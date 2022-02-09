@@ -35,6 +35,12 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
+    
+    // interface to parent component
+    void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
+    void importProfile() {};
+    void exportProfile() {};
+    void exportCode() {};
 
 private:
     
@@ -43,7 +49,7 @@ private:
     // GUI constants
     static const int lowerBarHeight = 20;
     static const int pointSize = 4;
-    static const int pointStroke = 2;
+    static const int pointStroke = 4;
     static const int clickRadius = 20;
     static const int throttleCurveClickRadius = clickRadius * 75;
     

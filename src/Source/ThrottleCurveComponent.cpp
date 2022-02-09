@@ -50,6 +50,23 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight());
     
+    // draw graph ticks
+    g.setColour(juce::Colours::darkgrey);
+    int numTicksX = 40;
+    int numTicksY = 20;
+    
+    for (int i = 0; i < numTicksX; i++)
+    {
+        float x = i * getWidth() / numTicksX;
+        g.drawLine(x, 0, x, getHeight());
+    }
+    
+    for (int i = 0; i < numTicksY; i++)
+    {
+        float y = i * getHeight() / numTicksY;
+        g.drawLine(0, y, getWidth(), y);
+    }
+    
     // draw interpolated points
     g.setColour(juce::Colours::white);
     int numPoints = getWidth() / 1;
@@ -62,7 +79,7 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     }
     
     // draw points
-    g.setColour(juce::Colours::red);
+    g.setColour(juce::Colours::orange);
     
     for (const auto& point : throttleCurve.getPoints())
     {
@@ -218,6 +235,19 @@ bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Compone
         }
     }
     return true;
+}
+
+//========================================================= Interface to parent
+
+/**
+ * @brief Sets the interpolation method used by the throttle curve
+ *
+ * @param[in]   method      Interpolation method
+ */
+void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::InterpolationMethod method)
+{
+    throttleCurve.setInterpolationMethod(method);
+    repaint();
 }
 
 //============================================================ Internal utility
