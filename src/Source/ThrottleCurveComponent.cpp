@@ -62,23 +62,33 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     
     // draw interpolated points
     g.setColour(juce::Colours::white);
-    int numPoints = 5;
+    int numPoints = getWidth() / 10;
     
-    for (int i = 0; i < throttleCurve.getPoints().size() - 1; i++)
+    for (int input = 0; input < ThrottleCurve::getInputMax(); input += ThrottleCurve::getInputMax() / numPoints)
     {
-        const auto& curvePoint = throttleCurve.getPoints().getReference(i);
-        const auto& curvePointNext = throttleCurve.getPoints().getReference(i + 1);
-        
-        for (int j = 1; j < numPoints; j++)
-        {
-            float mu = static_cast<float>(j) / numPoints;
-            
-            const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(curvePoint, curvePointNext, mu);
-            const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
-            g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), pointSize / 2, pointSize / 2, pointStroke);
-            
-        }
+        const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
+        const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
+        g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), pointSize / 2, pointSize / 2, pointStroke);
     }
+    
+    
+//    int numPoints = 5;
+    
+//    for (int i = 0; i < throttleCurve.getPoints().size() - 1; i++)
+//    {
+//        const auto& curvePoint = throttleCurve.getPoints().getReference(i);
+//        const auto& curvePointNext = throttleCurve.getPoints().getReference(i + 1);
+//
+//        for (int j = 1; j < numPoints; j++)
+//        {
+//            float mu = static_cast<float>(j) / numPoints;
+//
+//            const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(curvePoint, curvePointNext, mu);
+//            const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
+//            g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), pointSize / 2, pointSize / 2, pointStroke);
+//
+//        }
+//    }
     
     
 }

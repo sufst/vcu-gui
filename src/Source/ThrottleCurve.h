@@ -35,9 +35,8 @@ public:
     Point* pointMoved(const Point movedPoint);
     
     // interpolation
-    Point getInterpolatedPoint(int index1, int index2, float mu);
-    Point getInterpolatedPoint(const Point& p1, const Point& p2, float mu);
-    
+    Point getInterpolatedPoint(int input);
+
     // static utility
     static int getInputMax();
     static int getOutputMax();
@@ -60,8 +59,8 @@ private:
     void resetCurveToDefault(juce::Array<Point>& curveToReset);
     void sortCurve(juce::Array<Point>& curveToSort);
     
-    Point linearInterpolate(const Point& p1, const Point& p2, float mu);
-    Point cosineInterpolate(const Point& p1, const Point& p2, float mu);
+    Point linearInterpolate(int input);
+    Point cosineInterpolate(int input);
     
     // static
     static const juce::Array<ThrottleCurve::InterpolationMethod> listOfInterpolationMethods;

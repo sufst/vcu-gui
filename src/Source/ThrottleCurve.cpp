@@ -80,12 +80,17 @@ void ThrottleCurve::deleteNearbyPoints(const Point& point, int radius)
         }
     }
     
-    // delete the points
+    // delete the points (unless they are the first and last ones)
     int deleteCount = 0;
     for (const auto index : toDelete)
     {
-        curve.remove(index - deleteCount);
-        deleteCount++;
+        int realIndex = index - deleteCount;
+        
+        if ((realIndex != 0) && (realIndex != curve.size() - 1))
+        {
+            curve.remove(index - deleteCount);
+            deleteCount++;
+        }
     }
 }
 
@@ -111,80 +116,142 @@ ThrottleCurve::Point* ThrottleCurve::pointMoved(const Point movedPoint)
 //================================================================ Interpolation
 
 /**
- * @brief       Interpolate the curve between two indexed points
+ * @brief       Get an interpolated point on the curve
  *
  * @details     The method of interpolation can be set using setInterpolationMethod(...).
- *              It is expected that index2 > index1.
  *
- * @param[in]   index1      Index of first point
- * @param[in]   index2      Index of second point
- * @param[in]   mu          Fractional distance between points to interpolate
+ * @param[in]   input   Input in the range [0, inputMax]
  *
  * @return      Interpolated point
  */
-ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int index1, int index2, float mu)
-{
-    return getInterpolatedPoint(curve.getReference(index1), curve.getReference(index2), mu);
-}
-
-/**
- * @brief       Interpolate the curve between two indexed points
- *
- * @details     The method of interpolation can be set using setInterpolationMethod(...).
- *              It is expected that the x position of p1 is before that of p2
- *
- * @param[in]   p1          First point
- * @param[in]   p2          Second point
- * @param[in]   mu          Fractional distance between points to interpolate
- *
- * @return      Interpolated point
- */
-ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(const Point& p1, const Point& p2, float mu)
+ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int input)
 {
     switch (interpolation)
     {
         case InterpolationMethod::Linear:
-            return linearInterpolate(p1, p2, mu);
-            
+            return linearInterpolate(input);
+
         case InterpolationMethod::Cosine:
-            return cosineInterpolate(p1, p2, mu);
-            
+            return cosineInterpolate(input);
+
         default:
+            // something hasn't been implemented!
             jassertfalse;
-            return p1;
+            return Point(input, outputMax / 2);
     }
+}
+
+///**
+// * @brief       Interpolate the curve between two indexed points
+// *
+// * @details     The method of interpolation can be set using setInterpolationMethod(...).
+// *              It is expected that index2 > index1.
+// *
+// * @param[in]   index1      Index of first point
+// * @param[in]   index2      Index of second point
+// * @param[in]   mu          Fractional distance between points to interpolate
+// *
+// * @return      Interpolated point
+// */
+//ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int index1, int index2, float mu)
+//{
+//    return getInterpolatedPoint(curve.getReference(index1), curve.getReference(index2), mu);
+//}
+//
+///**
+// * @brief       Interpolate the curve between two indexed points
+// *
+// * @details     The method of interpolation can be set using setInterpolationMethod(...).
+// *              It is expected that the x position of p1 is before that of p2
+// *
+// * @param[in]   p1          First point
+// * @param[in]   p2          Second point
+// * @param[in]   mu          Fractional distance between points to interpolate
+// *
+// * @return      Interpolated point
+// */
+//ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(const Point& p1, const Point& p2, float mu)
+//{
+//    switch (interpolation)
+//    {
+//        case InterpolationMethod::Linear:
+//            return linearInterpolate(p1, p2, mu);
+//
+//        case InterpolationMethod::Cosine:
+//            return cosineInterpolate(p1, p2, mu);
+//
+//        default:
+//            jassertfalse;
+//            return p1;
+//    }
+//}
+
+/**
+ * @brief       Linear interpolation between two points
+ *
+ * @param[in]   input   Input in the range [0, inputMax]
+ *
+ * @return      Interpolated point
+ */
+ThrottleCurve::Point ThrottleCurve::linearInterpolate(int input)
+{
+    Point p1(0, 0);
+    Point p2(0, 0);
+    
+    // find the nearest points
+    for (int i = 0; i < curve.size(); i++)
+    {
+        auto& point = curve.getReference(i);
+        if (point.getX() < input)
+        {
+            p1 = point;
+            p2 = curve.getReference(i + 1);
+        }
+    }
+    
+    // linear interpolation
+    int xDiff = p2.getX() - p1.getX();
+    int yDiff = p2.getY() - p1.getY();
+    
+    float mu = static_cast<float>(input - p1.getX()) / static_cast<float>(xDiff);
+    float m  = static_cast<float>(yDiff) / static_cast<float>(xDiff);
+
+    int y = p1.getY() + m * mu * xDiff;
+    
+    return Point(input, y);
 }
 
 /**
  * @brief       Linear interpolation between two points
  *
- * @param[in]   p1      First point
- * @param[in]   p2      Second point
- * @param[in]   mu      Fractional distance between points to interpolate
+ * @param[in]   input   Input in the range [0, inputMax]
  *
  * @return      Interpolated point
  */
-ThrottleCurve::Point ThrottleCurve::linearInterpolate(const Point& p1, const Point& p2, float mu)
+ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
 {
-    int xDiff = p2.getX() - p1.getX();
-    int yDiff = p2.getY() - p1.getY();
-
-    float m = static_cast<float>(yDiff) / static_cast<float>(xDiff);
+    Point p1(0, 0);
+    Point p2(0, 0);
     
-    int x = p1.getX() + mu * xDiff;
-    int y = p1.getY() + m * mu * xDiff;
+    // find the nearest points
+    for (int i = 0; i < curve.size(); i++)
+    {
+        auto& point = curve.getReference(i);
+        if (point.getX() < input)
+        {
+            p1 = point;
+            p2 = curve.getReference(i + 1);
+        }
+    }
     
-    return Point(x, y);
-}
-
-ThrottleCurve::Point ThrottleCurve::cosineInterpolate(const Point& p1, const Point& p2, float mu)
-{
+    // cosine interpolation
+    float mu = static_cast<float>(input - p1.getX()) / static_cast<float>(p2.getX() - p1.getX());
+    
+    
     float mu2 = (1 - std::cos(mu * juce::MathConstants<float>::pi)) / 2;
-    
-    int x = p1.getX() + mu * (p2.getX() - p1.getX());
     int y = (p1.getY() * (1 - mu2) + p2.getY() * mu2);
-    
-    return Point(x, y);
+
+    return Point(input, y);
 }
 
 //============================================================ Internal utility
