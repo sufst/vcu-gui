@@ -28,8 +28,10 @@ public:
     ThrottleCurve(InterpolationMethod interpolationMethod);
     ~ThrottleCurve();
     
-    // getters
-    const juce::Array<juce::Point<int>>& getPoints() const;
+    // points
+    void addPoint(Point& point);
+    const juce::Array<Point>& getPoints() const;
+    
     
     // static utility
     static int getInputMax();
@@ -51,6 +53,7 @@ private:
     
     // internal utility
     void resetCurveToDefault(juce::Array<Point>& curveToReset);
+    void sortCurve(juce::Array<Point>& curveToSotr);
     
     // static
     static const juce::Array<ThrottleCurve::InterpolationMethod> listOfInterpolationMethods;

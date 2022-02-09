@@ -19,21 +19,7 @@
  */
 ThrottleCurveComponent::ThrottleCurveComponent()
 {
-    // combo box for selecting interpolation method
-    interpolationMethodComboBox.setTitle("Interpolation method");
-    
-    const auto& methods = ThrottleCurve::getAllInterpolationMethods();
-    
-    for (int i = 0; i < methods.size(); i++)
-    {
-        const auto& name = ThrottleCurve::getInterpolationMethodName(methods.getReference(i));
-        interpolationMethodComboBox.addItem(name, i + 1);
-    }
-    
-    interpolationMethodComboBox.setSelectedId(1);
-    
-    // add children
-    addAndMakeVisible(interpolationMethodComboBox);
+    // nothing to do
 }
 
 /**
@@ -57,10 +43,10 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     juce::Colour backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
     g.fillAll(backgroundColour);
     
-    // draw border around the component excluding the lower bar
+    // draw border around the component
     juce::Colour borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
     g.setColour(borderColour);
-    g.drawRect(0, 0, getWidth(), getHeight() - lowerBarHeight);
+    g.drawRect(0, 0, getWidth(), getHeight());
     
     // create a path
     g.setColour(juce::Colours::red);
@@ -68,7 +54,7 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     
     for (const auto& point : throttleCurve.getPoints())
     {
-        auto realPoint = transformCurvePoint(point);
+        auto realPoint = transformCurvePointToCanvas(point);
         g.drawEllipse(realPoint.getX(), realPoint.getY(), pointSize, pointSize, pointStroke);
     }
 }
@@ -78,13 +64,48 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
  */
 void ThrottleCurveComponent::resized()
 {
-    auto bounds = getLocalBounds();
+    // nothing to do
+}
+
+//====================================================================== Events
+
+/**
+ * @brief Handle a mouse down event
+ *
+ * @param[in]   event   Mouse event
+ */
+void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
+{
+    // add new point
+    if (!currentlyMovingPoint)
+    {
+        auto point = transformCanvasPointToCurve(event.getPosition());
+        throttleCurve.addPoint(point);
+    }
     
-    // remove a bar from the bottom of the component
-    auto lowerBar = bounds.removeFromBottom(lowerBarHeight);
-    auto lowerBarWidth = lowerBar.getWidth();
+    // trigger a re-paint
+    repaint();
+}
+
+/**
+ * @brief Handle a mouse up event
+ *
+ * @param[in]   event   Mouse event
+ */
+void ThrottleCurveComponent::mouseUp(const juce::MouseEvent& event)
+{
     
-    interpolationMethodComboBox.setBounds(lowerBar.removeFromRight(lowerBarWidth / 4));
+
+}
+
+/**
+ * @brief Handle a mouse drag event
+ *
+ * @param[in]   event   Mouse event
+ */
+void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
+{
+    
 }
 
 //============================================================ Internal utility
@@ -96,16 +117,25 @@ void ThrottleCurveComponent::resized()
  *
  * @return Position to draw the point on the component
  */
-juce::Point<int> ThrottleCurveComponent::transformCurvePoint(const ThrottleCurve::Point& point) const
+juce::Point<int> ThrottleCurveComponent::transformCurvePointToCanvas(const ThrottleCurve::Point& point) const
 {
-    // don't draw in the bottom bar
-    // use the full width
-    int height = getHeight() - lowerBarHeight;
-    int width = getWidth();
-    
-    // map the point
-    int x = width * (static_cast<float>(point.getX()) / static_cast<float>(ThrottleCurve::getInputMax()));
-    int y = height * (1 - static_cast<float>(point.getY()) / static_cast<float>(ThrottleCurve::getOutputMax()));
+    int x = getWidth() * (static_cast<float>(point.getX()) / static_cast<float>(ThrottleCurve::getInputMax()));
+    int y = getHeight() * (1 - static_cast<float>(point.getY()) / static_cast<float>(ThrottleCurve::getOutputMax()));
     
     return juce::Point<int>(x, y);
+}
+
+/**
+ * @brief Transforms a point on a throttle curve to its position on the component
+ *
+ * @param[in]   point   Point on the component
+ *
+ * @return Position to place the point on the throttle curve
+ */
+ThrottleCurve::Point ThrottleCurveComponent::transformCanvasPointToCurve(const juce::Point<int>& point) const
+{
+    int x = ThrottleCurve::getInputMax() * (static_cast<float>(point.getX()) / static_cast<float>(getWidth()));
+    int y = ThrottleCurve::getOutputMax() * (1 - static_cast<float>(point.getY()) / static_cast<float>(getHeight()));
+    
+    return ThrottleCurve::Point(x, y);
 }

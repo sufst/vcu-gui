@@ -27,21 +27,27 @@ public:
     // painting
     void paint(juce::Graphics&) override;
     void resized() override;
+    
+    // event handlers
+    void mouseDown(const juce::MouseEvent& event) override;
+    void mouseUp(const juce::MouseEvent& event) override;
+    void mouseDrag(const juce::MouseEvent& event) override;
 
 private:
     
     ThrottleCurve throttleCurve;
-    
-    // internal components
-    juce::ComboBox interpolationMethodComboBox;
     
     // GUI dimensions
     static const int lowerBarHeight = 20;
     static const int pointSize = 4;
     static const int pointStroke = 2;
     
+    // state
+    bool currentlyMovingPoint = false;
+    
     // internal utility
-    juce::Point<int> transformCurvePoint(const ThrottleCurve::Point& point) const;
+    juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;
+    ThrottleCurve::Point transformCanvasPointToCurve(const juce::Point<int>& point) const;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
     

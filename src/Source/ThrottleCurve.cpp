@@ -7,6 +7,8 @@
 
 #include "ThrottleCurve.h"
 
+#include <functional>
+
 //==================================================== Constructor / destructor
 
 /**
@@ -37,14 +39,25 @@ ThrottleCurve::~ThrottleCurve()
     // nothing to do
 }
 
-//===================================================================== Getters
+//================================================================ Curve points
 
 /**
- * @brief Returns a reference to the path associated with the curve
+ * @brief Returns a reference to the list of points associated with the curve
  */
 const juce::Array<juce::Point<int>>& ThrottleCurve::getPoints() const
 {
     return curve;
+}
+
+/**
+ * @brief Adds a new point to the curve
+ *
+ * @details 
+ */
+void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
+{
+    curve.add(point);
+    sortCurve(curve);
 }
 
 //============================================================ Internal utility
@@ -60,6 +73,20 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
     curveToReset.add(Point(0, 0));
     curveToReset.add(Point(inputMax / 2, outputMax / 2));
     //curveToReset.add(Point(inputMax, outputMax));
+}
+
+/**
+ * @brief Sorts a list of points on a throttle curve
+ *
+ * @param[in]   curveToSort     The curve to be sorted
+ */
+void ThrottleCurve::sortCurve(juce::Array<ThrottleCurve::Point>& curveToSort)
+{
+    std::function compareFunc = [] (ThrottleCurve::Point p1, ThrottleCurve::Point p2) {
+        return p1.getX() < p2.getX();
+    };
+    
+    std::sort(curveToSort.begin(), curveToSort.end(), compareFunc);
 }
 
 //============================================================== Static utility
