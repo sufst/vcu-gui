@@ -35,6 +35,9 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
+    
+    // interface to parent component
+    void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
 
 private:
     

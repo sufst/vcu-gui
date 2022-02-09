@@ -37,12 +37,14 @@ public:
     
     // interpolation
     Point getInterpolatedPoint(int input);
+    void setInterpolationMethod(InterpolationMethod method);
 
     // static utility
     static int getInputMax();
     static int getOutputMax();
     static const juce::Array<InterpolationMethod>& getAllInterpolationMethods();
     static const juce::String& getInterpolationMethodName(ThrottleCurve::InterpolationMethod method);
+    static const InterpolationMethod getDefaultInterpolationMethod();
     
 private:
     
@@ -67,7 +69,7 @@ private:
     // static
     static const juce::Array<ThrottleCurve::InterpolationMethod> listOfInterpolationMethods;
     static const juce::Array<juce::String> namesOfInterpolationMethods;
-    static constexpr InterpolationMethod defaultInterpolationMethod = InterpolationMethod::Hermite;
+    static constexpr InterpolationMethod defaultInterpolationMethod = InterpolationMethod::Cubic;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurve)
 };

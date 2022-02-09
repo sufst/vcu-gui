@@ -237,6 +237,19 @@ bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Compone
     return true;
 }
 
+//========================================================= Interface to parent
+
+/**
+ * @brief Sets the interpolation method used by the throttle curve
+ *
+ * @param[in]   method      Interpolation method
+ */
+void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::InterpolationMethod method)
+{
+    throttleCurve.setInterpolationMethod(method);
+    repaint();
+}
+
 //============================================================ Internal utility
 
 /**

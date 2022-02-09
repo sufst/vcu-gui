@@ -117,6 +117,16 @@ ThrottleCurve::Point* ThrottleCurve::pointMoved(const Point movedPoint)
 //================================================================ Interpolation
 
 /**
+ * @brief Sets the interpolation method used by the throttle curve
+ *
+ * @param[in]   method      Interpolation method
+ */
+void ThrottleCurve::setInterpolationMethod(InterpolationMethod method)
+{
+    interpolation = method;
+}
+
+/**
  * @brief       Get an interpolated point on the curve
  *
  * @details     The method of interpolation can be set using setInterpolationMethod(...).
@@ -308,12 +318,23 @@ const juce::String& ThrottleCurve::getInterpolationMethodName(ThrottleCurve::Int
     return namesOfInterpolationMethods.getReference(static_cast<int>(method));
 }
 
+/**
+ * @brief Returns the default interpolation method
+ */
+const ThrottleCurve::InterpolationMethod ThrottleCurve::getDefaultInterpolationMethod()
+{
+    return defaultInterpolationMethod;
+}
+
 //================================================================= Static data
 
 const juce::Array<ThrottleCurve::InterpolationMethod> ThrottleCurve::listOfInterpolationMethods = {
-    ThrottleCurve::InterpolationMethod::Linear, ThrottleCurve::InterpolationMethod::Cosine, ThrottleCurve::InterpolationMethod::Cubic, ThrottleCurve::InterpolationMethod::Hermite
+    ThrottleCurve::InterpolationMethod::Linear,
+    ThrottleCurve::InterpolationMethod::Cosine,
+    ThrottleCurve::InterpolationMethod::Cubic,
+    ThrottleCurve::InterpolationMethod::Hermite
 };
 
 const juce::Array<juce::String> ThrottleCurve::namesOfInterpolationMethods = {
-    "Linear", "Cosine", "C^2 Spline", "Hermite Spline"
+    "Linear", "Cosine", "C2 Spline", "Hermite Spline"
 };
