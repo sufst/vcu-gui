@@ -49,7 +49,7 @@ private:
     // GUI constants
     static const int lowerBarHeight = 20;
     static const int pointSize = 4;
-    static const int pointStroke = 2;
+    static const int pointStroke = 4;
     static const int clickRadius = 20;
     static const int throttleCurveClickRadius = clickRadius * 75;
     

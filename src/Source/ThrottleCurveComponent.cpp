@@ -79,7 +79,7 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     }
     
     // draw points
-    g.setColour(juce::Colours::red);
+    g.setColour(juce::Colours::orange);
     
     for (const auto& point : throttleCurve.getPoints())
     {
