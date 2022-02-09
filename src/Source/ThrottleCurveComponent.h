@@ -30,6 +30,8 @@ public:
 
 private:
     
+    ThrottleCurve throttleCurve;
+    
     // internal components
     juce::ComboBox interpolationMethodComboBox;
     

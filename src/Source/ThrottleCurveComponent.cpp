@@ -19,7 +19,7 @@
  */
 ThrottleCurveComponent::ThrottleCurveComponent()
 {
-    // setup and add children
+    // combo box for selecting interpolation method
     interpolationMethodComboBox.setTitle("Interpolation method");
     
     const auto& methods = ThrottleCurve::getAllInterpolationMethods();
@@ -30,10 +30,10 @@ ThrottleCurveComponent::ThrottleCurveComponent()
         interpolationMethodComboBox.addItem(name, i + 1);
     }
     
+    interpolationMethodComboBox.setSelectedId(1);
     
+    // add children
     addAndMakeVisible(interpolationMethodComboBox);
-    
-    
 }
 
 /**
@@ -57,9 +57,15 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     juce::Colour backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
     g.fillAll(backgroundColour);
     
-    // draw border around whole component
+    // draw border around the component excluding the lower bar
+    juce::Colour borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
+    g.setColour(borderColour);
+    g.drawRect(0, 0, getWidth(), getHeight() - lowerBarHeight);
+    
+    // TODO: create a path
     g.setColour(juce::Colours::white);
-    g.drawRect(0, 0, getWidth(), getHeight());
+    juce::Path path;
+    
 }
 
 /**

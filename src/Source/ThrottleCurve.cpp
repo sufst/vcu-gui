@@ -10,11 +10,23 @@
 //==================================================== Constructor / destructor
 
 /**
- * @brief Constructor
+ * @brief   Constructor
+ *
+ * @details Uses the default interpolation method
  */
 ThrottleCurve::ThrottleCurve()
+    :   interpolation(defaultInterpolationMethod)
 {
-    // nothing to do
+    resetCurveToDefault(curve);
+}
+
+/**
+ * @brief Constructor specifying interpolation method
+ */
+ThrottleCurve::ThrottleCurve(InterpolationMethod interpolationMethod)
+    :   interpolation(interpolationMethod)
+{
+    resetCurveToDefault(curve);
 }
 
 /**
@@ -25,6 +37,45 @@ ThrottleCurve::~ThrottleCurve()
     // nothing to do
 }
 
+//===================================================================== Getters
+
+/**
+ * @brief Returns a reference to the path associated with the curve
+ */
+const juce::Array<juce::Point<int>>& ThrottleCurve::getPoints() const
+{
+    return curve;
+}
+
+/**
+ * @brief Gets the maximum value of the input to the curve
+ */
+int ThrottleCurve::getInputMax() const
+{
+    return inputMax;
+}
+
+/**
+ * @brief Gets the maximum value of the output of the curve
+ */
+int ThrottleCurve::getOutputMax() const
+{
+    return outputMax;
+}
+
+//============================================================ Internal utility
+
+/**
+ * @brief   Resets the path to its default state
+ *
+ * @details By default the throttle curve is a linear mapping between input and output
+ */
+void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curveToReset)
+{
+    curveToReset.clear();
+    curveToReset.add(Point(0, 0));
+    curveToReset.add(Point(inputMax, outputMax));
+}
 
 //============================================================== Static utility
 
