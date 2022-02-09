@@ -62,10 +62,15 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight() - lowerBarHeight);
     
-    // TODO: create a path
-    g.setColour(juce::Colours::white);
+    // create a path
+    g.setColour(juce::Colours::red);
     juce::Path path;
     
+    for (const auto& point : throttleCurve.getPoints())
+    {
+        auto realPoint = transformCurvePoint(point);
+        g.drawEllipse(realPoint.getX(), realPoint.getY(), pointSize, pointSize, pointStroke);
+    }
 }
 
 /**
@@ -80,4 +85,27 @@ void ThrottleCurveComponent::resized()
     auto lowerBarWidth = lowerBar.getWidth();
     
     interpolationMethodComboBox.setBounds(lowerBar.removeFromRight(lowerBarWidth / 4));
+}
+
+//============================================================ Internal utility
+
+/**
+ * @brief Transforms a point on a throttle curve to its position on the component
+ *
+ * @param[in]   point   Point on the throttle curve
+ *
+ * @return Position to draw the point on the component
+ */
+juce::Point<int> ThrottleCurveComponent::transformCurvePoint(const ThrottleCurve::Point& point) const
+{
+    // don't draw in the bottom bar
+    // use the full width
+    int height = getHeight() - lowerBarHeight;
+    int width = getWidth();
+    
+    // map the point
+    int x = width * (static_cast<float>(point.getX()) / static_cast<float>(ThrottleCurve::getInputMax()));
+    int y = height * (1 - static_cast<float>(point.getY()) / static_cast<float>(ThrottleCurve::getOutputMax()));
+    
+    return juce::Point<int>(x, y);
 }

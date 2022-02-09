@@ -30,10 +30,10 @@ public:
     
     // getters
     const juce::Array<juce::Point<int>>& getPoints() const;
-    int getInputMax() const;
-    int getOutputMax() const;
     
     // static utility
+    static int getInputMax();
+    static int getOutputMax();
     static const juce::Array<InterpolationMethod>& getAllInterpolationMethods();
     static const juce::String& getInterpolationMethodName(ThrottleCurve::InterpolationMethod method);
     

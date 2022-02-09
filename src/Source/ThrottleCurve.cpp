@@ -47,22 +47,6 @@ const juce::Array<juce::Point<int>>& ThrottleCurve::getPoints() const
     return curve;
 }
 
-/**
- * @brief Gets the maximum value of the input to the curve
- */
-int ThrottleCurve::getInputMax() const
-{
-    return inputMax;
-}
-
-/**
- * @brief Gets the maximum value of the output of the curve
- */
-int ThrottleCurve::getOutputMax() const
-{
-    return outputMax;
-}
-
 //============================================================ Internal utility
 
 /**
@@ -74,7 +58,8 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
 {
     curveToReset.clear();
     curveToReset.add(Point(0, 0));
-    curveToReset.add(Point(inputMax, outputMax));
+    curveToReset.add(Point(inputMax / 2, outputMax / 2));
+    //curveToReset.add(Point(inputMax, outputMax));
 }
 
 //============================================================== Static utility
@@ -85,6 +70,22 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
 const juce::Array<ThrottleCurve::InterpolationMethod>& ThrottleCurve::getAllInterpolationMethods()
 {
     return listOfInterpolationMethods;
+}
+
+/**
+ * @brief Gets the maximum value of the input to the curve
+ */
+int ThrottleCurve::getInputMax()
+{
+    return inputMax;
+}
+
+/**
+ * @brief Gets the maximum value of the output of the curve
+ */
+int ThrottleCurve::getOutputMax()
+{
+    return outputMax;
 }
 
 /**

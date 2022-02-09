@@ -37,6 +37,11 @@ private:
     
     // GUI dimensions
     static const int lowerBarHeight = 20;
+    static const int pointSize = 4;
+    static const int pointStroke = 2;
+    
+    // internal utility
+    juce::Point<int> transformCurvePoint(const ThrottleCurve::Point& point) const;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
     
