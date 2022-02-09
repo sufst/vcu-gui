@@ -33,7 +33,7 @@ MainComponent::~MainComponent()
  *
  * @param[in]   g   Graphics context
  */
-void MainComponent::paint (juce::Graphics& g)
+void MainComponent::paint(juce::Graphics& g)
 {
     // fill background
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));

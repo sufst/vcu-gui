@@ -50,6 +50,23 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight());
     
+    // draw graph ticks
+    g.setColour(juce::Colours::darkgrey);
+    int numTicksX = 40;
+    int numTicksY = 20;
+    
+    for (int i = 0; i < numTicksX; i++)
+    {
+        float x = i * getWidth() / numTicksX;
+        g.drawLine(x, 0, x, getHeight());
+    }
+    
+    for (int i = 0; i < numTicksY; i++)
+    {
+        float y = i * getHeight() / numTicksY;
+        g.drawLine(0, y, getWidth(), y);
+    }
+    
     // draw interpolated points
     g.setColour(juce::Colours::white);
     int numPoints = getWidth() / 1;
