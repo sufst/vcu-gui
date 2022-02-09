@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <functional>
+#include <vector>
 
 //==================================================== Constructor / destructor
 
@@ -133,6 +134,12 @@ ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int input)
 
         case InterpolationMethod::Cosine:
             return cosineInterpolate(input);
+            
+        case InterpolationMethod::Cubic:
+            return splineInterpolate(input, tk::spline::cspline);
+        
+        case InterpolationMethod::Hermite:
+            return splineInterpolate(input, tk::spline::cspline_hermite);
 
         default:
             // something hasn't been implemented!
@@ -141,53 +148,8 @@ ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int input)
     }
 }
 
-///**
-// * @brief       Interpolate the curve between two indexed points
-// *
-// * @details     The method of interpolation can be set using setInterpolationMethod(...).
-// *              It is expected that index2 > index1.
-// *
-// * @param[in]   index1      Index of first point
-// * @param[in]   index2      Index of second point
-// * @param[in]   mu          Fractional distance between points to interpolate
-// *
-// * @return      Interpolated point
-// */
-//ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int index1, int index2, float mu)
-//{
-//    return getInterpolatedPoint(curve.getReference(index1), curve.getReference(index2), mu);
-//}
-//
-///**
-// * @brief       Interpolate the curve between two indexed points
-// *
-// * @details     The method of interpolation can be set using setInterpolationMethod(...).
-// *              It is expected that the x position of p1 is before that of p2
-// *
-// * @param[in]   p1          First point
-// * @param[in]   p2          Second point
-// * @param[in]   mu          Fractional distance between points to interpolate
-// *
-// * @return      Interpolated point
-// */
-//ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(const Point& p1, const Point& p2, float mu)
-//{
-//    switch (interpolation)
-//    {
-//        case InterpolationMethod::Linear:
-//            return linearInterpolate(p1, p2, mu);
-//
-//        case InterpolationMethod::Cosine:
-//            return cosineInterpolate(p1, p2, mu);
-//
-//        default:
-//            jassertfalse;
-//            return p1;
-//    }
-//}
-
 /**
- * @brief       Linear interpolation between two points
+ * @brief       Linear interpolation
  *
  * @param[in]   input   Input in the range [0, inputMax]
  *
@@ -222,7 +184,7 @@ ThrottleCurve::Point ThrottleCurve::linearInterpolate(int input)
 }
 
 /**
- * @brief       Linear interpolation between two points
+ * @brief       Cosine interpolation
  *
  * @param[in]   input   Input in the range [0, inputMax]
  *
@@ -252,6 +214,36 @@ ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
     int y = (p1.getY() * (1 - mu2) + p2.getY() * mu2);
 
     return Point(input, y);
+}
+
+/**
+ * @brief   Spline interpolation
+ *
+ * @param[in]   input   Input in the range [0, inputMax]
+ * @param[in]   type    Type of spline to use (cubic or Hermite)
+ *
+ * @return      Interpolated point
+ */
+ThrottleCurve::Point ThrottleCurve::splineInterpolate(int input, tk::spline::spline_type type)
+{
+    // default to linear if too few points
+    if (curve.size() < 3)
+    {
+        return linearInterpolate(input);
+    }
+    
+    // spline
+    std::vector<double> x, y;
+    
+    for (const auto& point : curve)
+    {
+        x.push_back(static_cast<double>(point.getX()));
+        y.push_back(static_cast<double>(point.getY()));
+    }
+    
+    tk::spline spline(x, y, type);
+    
+    return Point(input, static_cast<int>(spline(input)));
 }
 
 //============================================================ Internal utility
@@ -319,9 +311,9 @@ const juce::String& ThrottleCurve::getInterpolationMethodName(ThrottleCurve::Int
 //================================================================= Static data
 
 const juce::Array<ThrottleCurve::InterpolationMethod> ThrottleCurve::listOfInterpolationMethods = {
-    ThrottleCurve::InterpolationMethod::Linear, ThrottleCurve::InterpolationMethod::Cosine, ThrottleCurve::InterpolationMethod::Bezier
+    ThrottleCurve::InterpolationMethod::Linear, ThrottleCurve::InterpolationMethod::Cosine, ThrottleCurve::InterpolationMethod::Cubic, ThrottleCurve::InterpolationMethod::Hermite
 };
 
 const juce::Array<juce::String> ThrottleCurve::namesOfInterpolationMethods = {
-    "Linear", "Cosine", "Bezier"
+    "Linear", "Cosine", "C^2 Spline", "Hermite Spline"
 };

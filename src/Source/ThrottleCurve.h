@@ -8,6 +8,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "../../lib/spline/src/spline.h"
 
 /**
  * @brief Model of a throttle curve
@@ -18,7 +19,7 @@ public:
     
     // types
     enum class InterpolationMethod {
-        Linear = 0, Cosine, Bezier
+        Linear = 0, Cosine, Cubic, Hermite
     };
     
     typedef juce::Point<int> Point;
@@ -61,11 +62,12 @@ private:
     
     Point linearInterpolate(int input);
     Point cosineInterpolate(int input);
+    Point splineInterpolate(int input, tk::spline::spline_type type);
     
     // static
     static const juce::Array<ThrottleCurve::InterpolationMethod> listOfInterpolationMethods;
     static const juce::Array<juce::String> namesOfInterpolationMethods;
-    static constexpr InterpolationMethod defaultInterpolationMethod = InterpolationMethod::Cosine;
+    static constexpr InterpolationMethod defaultInterpolationMethod = InterpolationMethod::Hermite;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurve)
 };

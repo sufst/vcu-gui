@@ -50,46 +50,25 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight());
     
-    // create a path
+    // draw interpolated points
+    g.setColour(juce::Colours::white);
+    int numPoints = getWidth() / 1;
+    
+    for (int input = 0; input < ThrottleCurve::getInputMax(); input += ThrottleCurve::getInputMax() / numPoints)
+    {
+        const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
+        const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
+        g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), 1, 1, pointStroke / 2);
+    }
+    
+    // draw points
     g.setColour(juce::Colours::red);
-    juce::Path path;
     
     for (const auto& point : throttleCurve.getPoints())
     {
         auto realPoint = transformCurvePointToCanvas(point);
         g.drawEllipse(realPoint.getX(), realPoint.getY(), pointSize, pointSize, pointStroke);
     }
-    
-    // draw interpolated points
-    g.setColour(juce::Colours::white);
-    int numPoints = getWidth() / 10;
-    
-    for (int input = 0; input < ThrottleCurve::getInputMax(); input += ThrottleCurve::getInputMax() / numPoints)
-    {
-        const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
-        const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
-        g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), pointSize / 2, pointSize / 2, pointStroke);
-    }
-    
-    
-//    int numPoints = 5;
-    
-//    for (int i = 0; i < throttleCurve.getPoints().size() - 1; i++)
-//    {
-//        const auto& curvePoint = throttleCurve.getPoints().getReference(i);
-//        const auto& curvePointNext = throttleCurve.getPoints().getReference(i + 1);
-//
-//        for (int j = 1; j < numPoints; j++)
-//        {
-//            float mu = static_cast<float>(j) / numPoints;
-//
-//            const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(curvePoint, curvePointNext, mu);
-//            const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
-//            g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), pointSize / 2, pointSize / 2, pointStroke);
-//
-//        }
-//    }
-    
     
 }
 
