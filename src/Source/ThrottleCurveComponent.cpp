@@ -250,6 +250,52 @@ void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::Interpolation
     repaint();
 }
 
+// void ThrottleCurveComponent::importProfile() {
+
+// };
+
+void ThrottleCurveComponent::exportProfile() {
+    // create an outer node called "ANIMALS"
+    juce::XmlElement animalsList ("ANIMALS");
+
+    for (int i = 0; i < 4; ++i)
+    {
+        // create an inner element..
+        juce::XmlElement* giraffe = new juce::XmlElement ("GIRAFFE");
+
+        giraffe->setAttribute ("name", "nigel");
+        giraffe->setAttribute ("age", 10);
+        giraffe->setAttribute ("friendly", true);
+
+        // ..and add our new element to the parent node
+        animalsList.addChildElement (giraffe);
+    }
+
+    std::unique_ptr<juce::FileChooser> fileChooser;
+
+    fileChooser = std::make_unique<juce::FileChooser> ("Save throttle profile map",
+                                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                                       "*.xml",
+                                                       true);
+
+    auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+                          | juce::FileBrowserComponent::warnAboutOverwriting
+                          | juce::FileBrowserComponent::saveMode;
+
+    // launch file chooser asynchronously
+    fileChooser->launchAsync(fileChooserFlags, [this, animalsList] (const juce::FileChooser& chooser)
+    {
+
+        DBG("It's not calling the callback or showing the dialog");
+
+        // get result
+        juce::File mapFilePath = chooser.getResult();
+
+        // Write XML file to disk
+        animalsList.writeTo(mapFilePath, {});
+    });
+};
+
 //============================================================ Internal utility
 
 /**

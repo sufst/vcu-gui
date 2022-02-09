@@ -37,3 +37,6 @@
 # XCode
 *.xcuserstate
 src/Builds/
+
+# LSP
+.ccls-cache/

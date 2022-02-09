@@ -39,7 +39,7 @@ public:
     // interface to parent component
     void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
     void importProfile() {};
-    void exportProfile() {};
+    void exportProfile();
     void exportCode() {};
 
 private:
