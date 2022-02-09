@@ -44,7 +44,7 @@ ThrottleCurve::~ThrottleCurve()
 /**
  * @brief Returns a reference to the list of points associated with the curve
  */
-const juce::Array<juce::Point<int>>& ThrottleCurve::getPoints() const
+juce::Array<juce::Point<int>>& ThrottleCurve::getPoints()
 {
     return curve;
 }
@@ -66,7 +66,7 @@ void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
  * @param[in]   point   Input point
  * @param[in]   radius  Radius around point within which points will be deleted
  */
-void ThrottleCurve::deleteNearbyPoints(Point& point, int radius)
+void ThrottleCurve::deleteNearbyPoints(const Point& point, int radius)
 {
     juce::Array<int> toDelete = {};
     
@@ -89,28 +89,6 @@ void ThrottleCurve::deleteNearbyPoints(Point& point, int radius)
 }
 
 /**
- * @brief   Look for a point within a certain radius of an input point and get a pointer
- *          to it to allow its position to be changed.
- *
- * @param[in]   point   Input point
- * @param[in]   radius  Radius around point within which a point will be selected
- *
- * @return Pointer to point if found, nullptr otherwise
- */
-ThrottleCurve::Point* ThrottleCurve::getNearbyPointForMove(Point& point, int radius)
-{
-    for (auto& curvePoint : curve)
-    {
-        if (curvePoint.getDistanceFrom(point) < radius)
-        {
-            return &curvePoint;
-        }
-    }
-    
-    return nullptr;
-}
-
-/**
  * @brief       Update the curve when a point has been moved and return a pointer
  *              to the moved point.
  *
@@ -122,7 +100,7 @@ ThrottleCurve::Point* ThrottleCurve::getNearbyPointForMove(Point& point, int rad
  *
  * @return      Pointer to the point which was moved
  */
-ThrottleCurve::Point* ThrottleCurve::pointMoved(Point movedPoint)
+ThrottleCurve::Point* ThrottleCurve::pointMoved(const Point movedPoint)
 {
     sortCurve(curve);
     int index = curve.indexOf(movedPoint);

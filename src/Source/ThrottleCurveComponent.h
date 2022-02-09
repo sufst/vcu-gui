@@ -33,6 +33,7 @@ public:
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseUp(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
 
 private:
@@ -43,7 +44,8 @@ private:
     static const int lowerBarHeight = 20;
     static const int pointSize = 4;
     static const int pointStroke = 2;
-    static const int clickRadius = 10 * 100;
+    static const int clickRadius = 20;
+    static const int throttleCurveClickRadius = clickRadius * 75;
     
     // state
     bool currentlyMovingPoint = false;
@@ -53,6 +55,7 @@ private:
     // internal utility
     juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;
     ThrottleCurve::Point transformCanvasPointToCurve(const juce::Point<int>& point) const;
+    bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
     

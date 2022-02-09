@@ -30,11 +30,9 @@ public:
     
     // points
     void addPoint(Point& point);
-    void deleteNearbyPoints(Point& point, int radius);
-    const juce::Array<Point>& getPoints() const;
-    Point* getNearbyPointForMove(Point& point, int radius);
-    Point* pointMoved(Point movedPoint);
-    
+    void deleteNearbyPoints(const Point& point, int radius);
+    juce::Array<Point>& getPoints();
+    Point* pointMoved(const Point movedPoint);
     
     // static utility
     static int getInputMax();

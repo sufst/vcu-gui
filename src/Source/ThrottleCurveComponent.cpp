@@ -81,14 +81,17 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
     // check if a point already exists in the clicked location
     // if one does and not deleting it, begin a move
     if (!deleteMode)
-    {
-        ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
-        pMovingPoint = throttleCurve.getNearbyPointForMove(point, clickRadius);
-        
-        if (pMovingPoint != nullptr)
+    {        
+        for (int i = 0; i < throttleCurve.getPoints().size(); i++)
         {
-            currentlyMovingPoint = true;
-            setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+            
+            if (pointHitTest(event.getPosition(), throttleCurve.getPoints()[i]))
+            {
+                pMovingPoint = &throttleCurve.getPoints().getReference(i);
+                currentlyMovingPoint = true;
+                setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+                break;
+            }
         }
     }
     
@@ -100,7 +103,7 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
         if (deleteMode)
         {
             ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
-            throttleCurve.deleteNearbyPoints(point, clickRadius);
+            throttleCurve.deleteNearbyPoints(point, throttleCurveClickRadius);
         }
         // add
         else
@@ -147,6 +150,38 @@ void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
     
     // trigger a re-paint
     repaint();
+}
+
+/**
+ * @brief Handle a mouse move event
+ *
+ * @param[in]   event   Mouse event
+ */
+void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
+{
+    // change mouse cursor if a point is within the grab radius
+    if (!deleteMode && !currentlyMovingPoint)
+    {
+        bool hit = false;
+        
+        for (const auto& point : throttleCurve.getPoints())
+        {
+            if (pointHitTest(event.getPosition(), point))
+            {
+                hit = true;
+                break;
+            }
+        }
+        
+        if (hit)
+        {
+            setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+        }
+        else
+        {
+            setMouseCursor(juce::MouseCursor::CrosshairCursor);
+        }
+    }
 }
 
 /**
@@ -205,4 +240,14 @@ ThrottleCurve::Point ThrottleCurveComponent::transformCanvasPointToCurve(const j
     int y = ThrottleCurve::getOutputMax() * (1 - static_cast<float>(point.getY()) / static_cast<float>(getHeight()));
     
     return ThrottleCurve::Point(x, y);
+}
+
+/**
+ * @brief Hit test between a point on the canvas and a point on the curve
+ */
+
+bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint)
+{
+    juce::Point<int> transformedCurvePoint = transformCurvePointToCanvas(curvePoint);
+    return (canvasPoint.getDistanceFrom(transformedCurvePoint) < clickRadius);
 }
