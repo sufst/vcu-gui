@@ -42,9 +42,29 @@ MainComponent::MainComponent()
         throttleCurveComponent.setInterpolationMethod(method);
     };
     
+    // set up buttons
+    importProfileButton.setButtonText("Import profile");
+    exportProfileButton.setButtonText("Export profile");
+    exportCodeButton.setButtonText("Export code");
+    
+    importProfileButton.onClick = [this] () {
+        throttleCurveComponent.importProfile();
+    };
+    
+    exportProfileButton.onClick = [this] () {
+        throttleCurveComponent.exportProfile();
+    };
+    
+    exportCodeButton.onClick = [this] () {
+        throttleCurveComponent.exportCode();
+    };
+    
     // add children
     addAndMakeVisible(throttleCurveComponent);
     addAndMakeVisible(interpolationMethodComboBox);
+    addAndMakeVisible(importProfileButton);
+    addAndMakeVisible(exportProfileButton);
+    addAndMakeVisible(exportCodeButton);
 }
 
 /**
@@ -84,7 +104,19 @@ void MainComponent::resized()
     lowerBounds.removeFromBottom(borderSize / 4);
     
     // add user inputs at the bottom
-    interpolationMethodComboBox.setBounds(lowerBounds.removeFromLeft(lowerBounds.getWidth() / 4));
+    auto spacing = borderSize / 4;
+    auto width = (lowerBounds.getWidth() - spacing) / 4;
+    
+    interpolationMethodComboBox.setBounds(lowerBounds.removeFromLeft(width));
+    lowerBounds.removeFromLeft(spacing);
+    
+    importProfileButton.setBounds(lowerBounds.removeFromLeft(width));
+    lowerBounds.removeFromLeft(spacing);
+    
+    exportProfileButton.setBounds(lowerBounds.removeFromLeft(width));
+    lowerBounds.removeFromLeft(spacing);
+    
+    exportCodeButton.setBounds(lowerBounds.removeFromLeft(width));
     
     // use the rest for the graph
     throttleCurveComponent.setBounds(bounds);
