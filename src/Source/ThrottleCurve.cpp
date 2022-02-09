@@ -50,14 +50,83 @@ const juce::Array<juce::Point<int>>& ThrottleCurve::getPoints() const
 }
 
 /**
- * @brief Adds a new point to the curve
+ * @brief   Adds a new point to the curve
  *
- * @details 
+ * @details The points are sorted by x position each time
  */
 void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
 {
     curve.add(point);
     sortCurve(curve);
+}
+
+/**
+ * @brief Deletes points within a certain radius of an input point
+ *
+ * @param[in]   point   Input point
+ * @param[in]   radius  Radius around point within which points will be deleted
+ */
+void ThrottleCurve::deleteNearbyPoints(Point& point, int radius)
+{
+    juce::Array<int> toDelete = {};
+    
+    // work out which points to delete
+    for (int i = 0; i < curve.size(); i++)
+    {
+        if (curve.getReference(i).getDistanceFrom(point) < radius)
+        {
+            toDelete.add(i);
+        }
+    }
+    
+    // delete the points
+    int deleteCount = 0;
+    for (const auto index : toDelete)
+    {
+        curve.remove(index - deleteCount);
+        deleteCount++;
+    }
+}
+
+/**
+ * @brief   Look for a point within a certain radius of an input point and get a pointer
+ *          to it to allow its position to be changed.
+ *
+ * @param[in]   point   Input point
+ * @param[in]   radius  Radius around point within which a point will be selected
+ *
+ * @return Pointer to point if found, nullptr otherwise
+ */
+ThrottleCurve::Point* ThrottleCurve::getNearbyPointForMove(Point& point, int radius)
+{
+    for (auto& curvePoint : curve)
+    {
+        if (curvePoint.getDistanceFrom(point) < radius)
+        {
+            return &curvePoint;
+        }
+    }
+    
+    return nullptr;
+}
+
+/**
+ * @brief       Update the curve when a point has been moved and return a pointer
+ *              to the moved point.
+ *
+ * @details     This sorts the points in the curve, which necessitates returning a
+ *              new pointer to the point which has been moved if a further move
+ *              of that point is required.s
+ *
+ * @param[in]   movedPoint  Copy of the point which has been moved
+ *
+ * @return      Pointer to the point which was moved
+ */
+ThrottleCurve::Point* ThrottleCurve::pointMoved(Point movedPoint)
+{
+    sortCurve(curve);
+    int index = curve.indexOf(movedPoint);
+    return &curve.getReference(index);
 }
 
 //============================================================ Internal utility
@@ -71,8 +140,7 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
 {
     curveToReset.clear();
     curveToReset.add(Point(0, 0));
-    curveToReset.add(Point(inputMax / 2, outputMax / 2));
-    //curveToReset.add(Point(inputMax, outputMax));
+    curveToReset.add(Point(inputMax - 1, outputMax - 1));
 }
 
 /**

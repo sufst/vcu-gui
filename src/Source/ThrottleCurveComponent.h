@@ -16,7 +16,8 @@
  * @brief Throttle curve drawing component
  */
 class ThrottleCurveComponent
-    :   public juce::Component
+    :   public juce::Component,
+        public juce::KeyListener
 {
 public:
     
@@ -32,18 +33,22 @@ public:
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseUp(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
+    bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
 
 private:
     
     ThrottleCurve throttleCurve;
     
-    // GUI dimensions
+    // GUI constants
     static const int lowerBarHeight = 20;
     static const int pointSize = 4;
     static const int pointStroke = 2;
+    static const int clickRadius = 10 * 100;
     
     // state
     bool currentlyMovingPoint = false;
+    bool deleteMode = false;
+    ThrottleCurve::Point* pMovingPoint = nullptr;
     
     // internal utility
     juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;

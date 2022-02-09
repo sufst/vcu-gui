@@ -19,7 +19,9 @@
  */
 ThrottleCurveComponent::ThrottleCurveComponent()
 {
-    // nothing to do
+    setWantsKeyboardFocus(true);
+    setMouseCursor(juce::MouseCursor::CrosshairCursor);
+    addKeyListener(this);
 }
 
 /**
@@ -76,11 +78,36 @@ void ThrottleCurveComponent::resized()
  */
 void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
 {
-    // add new point
+    // check if a point already exists in the clicked location
+    // if one does and not deleting it, begin a move
+    if (!deleteMode)
+    {
+        ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
+        pMovingPoint = throttleCurve.getNearbyPointForMove(point, clickRadius);
+        
+        if (pMovingPoint != nullptr)
+        {
+            currentlyMovingPoint = true;
+            setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+        }
+    }
+    
+    
+    // add / delete if not moving
     if (!currentlyMovingPoint)
     {
-        auto point = transformCanvasPointToCurve(event.getPosition());
-        throttleCurve.addPoint(point);
+        // delete
+        if (deleteMode)
+        {
+            ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
+            throttleCurve.deleteNearbyPoints(point, clickRadius);
+        }
+        // add
+        else
+        {
+            auto point = transformCanvasPointToCurve(event.getPosition());
+            throttleCurve.addPoint(point);
+        }
     }
     
     // trigger a re-paint
@@ -94,8 +121,13 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
  */
 void ThrottleCurveComponent::mouseUp(const juce::MouseEvent& event)
 {
-    
-
+    // stop moving points
+    if (currentlyMovingPoint)
+    {
+        currentlyMovingPoint = false;
+        pMovingPoint = nullptr;
+        setMouseCursor(juce::MouseCursor::CrosshairCursor);
+    }
 }
 
 /**
@@ -105,7 +137,42 @@ void ThrottleCurveComponent::mouseUp(const juce::MouseEvent& event)
  */
 void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
 {
+    // move the point
+    if (currentlyMovingPoint)
+    {
+        ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
+        pMovingPoint->setXY(point.getX(), point.getY());
+        pMovingPoint = throttleCurve.pointMoved(*pMovingPoint);
+    }
     
+    // trigger a re-paint
+    repaint();
+}
+
+/**
+ * @brief Handle a key press event
+ *
+ * @param[in]   key                     Key pressed
+ * @param[in]   originatingComponent    Component from which the key press originated
+ */
+bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent)
+{
+    // toggle delete mode
+    if (key.isKeyCode(juce::KeyPress::backspaceKey))
+    {
+        deleteMode = !deleteMode;
+        
+        if (deleteMode)
+        {
+            setMouseCursor(juce::MouseCursor(juce::ImageCache::getFromMemory(BinaryData::Delete_png, BinaryData::Delete_pngSize), 1, 7, 5));
+        }
+        
+        else
+        {
+            setMouseCursor(juce::MouseCursor::CrosshairCursor);
+        }
+    }
+    return true;
 }
 
 //============================================================ Internal utility

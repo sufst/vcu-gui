@@ -30,7 +30,10 @@ public:
     
     // points
     void addPoint(Point& point);
+    void deleteNearbyPoints(Point& point, int radius);
     const juce::Array<Point>& getPoints() const;
+    Point* getNearbyPointForMove(Point& point, int radius);
+    Point* pointMoved(Point movedPoint);
     
     
     // static utility
@@ -53,7 +56,7 @@ private:
     
     // internal utility
     void resetCurveToDefault(juce::Array<Point>& curveToReset);
-    void sortCurve(juce::Array<Point>& curveToSotr);
+    void sortCurve(juce::Array<Point>& curveToSort);
     
     // static
     static const juce::Array<ThrottleCurve::InterpolationMethod> listOfInterpolationMethods;
