@@ -40,7 +40,7 @@ public:
     void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
     void importProfile() {};
     void exportProfile() {};
-    void exportCode() {};
+    void exportCode();
 
 private:
     
