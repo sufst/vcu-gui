@@ -34,6 +34,10 @@ public:
     juce::Array<Point>& getPoints();
     Point* pointMoved(const Point movedPoint);
     
+    // interpolation
+    Point getInterpolatedPoint(int index1, int index2, float mu);
+    Point getInterpolatedPoint(const Point& p1, const Point& p2, float mu);
+    
     // static utility
     static int getInputMax();
     static int getOutputMax();
@@ -56,10 +60,13 @@ private:
     void resetCurveToDefault(juce::Array<Point>& curveToReset);
     void sortCurve(juce::Array<Point>& curveToSort);
     
+    Point linearInterpolate(const Point& p1, const Point& p2, float mu);
+    Point cosineInterpolate(const Point& p1, const Point& p2, float mu);
+    
     // static
     static const juce::Array<ThrottleCurve::InterpolationMethod> listOfInterpolationMethods;
     static const juce::Array<juce::String> namesOfInterpolationMethods;
-    static constexpr InterpolationMethod defaultInterpolationMethod = InterpolationMethod::Linear;
+    static constexpr InterpolationMethod defaultInterpolationMethod = InterpolationMethod::Cosine;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurve)
 };
