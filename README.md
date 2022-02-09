@@ -4,9 +4,26 @@ A graphical tool for customising and exporting driver profiles for the VCU.
 ## Usage
 
 ### Creating a Profile
-<!--Bad input points will give bad outputs.-->
+
+### Interpolation Algorithms
+
+<p align="center">
+  <img src="./docs/Linear.png" width="30%" class="center">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="./docs/C2 Spline.png" width="30%" class="center">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="./docs/Hermite Spline.png" width="30%" class="center">
+</p>
+
+Four algorithms are available for interpolating between the placed points.
+- Linear
+- Cosine
+- C2 spline
+- Hermite
 
 ### Exporting Profiles
+
+### Exporting Source Code
 
 
 ## Contributing
