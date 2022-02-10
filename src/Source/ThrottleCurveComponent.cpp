@@ -406,8 +406,23 @@ void ThrottleCurveComponent::exportProfile()
         // write XML file to disk
         if (throttleMap.writeTo(mapFile, {}))
         {
-            // show a success dialog
-            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Success", "Exported map profile");
+            // validate the curve and get warnings
+            juce::StringArray warnings = throttleCurve.validateCurve();
+            juce::String alert = "Exported throttle curve to file.";
+            
+            if (warnings.size() > 0)
+            {
+                alert += "\n\n";
+                for (const auto& warning : warnings)
+                {
+                    alert += warning + ".\n";
+                }
+                juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Info", alert);
+            }
+            else
+            {
+                juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", alert);
+            }
         }
         else
         {
@@ -472,8 +487,27 @@ void ThrottleCurveComponent::exportCode()
     // copy the code to the clipboard
     juce::SystemClipboard::copyTextToClipboard(code);
     
+    // validate the curve and get warnings
+    juce::StringArray warnings = throttleCurve.validateCurve();
+    
     // generate an alert window
-    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", "Lookup table code copied to clipboard");
+    juce::String alert = "Lookup table code copied to clipboard.";
+    
+    if (warnings.size() > 0)
+    {
+        alert += "\n\n";
+        for (const auto& warning : warnings)
+        {
+            alert += warning + ".\n";
+        }
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Info", alert);
+    }
+    else
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", alert);
+    }
+    
+
 }
 
 //============================================================ Internal utility

@@ -39,6 +39,7 @@ public:
     Point getInterpolatedPoint(int input);
     void setInterpolationMethod(InterpolationMethod method);
     InterpolationMethod getInterpolationMethod() const;
+    juce::StringArray validateCurve();
 
     // static utility
     static int getInputMax();
