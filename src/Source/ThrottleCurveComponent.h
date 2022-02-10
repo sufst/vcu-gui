@@ -39,7 +39,7 @@ public:
 
     bool isInterestedInFileDrag(const juce::StringArray &files) override;
     void filesDropped(const juce::StringArray& files, int x, int y) override;
-    void fileDragMove(const juce::StringArray &files, int x, int y) override;
+    void fileDragEnter(const juce::StringArray& files, int x, int y) override;
     void fileDragExit(const juce::StringArray &files) override;
 
     
@@ -60,8 +60,12 @@ private:
     static const int pointStroke = 4;
     static const int clickRadius = 20;
     static const int throttleCurveClickRadius = clickRadius * 75;
+    
+    // appearance
     juce::Colour backgroundColour;
     juce::Colour borderColour;
+    int borderThickness = 1;
+    static constexpr float fileDragBrightnessFactor = 0.05f;
     
     // state
     bool currentlyMovingPoint = false;
