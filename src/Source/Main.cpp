@@ -7,6 +7,7 @@
 
 #include <JuceHeader.h>
 #include "MainComponent.h"
+#include <limits.h>
 
 //==============================================================================
 class VCUDriverProfileApplication  : public juce::JUCEApplication
@@ -17,14 +18,14 @@ public:
 
     const juce::String getApplicationName() override       { return ProjectInfo::projectName; }
     const juce::String getApplicationVersion() override    { return ProjectInfo::versionString; }
-    bool moreThanOneInstanceAllowed() override             { return true; }
+    bool moreThanOneInstanceAllowed() override             { return false; }
 
     //==============================================================================
     void initialise (const juce::String& commandLine) override
     {
         // This method is where you should put your application's initialisation code..
 
-        mainWindow.reset (new MainWindow (getApplicationName()));
+        mainWindow.reset (new MainWindow ("VCU Driver Profile"));
     }
 
     void shutdown() override
@@ -63,7 +64,7 @@ public:
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true);
-            setResizeLimits(minWidth, minHeight, 10000000, 1000000);
+            setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);
 
            #if JUCE_IOS || JUCE_ANDROID
             setFullScreen (true);

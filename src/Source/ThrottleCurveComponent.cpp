@@ -71,16 +71,28 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     g.setColour(juce::Colours::white);
     int numPoints = getWidth() / 1;
     
+    juce::Path path;
+
     for (int input = 0; input < ThrottleCurve::getInputMax(); input += ThrottleCurve::getInputMax() / numPoints)
     {
         const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
         const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
-        g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), 1, 1, 1);
+        
+        if (input == 0)
+        {
+            path.startNewSubPath(transformedPoint.toFloat());
+        }
+        else
+        {
+            path.lineTo(transformedPoint.toFloat());
+        }
     }
-    
+
+    g.strokePath(path, juce::PathStrokeType(1));
+
     // draw points
     g.setColour(juce::Colours::orange);
-    
+
     for (const auto& point : throttleCurve.getPoints())
     {
         auto realPoint = transformCurvePointToCanvas(point);
