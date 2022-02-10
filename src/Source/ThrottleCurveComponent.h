@@ -8,6 +8,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <functional>
 
 #include "ThrottleCurveComponent.h"
 #include "ThrottleCurve.h"
@@ -42,12 +43,14 @@ public:
     void fileDragEnter(const juce::StringArray& files, int x, int y) override;
     void fileDragExit(const juce::StringArray &files) override;
 
-    
     // interface to parent component
     void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
     void importProfile();
     void exportProfile();
     void exportCode();
+    
+    // callbacks
+    std::function<void(ThrottleCurve::InterpolationMethod)> onProfileLoad = nullptr;
 
 private:
     

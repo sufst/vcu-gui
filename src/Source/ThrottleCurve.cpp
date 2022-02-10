@@ -117,13 +117,23 @@ ThrottleCurve::Point* ThrottleCurve::pointMoved(const Point movedPoint)
 //================================================================ Interpolation
 
 /**
- * @brief Sets the interpolation method used by the throttle curve
+ * @brief       Sets the interpolation method used by the throttle curve
  *
  * @param[in]   method      Interpolation method
  */
 void ThrottleCurve::setInterpolationMethod(InterpolationMethod method)
 {
     interpolation = method;
+}
+
+/**
+ * @brief   Gets the interpolation method used by the throttle curve
+ *
+ * @return  Interpolation method
+ */
+ThrottleCurve::InterpolationMethod ThrottleCurve::getInterpolationMethod() const
+{
+    return interpolation;
 }
 
 /**
