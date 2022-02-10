@@ -40,7 +40,7 @@ ThrottleCurveComponent::~ThrottleCurveComponent()
  */
 void ThrottleCurveComponent::paint(juce::Graphics& g)
 {
-    
+
     // fill background
     juce::Colour backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
     g.fillAll(backgroundColour);
@@ -112,7 +112,7 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
     {
         for (int i = 0; i < throttleCurve.getPoints().size(); i++)
         {
-            
+
             if (pointHitTest(event.getPosition(), throttleCurve.getPoints()[i]))
             {
                 pMovingPoint = &throttleCurve.getPoints().getReference(i);
@@ -249,6 +249,125 @@ void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::Interpolation
     throttleCurve.setInterpolationMethod(method);
     repaint();
 }
+
+void ThrottleCurveComponent::importProfile() {
+    fileChooser = std::make_unique<juce::FileChooser> ("Open throttle profile map",
+                                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                                       "*.xml",
+                                                       true);
+
+    auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+    | juce::FileBrowserComponent::openMode;
+
+    // launch file chooser asynchronously
+    fileChooser->launchAsync(fileChooserFlags, [this] (const juce::FileChooser& chooser)
+    {
+        // get result
+        juce::File mapFile = chooser.getResult();
+
+        // Create new XML document
+        static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
+
+        if  (mapRoot == nullptr)
+            return;
+
+        // Check root element is correct
+        if (!mapRoot->hasTagName("throttle_map"))
+            return;
+
+        // Search for elements by name
+        for (auto* e : mapRoot->getChildIterator())
+        {
+            if (e->hasTagName("config"))
+            {
+                // Set interpolation type
+                // TODO: Fix below. We don't have a method to get the interp type from a string of the same name.
+                // I'm sure theres a clever way to do this...
+
+                //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
+            } else if (e->hasTagName("points"))
+            {
+                // Clear all old points
+                throttleCurve.getPoints().clear();
+
+                // Loop through all points
+                for (auto* p : e->getChildIterator())
+                {
+                    // Check element is a point
+                    if (!p->hasTagName("point"))
+                        return;
+
+                    // Create point
+                    int pointX = p->getIntAttribute("x");
+                    int pointY = p->getIntAttribute("y");
+
+                    ThrottleCurve::Point point(pointX, pointY);
+
+                    // Add point
+                    throttleCurve.addPoint(point);
+                }
+
+                this->repaint();
+            }
+        }
+    });
+};
+
+void ThrottleCurveComponent::exportProfile() {
+    // Create top level element
+    juce::XmlElement throttleMap("throttle_map");
+
+    // Second level elements
+    juce::XmlElement* config = new juce::XmlElement("config");
+    juce::XmlElement* pointsList = new juce::XmlElement("points");
+
+    // Fill config element
+    // Create option element
+    juce::XmlElement* option = new juce::XmlElement("option");
+
+    // TODO: Change second param below to get the interp method from ThrottleCurve class
+    option->setAttribute("interpolation_method", "linear");
+
+    config->addChildElement(option);
+
+    // Fill points element
+    for (const auto& point : throttleCurve.getPoints()) {
+        // Create inner point element
+        juce::XmlElement* pointElement = new juce::XmlElement("point");
+
+        pointElement->setAttribute("x", point.getX());
+        pointElement->setAttribute("y", point.getY());
+
+        // Add point element to parent
+        pointsList->addChildElement(pointElement);
+    }
+
+    // Add child elements to top level parent
+    throttleMap.addChildElement(config);
+    throttleMap.addChildElement(pointsList);
+
+    fileChooser = std::make_unique<juce::FileChooser> ("Save throttle profile map",
+                                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                                       "*.xml",
+                                                       true);
+
+    auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+    | juce::FileBrowserComponent::warnAboutOverwriting
+    | juce::FileBrowserComponent::saveMode;
+
+
+    // launch file chooser asynchronously
+    fileChooser->launchAsync(fileChooserFlags, [this, throttleMap] (const juce::FileChooser& chooser)
+    {
+        // get result
+        juce::File mapFile = chooser.getResult();
+
+        // Write XML file to disk
+        throttleMap.writeTo(mapFile, {});
+
+        // TODO: Maybe show a success dialog?
+    });
+};
 
 /**
  * @brief Export the throttle curve to C code

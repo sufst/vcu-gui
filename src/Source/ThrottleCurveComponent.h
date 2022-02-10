@@ -38,13 +38,14 @@ public:
     
     // interface to parent component
     void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
-    void importProfile() {};
-    void exportProfile() {};
-    void exportCode();
+    void importProfile();
+    void exportProfile();
+    void exportCode() {};
 
 private:
     
     ThrottleCurve throttleCurve;
+    std::unique_ptr<juce::FileChooser> fileChooser;
     
     // GUI constants
     static const int lowerBarHeight = 20;
