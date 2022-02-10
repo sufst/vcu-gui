@@ -69,11 +69,9 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     
     // draw interpolated points
     g.setColour(juce::Colours::white);
-    int numPoints = getWidth() / 1;
-    
     juce::Path path;
 
-    for (int input = 0; input < ThrottleCurve::getInputMax(); input += ThrottleCurve::getInputMax() / numPoints)
+    for (int input = 0; input < ThrottleCurve::getInputMax(); input += 1)
     {
         const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
         const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
@@ -127,7 +125,7 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
 
             if (pointHitTest(event.getPosition(), throttleCurve.getPoints()[i]))
             {
-                pMovingPoint = &throttleCurve.getPoints().getReference(i);
+                pMovingPoint = throttleCurve.getPointForMove(i);
                 currentlyMovingPoint = true;
                 setMouseCursor(juce::MouseCursor::DraggingHandCursor);
                 break;
@@ -180,7 +178,7 @@ void ThrottleCurveComponent::mouseUp(const juce::MouseEvent& event)
 void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
 {
     // move the point
-    if (currentlyMovingPoint)
+    if (currentlyMovingPoint && pMovingPoint != nullptr)
     {
         ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
         pMovingPoint->setXY(point.getX(), point.getY());
@@ -568,7 +566,7 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
         else if (e->hasTagName("points"))
         {
             // clear all old points
-            throttleCurve.getPoints().clear();
+            throttleCurve.reset();
 
             // loop through all points
             for (auto* p : e->getChildIterator())
