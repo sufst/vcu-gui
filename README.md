@@ -7,6 +7,12 @@ A cross-platform graphical tool for customising and exporting driver profiles fo
 
 ## TODO: Creating a Profile
 
+Tips for getting a good profile:
+- Make sure the curve is strictly increasing.
+- Make sure the curve doesn't exceed the axis bounds - this will cause clipping when the profile is exported.
+- Don't place points next to each other with a steep gradient between them - this causes poor interpolation.
+- Make sure no two points have the same input (x-axis) coordinate - you can't map one input to two different outputs. Interpolation algorithms also don't like this because the curve becomes discontinuous (or has an infinite gradient).
+
 ## Interpolation Algorithms
 
 <p align="center">
