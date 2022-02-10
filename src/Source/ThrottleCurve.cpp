@@ -156,6 +156,14 @@ void ThrottleCurve::interpolate()
     // otherwise need to re-compute
     for (int input = 0; input < inputMax + 1; input++)
     {
+        // deadzone
+        if (input < curve.getFirst().getX())
+        {
+            cachedOutputs.at(input) = 0;
+            continue;
+        }
+        
+        // normal points
         switch (interpolation)
         {
             case InterpolationMethod::Linear:
@@ -339,7 +347,7 @@ ThrottleCurve::Point ThrottleCurve::splineInterpolate(int input, tk::spline::spl
 void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curveToReset)
 {
     curveToReset.clear();
-    curveToReset.add(Point(0, 0));
+    curveToReset.add(Point(defaultDeadzone, 0));
     curveToReset.add(Point(inputMax, outputMax));
     cacheValid = false;
 }

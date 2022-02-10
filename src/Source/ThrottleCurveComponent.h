@@ -67,18 +67,23 @@ private:
     // appearance
     juce::Colour backgroundColour;
     juce::Colour borderColour;
+    juce::Colour deadzoneLineColour = juce::Colours::skyblue;
     int borderThickness = 1;
     static constexpr float fileDragBrightnessFactor = 0.05f;
     
     // state
     bool currentlyMovingPoint = false;
+    bool currentlyMovingDeadzone = false;
     bool deleteMode = false;
     ThrottleCurve::Point* pMovingPoint = nullptr;
+    
+    juce::Line<int> deadzoneLine;
     
     // internal utility
     juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;
     ThrottleCurve::Point transformCanvasPointToCurve(const juce::Point<int>& point) const;
-    bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint);
+    bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint) const;
+    bool deadzoneHitTest(const juce::Point<int>& canvasPoint) const;
     void loadProfile(juce::File mapFile);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
