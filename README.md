@@ -2,7 +2,7 @@
 A cross-platform graphical tool for customising and exporting driver profiles for the VCU throttle response.
 
 <p align="center">
-  <img src="./docs/C2 Spline.png" width="60%" class="center">
+  <img src="./docs/C2 Spline.png" width="90%" class="center">
 </p>
 
 ## TODO: Creating a Profile
