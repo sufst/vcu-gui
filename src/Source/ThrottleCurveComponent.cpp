@@ -22,6 +22,9 @@ ThrottleCurveComponent::ThrottleCurveComponent()
     setWantsKeyboardFocus(true);
     setMouseCursor(juce::MouseCursor::CrosshairCursor);
     addKeyListener(this);
+
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
 }
 
 /**
@@ -40,13 +43,10 @@ ThrottleCurveComponent::~ThrottleCurveComponent()
  */
 void ThrottleCurveComponent::paint(juce::Graphics& g)
 {
-
     // fill background
-    juce::Colour backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
     g.fillAll(backgroundColour);
     
     // draw border around the component
-    juce::Colour borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
     g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight());
     
@@ -237,6 +237,39 @@ bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Compone
     return true;
 }
 
+void ThrottleCurveComponent::filesDropped(const juce::StringArray& files, int x, int y)
+{
+    // get result
+    juce::File mapFile(files.getReference(0));
+
+    loadProfile(mapFile);
+}
+
+bool ThrottleCurveComponent::isInterestedInFileDrag(const juce::StringArray &files) {
+    DBG("enter");
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).brighter(0.4f);
+    borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
+
+    repaint();
+
+    return true;
+};
+
+void ThrottleCurveComponent::fileDragMove(const juce::StringArray &files, int x, int y) {
+    DBG("hello");
+    // backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).brighter(0.4f);
+    // borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
+};
+
+void ThrottleCurveComponent::fileDragExit(const juce::StringArray &files) {
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
+
+    repaint();
+};
+
+
+
 //========================================================= Interface to parent
 
 /**
@@ -265,51 +298,7 @@ void ThrottleCurveComponent::importProfile() {
         // get result
         juce::File mapFile = chooser.getResult();
 
-        // Create new XML document
-        static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
-
-        if  (mapRoot == nullptr)
-            return;
-
-        // Check root element is correct
-        if (!mapRoot->hasTagName("throttle_map"))
-            return;
-
-        // Search for elements by name
-        for (auto* e : mapRoot->getChildIterator())
-        {
-            if (e->hasTagName("config"))
-            {
-                // Set interpolation type
-                // TODO: Fix below. We don't have a method to get the interp type from a string of the same name.
-                // I'm sure theres a clever way to do this...
-
-                //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
-            } else if (e->hasTagName("points"))
-            {
-                // Clear all old points
-                throttleCurve.getPoints().clear();
-
-                // Loop through all points
-                for (auto* p : e->getChildIterator())
-                {
-                    // Check element is a point
-                    if (!p->hasTagName("point"))
-                        return;
-
-                    // Create point
-                    int pointX = p->getIntAttribute("x");
-                    int pointY = p->getIntAttribute("y");
-
-                    ThrottleCurve::Point point(pointX, pointY);
-
-                    // Add point
-                    throttleCurve.addPoint(point);
-                }
-
-                this->repaint();
-            }
-        }
+        loadProfile(mapFile);
     });
 };
 
@@ -363,9 +352,13 @@ void ThrottleCurveComponent::exportProfile() {
         juce::File mapFile = chooser.getResult();
 
         // Write XML file to disk
-        throttleMap.writeTo(mapFile, {});
-
-        // TODO: Maybe show a success dialog?
+        if (throttleMap.writeTo(mapFile, {})) {
+            // Show a success dialog
+            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Success", "Exported map profile");
+        } else {
+            // Show a failure dialog
+            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Error", "Error exporting map profile");
+        }
     });
 };
 
@@ -468,3 +461,51 @@ bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, c
     juce::Point<int> transformedCurvePoint = transformCurvePointToCanvas(curvePoint);
     return (canvasPoint.getDistanceFrom(transformedCurvePoint) < clickRadius);
 }
+
+void ThrottleCurveComponent::loadProfile(juce::File mapFile) {
+    // Create new XML document
+    static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
+
+    if  (mapRoot == nullptr)
+        return;
+
+    // Check root element is correct
+    if (!mapRoot->hasTagName("throttle_map"))
+        return;
+
+    // Search for elements by name
+    for (auto* e : mapRoot->getChildIterator())
+    {
+        if (e->hasTagName("config"))
+        {
+            // Set interpolation type
+            // TODO: Fix below. We don't have a method to get the interp type from a string of the same name.
+            // I'm sure theres a clever way to do this...
+
+            //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
+        } else if (e->hasTagName("points"))
+        {
+            // Clear all old points
+            throttleCurve.getPoints().clear();
+
+            // Loop through all points
+            for (auto* p : e->getChildIterator())
+            {
+                // Check element is a point
+                if (!p->hasTagName("point"))
+                    return;
+
+                // Create point
+                int pointX = p->getIntAttribute("x");
+                int pointY = p->getIntAttribute("y");
+
+                ThrottleCurve::Point point(pointX, pointY);
+
+                // Add point
+                throttleCurve.addPoint(point);
+            }
+
+            this->repaint();
+        }
+    }
+};

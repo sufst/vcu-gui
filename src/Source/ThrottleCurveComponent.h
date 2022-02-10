@@ -17,7 +17,8 @@
  */
 class ThrottleCurveComponent
     :   public juce::Component,
-        public juce::KeyListener
+        public juce::KeyListener,
+        public juce::FileDragAndDropTarget
 {
 public:
     
@@ -35,12 +36,18 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
+
+    bool isInterestedInFileDrag(const juce::StringArray &files) override;
+    void filesDropped(const juce::StringArray& files, int x, int y) override;
+    void fileDragMove(const juce::StringArray &files, int x, int y) override;
+    void fileDragExit(const juce::StringArray &files) override;
+
     
     // interface to parent component
     void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
     void importProfile();
     void exportProfile();
-    void exportCode() {};
+    void exportCode();
 
 private:
     
@@ -53,6 +60,8 @@ private:
     static const int pointStroke = 4;
     static const int clickRadius = 20;
     static const int throttleCurveClickRadius = clickRadius * 75;
+    juce::Colour backgroundColour;
+    juce::Colour borderColour;
     
     // state
     bool currentlyMovingPoint = false;
@@ -63,6 +72,8 @@ private:
     juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;
     ThrottleCurve::Point transformCanvasPointToCurve(const juce::Point<int>& point) const;
     bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint);
+
+    void loadProfile(juce::File mapFile);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
     
