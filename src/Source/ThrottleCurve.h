@@ -56,7 +56,7 @@ private:
     
     // constants
     static const int inputResolution = 10;
-    static const int outputResolution = 16;
+    static const int outputResolution = 15;
     static const int inputMax = (1 << inputResolution) - 1;
     static const int outputMax = (1 << outputResolution) - 1;
     
