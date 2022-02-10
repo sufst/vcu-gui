@@ -1,5 +1,5 @@
 # VCU Driver Profile Tool
-A graphical tool for customising and exporting driver profiles for the VCU throttle response.
+A cross-platform graphical tool for customising and exporting driver profiles for the VCU throttle response.
 
 <p align="center">
   <img src="./docs/C2 Spline.png" width="60%" class="center">
