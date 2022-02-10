@@ -399,9 +399,9 @@ juce::StringArray ThrottleCurve::validateCurve()
         }
         
         // check for strictly increasing
-        if (input > 0)
+        if (input > 0 && output != 0)
         {
-            if (getInterpolatedPoint(input - 1).getY() > output)
+            if (output < getInterpolatedPoint(input - 1).getY())
             {
                 strictlyIncreasing = false;
             }
