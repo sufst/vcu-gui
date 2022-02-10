@@ -334,7 +334,11 @@ void ThrottleCurveComponent::importProfile() {
     fileChooser->launchAsync(fileChooserFlags, [this] (const juce::FileChooser& chooser)
     {
         juce::File mapFile = chooser.getResult();
-        loadProfile(mapFile);
+        
+        if (mapFile.existsAsFile())
+        {
+            loadProfile(mapFile);
+        }
     });
     
 };
@@ -392,8 +396,14 @@ void ThrottleCurveComponent::exportProfile()
     {
         // get result
         juce::File mapFile = chooser.getResult();
+        
+        // validate file
+        if (!mapFile.existsAsFile())
+        {
+            return;
+        }
 
-        // Write XML file to disk
+        // write XML file to disk
         if (throttleMap.writeTo(mapFile, {}))
         {
             // show a success dialog
