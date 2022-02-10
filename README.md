@@ -5,11 +5,9 @@ A graphical tool for customising and exporting driver profiles for the VCU throt
   <img src="./docs/C2 Spline.png" width="60%" class="center">
 </p>
 
-## Usage
+## TODO: Creating a Profile
 
-### TODO: Creating a Profile
-
-### Interpolation Algorithms
+## Interpolation Algorithms
 
 <p align="center">
   <img src="./docs/Linear.png" width="45%" class="center">
@@ -24,9 +22,9 @@ Four algorithms are available for [interpolating](http://paulbourke.net/miscella
 3.  C2 spline (best)
 4.  Hermite spline (good)
 
-### TODO: Importing and Exporting Profiles
+## TODO: Importing and Exporting Profiles
 
-### TODO: Exporting Source Code
+## TODO: Exporting Source Code
 
 
 ## Contributing
