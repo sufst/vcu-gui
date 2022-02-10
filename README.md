@@ -25,7 +25,7 @@ Four algorithms are available for [interpolating](http://paulbourke.net/miscella
 ## TODO: Importing and Exporting Profiles
 
 ## Exporting Source Code
-The 'export code' button will generate a `uint16_t` C array mapping 2¹⁰ integer input values onto the interpolated curve. This is used as a look-up table in the VCU to map the scaled 10-bit analogue reading from the throttle to the desired output torque.
+The 'export code' button will generate a `uint16_t` C array mapping 2¹⁰ integer input values onto the interpolated curve and copy it to the clipboard. This is used as a look-up table in the VCU to map the scaled 10-bit analogue reading from the throttle to the desired output torque.
 
 ```C
 static const uint16_t driver_profile [1024] = {
