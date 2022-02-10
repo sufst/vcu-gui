@@ -588,14 +588,21 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
     {
         if (e->hasTagName("config"))
         {
-            // set interpolation type
-            juce::String interpolationMethodName = e->getStringAttribute("interpolation_method");
-            
-            for (const auto& method : ThrottleCurve::getAllInterpolationMethods())
+            for (auto* p : e->getChildIterator())
             {
-                if (interpolationMethodName.compare(ThrottleCurve::getInterpolationMethodName(method)))
+                if (p->hasAttribute("interpolation_method"))
                 {
-                    setInterpolationMethod(method);
+                    // set interpolation type
+                    juce::String interpolationMethodName = p->getStringAttribute("interpolation_method");
+
+                    for (const auto& method : ThrottleCurve::getAllInterpolationMethods())
+                    {
+                        if (interpolationMethodName == ThrottleCurve::getInterpolationMethodName(method))
+                        {
+                            setInterpolationMethod(method);
+                            break;
+                        }
+                    }
                     break;
                 }
             }
@@ -626,11 +633,12 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
             // need to repaint GUI after loading new points
             this->repaint();
             
-            // also need to inform parent via callback
+            // need to inform parent component of changes via callback
             if (onProfileLoad != nullptr)
             {
                 onProfileLoad(throttleCurve.getInterpolationMethod());
             }
+        
         }
     }
 };
