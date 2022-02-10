@@ -8,6 +8,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <vector>
 #include "../../lib/spline/src/spline.h"
 
 /**
@@ -32,10 +33,13 @@ public:
     // points
     void addPoint(Point& point);
     void deleteNearbyPoints(const Point& point, int radius);
-    juce::Array<Point>& getPoints();
+    const juce::Array<Point>& getPoints();
+    Point* getPointForMove(int index);
     Point* pointMoved(const Point movedPoint);
+    void reset();
     
     // interpolation
+    void interpolate();
     Point getInterpolatedPoint(int input);
     void setInterpolationMethod(InterpolationMethod method);
     InterpolationMethod getInterpolationMethod() const;
@@ -59,6 +63,9 @@ private:
     // state
     juce::Array<Point> curve;
     InterpolationMethod interpolation;
+    
+    std::array<int, outputMax + 1> cachedOutputs;
+    bool cacheValid = false;
     
     // internal utility
     void resetCurveToDefault(juce::Array<Point>& curveToReset);

@@ -22,6 +22,7 @@ ThrottleCurve::ThrottleCurve()
     :   interpolation(defaultInterpolationMethod)
 {
     resetCurveToDefault(curve);
+    interpolate();
 }
 
 /**
@@ -31,6 +32,7 @@ ThrottleCurve::ThrottleCurve(InterpolationMethod interpolationMethod)
     :   interpolation(interpolationMethod)
 {
     resetCurveToDefault(curve);
+    interpolate();
 }
 
 /**
@@ -46,7 +48,7 @@ ThrottleCurve::~ThrottleCurve()
 /**
  * @brief Returns a reference to the list of points associated with the curve
  */
-juce::Array<juce::Point<int>>& ThrottleCurve::getPoints()
+const juce::Array<juce::Point<int>>& ThrottleCurve::getPoints()
 {
     return curve;
 }
@@ -60,6 +62,7 @@ void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
 {
     curve.addIfNotAlreadyThere(point);
     sortCurve(curve);
+    cacheValid = false;
 }
 
 /**
@@ -93,6 +96,18 @@ void ThrottleCurve::deleteNearbyPoints(const Point& point, int radius)
             deleteCount++;
         }
     }
+    
+    cacheValid = false;
+}
+
+/**
+ * @brief       Gets the raw pointer to a point to allow it to be moved
+ *
+ * @param[in]   index   Index of point
+ */
+ThrottleCurve::Point* ThrottleCurve::getPointForMove(int index)
+{
+    return &curve.getReference(index);
 }
 
 /**
@@ -111,10 +126,63 @@ ThrottleCurve::Point* ThrottleCurve::pointMoved(const Point movedPoint)
 {
     sortCurve(curve);
     int index = curve.indexOf(movedPoint);
+    cacheValid = false;
     return &curve.getReference(index);
 }
 
+/**
+ * @brief Reset the curve, removing points
+ */
+void ThrottleCurve::reset()
+{
+    resetCurveToDefault(curve);
+}
+
 //================================================================ Interpolation
+
+/**
+ * @brief   Run interpolation
+ *
+ * @details If the points haven't changed, the cached result is used
+ */
+void ThrottleCurve::interpolate()
+{
+    // no need to do anything if cache valid
+    if (cacheValid)
+    {
+        return;
+    }
+    
+    // otherwise need to re-compute
+    for (int input = 0; input < inputMax + 1; input++)
+    {
+        switch (interpolation)
+        {
+            case InterpolationMethod::Linear:
+                cachedOutputs.at(input) = linearInterpolate(input).getY();
+                break;
+
+            case InterpolationMethod::Cosine:
+                cachedOutputs.at(input) = cosineInterpolate(input).getY();
+                break;
+                
+            case InterpolationMethod::Cubic:
+                cachedOutputs.at(input) = splineInterpolate(input, tk::spline::cspline).getY();
+                break;
+            
+            case InterpolationMethod::Hermite:
+                cachedOutputs.at(input) = splineInterpolate(input, tk::spline::cspline_hermite).getY();
+                break;
+
+            default:
+                // something hasn't been implemented!
+                jassertfalse;
+                break;
+        }
+    }
+    
+    cacheValid = true;
+}
 
 /**
  * @brief       Sets the interpolation method used by the throttle curve
@@ -124,6 +192,7 @@ ThrottleCurve::Point* ThrottleCurve::pointMoved(const Point movedPoint)
 void ThrottleCurve::setInterpolationMethod(InterpolationMethod method)
 {
     interpolation = method;
+    cacheValid = false;
 }
 
 /**
@@ -147,25 +216,12 @@ ThrottleCurve::InterpolationMethod ThrottleCurve::getInterpolationMethod() const
  */
 ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int input)
 {
-    switch (interpolation)
+    if (!cacheValid)
     {
-        case InterpolationMethod::Linear:
-            return linearInterpolate(input);
-
-        case InterpolationMethod::Cosine:
-            return cosineInterpolate(input);
-            
-        case InterpolationMethod::Cubic:
-            return splineInterpolate(input, tk::spline::cspline);
-        
-        case InterpolationMethod::Hermite:
-            return splineInterpolate(input, tk::spline::cspline_hermite);
-
-        default:
-            // something hasn't been implemented!
-            jassertfalse;
-            return Point(input, outputMax / 2);
+        interpolate();
     }
+    
+    return Point(input, cachedOutputs.at(input));
 }
 
 /**
@@ -285,6 +341,7 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
     curveToReset.clear();
     curveToReset.add(Point(0, 0));
     curveToReset.add(Point(inputMax, outputMax));
+    cacheValid = false;
 }
 
 /**
@@ -299,6 +356,7 @@ void ThrottleCurve::sortCurve(juce::Array<ThrottleCurve::Point>& curveToSort)
     };
     
     std::sort(curveToSort.begin(), curveToSort.end(), compareFunc);
+    cacheValid = false;
 }
 
 /**

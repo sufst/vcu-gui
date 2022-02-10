@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="wH6UEG" name="VCU Driver Profiles" projectType="guiapp" useAppConfig="0"
+<JUCERPROJECT id="wH6UEG" name="VCU Driver Profile" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="SUFST" companyCopyright="2022" cppLanguageStandard="17"
               companyWebsite="https://www.sufst.co.uk">
-  <MAINGROUP id="RxnfqH" name="VCU Driver Profiles">
+  <MAINGROUP id="RxnfqH" name="VCU Driver Profile">
     <GROUP id="{3E9F51AA-4C92-4EB6-CEDC-8A7075BEFB1C}" name="Resources">
       <FILE id="yIn5oC" name="Delete.png" compile="0" resource="1" file="../res/Delete.png"/>
     </GROUP>
