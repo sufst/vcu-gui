@@ -9,6 +9,7 @@
 
 #include <JuceHeader.h>
 #include <functional>
+#include <cmath>
 
 #include "ThrottleCurveComponent.h"
 #include "ThrottleCurve.h"
@@ -56,6 +57,7 @@ private:
     
     ThrottleCurve throttleCurve;
     std::unique_ptr<juce::FileChooser> fileChooser;
+    std::unique_ptr<juce::TooltipWindow> toolTip;
     
     // GUI constants
     static const int lowerBarHeight = 20;
@@ -63,25 +65,53 @@ private:
     static const int pointStroke = 4;
     static const int clickRadius = 20;
     static const int throttleCurveClickRadius = clickRadius * 75;
+    static const int minDeadzoneToPointDistance = 5;
     
     // appearance
     juce::Colour backgroundColour;
     juce::Colour borderColour;
+    juce::Colour deadzoneLineColour = juce::Colours::skyblue;
     int borderThickness = 1;
     static constexpr float fileDragBrightnessFactor = 0.05f;
     
     // state
     bool currentlyMovingPoint = false;
+    bool currentlyMovingDeadzone = false;
     bool deleteMode = false;
     ThrottleCurve::Point* pMovingPoint = nullptr;
+    
+    juce::Line<int> deadzoneLine;
     
     // internal utility
     juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;
     ThrottleCurve::Point transformCanvasPointToCurve(const juce::Point<int>& point) const;
-    bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint);
-
+    bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint) const;
+    bool deadzoneHitTest(const juce::Point<int>& canvasPoint) const;
     void loadProfile(juce::File mapFile);
+    void showToolTip()
+    {
+        if (toolTip == nullptr)
+        {
+            toolTip.reset(new juce::TooltipWindow(this, 0));
+        }
+        
+        
+        int x = this->getScreenX() + deadzoneLine.getStartX() - 10;
+        int y = juce::Desktop::getMousePosition().getY();
+        
+        juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(100 * static_cast<float>(throttleCurve.getPoints().getFirst().getX()) / ThrottleCurve::getInputMax(), 3);
+        tipText += "%";
+        toolTip->displayTip(juce::Point<int>(x, y), tipText);
+        toolTip->setVisible(true);
+    };
+    void hideToolTip()
+    {
+        if (toolTip != nullptr)
+        {
+            toolTip->hideTip();
+            toolTip.reset();
+        }
+    };
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
-    
 };

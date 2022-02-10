@@ -18,10 +18,12 @@
  */
 ThrottleCurveComponent::ThrottleCurveComponent()
 {
+    // setup component
     setWantsKeyboardFocus(true);
     setMouseCursor(juce::MouseCursor::CrosshairCursor);
     addKeyListener(this);
 
+    // setup appearance
     backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
     borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
 }
@@ -97,6 +99,20 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
         g.drawEllipse(realPoint.getX(), realPoint.getY(), pointSize, pointSize, pointStroke);
     }
     
+    // draw deadzone
+    auto firstPoint = transformCurvePointToCanvas(throttleCurve.getPoints().getFirst());
+    
+    deadzoneLine.setStart(firstPoint.getX(), borderThickness);
+    deadzoneLine.setEnd(firstPoint.getX(), getHeight() - borderThickness * 2);
+    
+    if (deadzoneLine.getStartX() > 0)
+    {
+        g.setColour(deadzoneLineColour.withLightness(0.9f).withAlpha(0.2f));
+        g.fillRect(borderThickness, borderThickness, deadzoneLine.getStartX(), getHeight() - borderThickness * 2);
+    }
+    
+    g.setColour(deadzoneLineColour);
+    g.drawLine(deadzoneLine.toFloat(), 1);
 }
 
 /**
@@ -116,14 +132,25 @@ void ThrottleCurveComponent::resized()
  */
 void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
 {
+    // check for starting deadzone mode
+    if (!deleteMode && !currentlyMovingDeadzone)
+    {
+        if (deadzoneHitTest(event.getPosition()))
+        {
+            currentlyMovingDeadzone = true;
+            showToolTip();
+        }
+    }
+    
     // check if a point already exists in the clicked location
     // if one does and not deleting it, begin a move
-    if (!deleteMode)
+    if (!deleteMode && !currentlyMovingDeadzone)
     {
         for (int i = 0; i < throttleCurve.getPoints().size(); i++)
         {
-
-            if (pointHitTest(event.getPosition(), throttleCurve.getPoints()[i]))
+            // can move any point except the first which is mapped to the deadzone
+            if (pointHitTest(event.getPosition(), throttleCurve.getPoints()[i])
+                && i != 0)
             {
                 pMovingPoint = throttleCurve.getPointForMove(i);
                 currentlyMovingPoint = true;
@@ -134,7 +161,7 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
     }
     
     // add / delete if not moving
-    if (!currentlyMovingPoint)
+    if (!currentlyMovingPoint && !currentlyMovingDeadzone)
     {
         // delete
         if (deleteMode)
@@ -154,6 +181,8 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
     repaint();
 }
 
+
+
 /**
  * @brief Handle a mouse up event
  *
@@ -168,6 +197,11 @@ void ThrottleCurveComponent::mouseUp(const juce::MouseEvent& event)
         pMovingPoint = nullptr;
         setMouseCursor(juce::MouseCursor::CrosshairCursor);
     }
+    else if (currentlyMovingDeadzone)
+    {
+        currentlyMovingDeadzone = false;
+        setMouseCursor(juce::MouseCursor::CrosshairCursor);
+    }
 }
 
 /**
@@ -177,12 +211,36 @@ void ThrottleCurveComponent::mouseUp(const juce::MouseEvent& event)
  */
 void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
 {
-    // move the point
+    // move a point
     if (currentlyMovingPoint && pMovingPoint != nullptr)
     {
         ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
         pMovingPoint->setXY(point.getX(), point.getY());
         pMovingPoint = throttleCurve.pointMoved(*pMovingPoint);
+    }
+    // move deadzone
+    if (currentlyMovingDeadzone)
+    {
+        showToolTip();
+        
+        int x = transformCanvasPointToCurve(event.getPosition()).getX();
+        int xLim = throttleCurve.getPoints().getReference(1).getX() - minDeadzoneToPointDistance;
+        
+        // restrict movement
+        if (x < 0)
+        {
+            x = 0;
+        }
+        else if (x > xLim)
+        {
+            x = xLim;
+        }
+        
+        // move point
+        ThrottleCurve::Point* deadzoneStart = throttleCurve.getPointForMove(0);
+        deadzoneStart->setXY(x, 0);
+        throttleCurve.pointMoved(*deadzoneStart);
+            
     }
     
     // trigger a re-paint
@@ -199,23 +257,41 @@ void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
     // change mouse cursor if a point is within the grab radius
     if (!deleteMode && !currentlyMovingPoint)
     {
-        bool hit = false;
+        bool pointHit = false;
+        bool deadzoneHit = false;
         
-        for (const auto& point : throttleCurve.getPoints())
+        // deadzone hit test
+        if (deadzoneHitTest(event.getPosition()))
         {
-            if (pointHitTest(event.getPosition(), point))
+            deadzoneHit = true;
+        }
+        // point hit test
+        else
+        {
+            for (const auto& point : throttleCurve.getPoints())
             {
-                hit = true;
-                break;
+                // check for point hits
+                if (pointHitTest(event.getPosition(), point))
+                {
+                    pointHit = true;
+                    break;
+                }
             }
         }
-        
-        if (hit)
+            
+        // change cursor
+        if (deadzoneHit)
+        {
+            setMouseCursor(juce::MouseCursor::LeftRightResizeCursor);
+            showToolTip();
+        }
+        else if (pointHit)
         {
             setMouseCursor(juce::MouseCursor::DraggingHandCursor);
         }
         else
         {
+            hideToolTip();
             setMouseCursor(juce::MouseCursor::CrosshairCursor);
         }
     }
@@ -560,10 +636,18 @@ ThrottleCurve::Point ThrottleCurveComponent::transformCanvasPointToCurve(const j
  * @brief Hit test between a point on the canvas and a point on the curve
  */
 
-bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint)
+bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint) const
 {
     juce::Point<int> transformedCurvePoint = transformCurvePointToCanvas(curvePoint);
     return (canvasPoint.getDistanceFrom(transformedCurvePoint) < clickRadius);
+}
+
+/**
+ * @brief Hit test for the deadzone
+ */
+bool ThrottleCurveComponent::deadzoneHitTest(const juce::Point<int>& canvasPoint) const
+{
+    return (canvasPoint.getX() <= deadzoneLine.getStartX());
 }
 
 /**
@@ -588,14 +672,21 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
     {
         if (e->hasTagName("config"))
         {
-            // set interpolation type
-            juce::String interpolationMethodName = e->getStringAttribute("interpolation_method");
-            
-            for (const auto& method : ThrottleCurve::getAllInterpolationMethods())
+            for (auto* p : e->getChildIterator())
             {
-                if (interpolationMethodName.compare(ThrottleCurve::getInterpolationMethodName(method)))
+                if (p->hasAttribute("interpolation_method"))
                 {
-                    setInterpolationMethod(method);
+                    // set interpolation type
+                    juce::String interpolationMethodName = p->getStringAttribute("interpolation_method");
+
+                    for (const auto& method : ThrottleCurve::getAllInterpolationMethods())
+                    {
+                        if (interpolationMethodName == ThrottleCurve::getInterpolationMethodName(method))
+                        {
+                            setInterpolationMethod(method);
+                            break;
+                        }
+                    }
                     break;
                 }
             }
@@ -626,11 +717,12 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
             // need to repaint GUI after loading new points
             this->repaint();
             
-            // also need to inform parent via callback
+            // need to inform parent component of changes via callback
             if (onProfileLoad != nullptr)
             {
                 onProfileLoad(throttleCurve.getInterpolationMethod());
             }
+        
         }
     }
 };
