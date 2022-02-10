@@ -340,7 +340,7 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
 {
     curveToReset.clear();
     curveToReset.add(Point(0, 0));
-    curveToReset.add(Point(inputMax - 1, outputMax - 1));
+    curveToReset.add(Point(inputMax, outputMax));
     cacheValid = false;
 }
 
@@ -357,6 +357,68 @@ void ThrottleCurve::sortCurve(juce::Array<ThrottleCurve::Point>& curveToSort)
     
     std::sort(curveToSort.begin(), curveToSort.end(), compareFunc);
     cacheValid = false;
+}
+
+/**
+ * @brief Validate the interpolated curve
+ *
+ * @return String array containing warning text if any issues
+ */
+juce::StringArray ThrottleCurve::validateCurve()
+{
+    juce::StringArray warnings;
+    bool positiveClipping = false;
+    bool negativeClipping = false;
+    int positiveClippingStart = 0;
+    int negativeClippingStart = 0;
+    bool strictlyIncreasing = true;
+    
+    // check curve
+    for (int input = 0; input < inputMax + 1; input++)
+    {
+        // check for clipping
+        int output = getInterpolatedPoint(input).getY();
+        
+        if (!positiveClipping && output > outputMax)
+        {
+            positiveClipping = true;
+            positiveClippingStart = input;
+        }
+        else if (!negativeClipping && output < 0)
+        {
+            negativeClipping = true;
+            negativeClippingStart = input;
+        }
+        
+        // check for strictly increasing
+        if (input > 0)
+        {
+            if (getInterpolatedPoint(input - 1).getY() > output)
+            {
+                strictlyIncreasing = false;
+            }
+        }
+    }
+    
+    // add warnings
+    if (positiveClipping)
+    {
+        float percentStart = 100 * std::round(100 * static_cast<float>(positiveClippingStart) / ThrottleCurve::getInputMax()) / 100;
+        warnings.add("Warning: clipping (above max @ " +  juce::String(percentStart) + "% input)");
+    }
+    
+    if (negativeClipping)
+    {
+        float percentStart = 100 * std::round(100 * static_cast<float>(negativeClippingStart) / ThrottleCurve::getInputMax()) / 100;
+        warnings.add("Warning: clipping (below 0 @ " + juce::String(percentStart) + "% input)");
+    }
+    
+    if (!strictlyIncreasing)
+    {
+        warnings.add("Warning: curve not strictly increasing");
+    }
+    
+    return warnings;
 }
 
 //============================================================== Static utility
