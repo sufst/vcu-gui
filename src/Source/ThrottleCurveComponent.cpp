@@ -244,6 +244,11 @@ bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Compone
             setMouseCursor(juce::MouseCursor::CrosshairCursor);
         }
     }
+    else if (key.isKeyCode(juce::KeyPress::escapeKey))
+    {
+        throttleCurve.reset();
+        repaint();
+    }
     return true;
 }
 
@@ -517,7 +522,6 @@ void ThrottleCurveComponent::exportCode()
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", alert);
     }
     
-
 }
 
 //============================================================ Internal utility
