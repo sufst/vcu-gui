@@ -45,6 +45,7 @@ public:
 private:
     
     ThrottleCurve throttleCurve;
+    std::unique_ptr<juce::FileChooser> fileChooser;
     
     // GUI constants
     static const int lowerBarHeight = 20;

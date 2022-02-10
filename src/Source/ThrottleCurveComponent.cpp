@@ -350,6 +350,7 @@ void ThrottleCurveComponent::exportProfile() {
     | juce::FileBrowserComponent::warnAboutOverwriting
     | juce::FileBrowserComponent::saveMode;
 
+
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this, throttleMap] (const juce::FileChooser& chooser)
     {
