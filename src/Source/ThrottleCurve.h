@@ -38,6 +38,7 @@ public:
     // interpolation
     Point getInterpolatedPoint(int input);
     void setInterpolationMethod(InterpolationMethod method);
+    InterpolationMethod getInterpolationMethod() const;
 
     // static utility
     static int getInputMax();

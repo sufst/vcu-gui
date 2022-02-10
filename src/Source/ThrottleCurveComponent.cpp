@@ -7,7 +7,6 @@
 
 #include <JuceHeader.h>
 #include <algorithm>
-#include <functional>
 #include <cmath>
 
 #include "ThrottleCurveComponent.h"
@@ -329,7 +328,7 @@ void ThrottleCurveComponent::importProfile() {
                                                        true);
 
     auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
-    | juce::FileBrowserComponent::openMode;
+                            | juce::FileBrowserComponent::openMode;
 
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this] (const juce::FileChooser& chooser)
@@ -356,8 +355,9 @@ void ThrottleCurveComponent::exportProfile()
     // create option element
     juce::XmlElement* option = new juce::XmlElement("option");
 
-    // TODO: Change second param below to get the interp method from ThrottleCurve class
-    option->setAttribute("interpolation_method", "linear");
+    // interpolation method element
+    juce::String interpolationMethod = throttleCurve.getInterpolationMethodName(throttleCurve.getInterpolationMethod());
+    option->setAttribute("interpolation_method", interpolationMethod);
     config->addChildElement(option);
 
     // fill points element
@@ -384,8 +384,8 @@ void ThrottleCurveComponent::exportProfile()
                                                        true);
 
     auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
-    | juce::FileBrowserComponent::warnAboutOverwriting
-    | juce::FileBrowserComponent::saveMode;
+                            | juce::FileBrowserComponent::warnAboutOverwriting
+                            | juce::FileBrowserComponent::saveMode;
 
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this, throttleMap] (const juce::FileChooser& chooser)
@@ -508,50 +508,71 @@ bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, c
     return (canvasPoint.getDistanceFrom(transformedCurvePoint) < clickRadius);
 }
 
-void ThrottleCurveComponent::loadProfile(juce::File mapFile) {
-    // Create new XML document
+/**
+ * @brief   Load a throttle profile
+ *
+ * @param[in]   mapFile     Path to throttle map file
+ */
+void ThrottleCurveComponent::loadProfile(juce::File mapFile)
+{
+    // create new XML document
     static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
 
+    // validate file
     if  (mapRoot == nullptr)
         return;
 
-    // Check root element is correct
     if (!mapRoot->hasTagName("throttle_map"))
         return;
 
-    // Search for elements by name
+    // search for elements by name
     for (auto* e : mapRoot->getChildIterator())
     {
         if (e->hasTagName("config"))
         {
-            // Set interpolation type
-            // TODO: Fix below. We don't have a method to get the interp type from a string of the same name.
-            // I'm sure theres a clever way to do this...
+            // set interpolation type
+            juce::String interpolationMethodName = e->getStringAttribute("interpolation_method");
+            
+            for (const auto& method : ThrottleCurve::getAllInterpolationMethods())
+            {
+                if (interpolationMethodName.compare(ThrottleCurve::getInterpolationMethodName(method)))
+                {
+                    setInterpolationMethod(method);
+                    break;
+                }
+            }
 
-            //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
-        } else if (e->hasTagName("points"))
+        }
+        else if (e->hasTagName("points"))
         {
-            // Clear all old points
+            // clear all old points
             throttleCurve.getPoints().clear();
 
-            // Loop through all points
+            // loop through all points
             for (auto* p : e->getChildIterator())
             {
-                // Check element is a point
+                // check element is a point
                 if (!p->hasTagName("point"))
                     return;
 
-                // Create point
+                // create point
                 int pointX = p->getIntAttribute("x");
                 int pointY = p->getIntAttribute("y");
 
                 ThrottleCurve::Point point(pointX, pointY);
 
-                // Add point
+                // add point
                 throttleCurve.addPoint(point);
             }
 
+            // need to repaint GUI after loading new points
             this->repaint();
+            
+            // also need to inform parent via callback
+            if (onProfileLoad != nullptr)
+            {
+                onProfileLoad(throttleCurve.getInterpolationMethod());
+            }
         }
     }
 };

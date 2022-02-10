@@ -42,6 +42,11 @@ MainComponent::MainComponent()
         throttleCurveComponent.setInterpolationMethod(method);
     };
     
+    // set callback lambda to be called when profile loaded
+    throttleCurveComponent.onProfileLoad = [this] (ThrottleCurve::InterpolationMethod method) {
+        interpolationMethodComboBox.setSelectedId(static_cast<int>(method) + 1);
+    };
+    
     // set up buttons
     importProfileButton.setButtonText("Import profile");
     exportProfileButton.setButtonText("Export profile");
