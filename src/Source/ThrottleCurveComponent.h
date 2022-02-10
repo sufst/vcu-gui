@@ -38,7 +38,7 @@ public:
     
     // interface to parent component
     void setInterpolationMethod(ThrottleCurve::InterpolationMethod method);
-    void importProfile() {};
+    void importProfile();
     void exportProfile();
     void exportCode() {};
 
@@ -62,6 +62,9 @@ private:
     juce::Point<int> transformCurvePointToCanvas(const ThrottleCurve::Point& point) const;
     ThrottleCurve::Point transformCanvasPointToCurve(const juce::Point<int>& point) const;
     bool pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint);
+
+    // file handling
+    std::unique_ptr<juce::FileChooser> fileChooser;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ThrottleCurveComponent)
     
