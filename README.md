@@ -38,7 +38,7 @@ Clone / update submodules:
 ```
 git submodule init
 git submodule update
-```<img width="878" alt="image" src="https://user-images.githubusercontent.com/31595761/153313139-eedbc98f-5834-4491-a9fa-fc8617bb8f30.png">
+```
 
 Install [JUCE](https://juce.com/get-juce) (personal or education) on your system. [JUCE's project configuration tool](https://juce.com/discover/projucer) will generate the necessary project files to build, run and debug a project using a variety of exporters (usually an IDE).
 - For macOS, use Xcode.
