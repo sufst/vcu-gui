@@ -99,7 +99,7 @@ private:
         int x = this->getScreenX() + deadzoneLine.getStartX() - 10;
         int y = juce::Desktop::getMousePosition().getY();
         
-        juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(100 * static_cast<float>(throttleCurve.getPoints().getFirst().getX()) / ThrottleCurve::getInputMax(), 3);
+        juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(100 * static_cast<float>(throttleCurve.getPoints().getFirst().getX()) / ThrottleCurve::getInputMax(), 2);
         tipText += "%";
         toolTip->displayTip(juce::Point<int>(x, y), tipText);
         toolTip->setVisible(true);
