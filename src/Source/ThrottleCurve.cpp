@@ -177,7 +177,14 @@ ThrottleCurve::Point ThrottleCurve::linearInterpolate(int input)
         if (point.getX() < input)
         {
             p1 = point;
-            p2 = curve.getReference(i + 1);
+            if (input != inputMax)
+            {
+                p2 = curve.getReference(i + 1);
+            }
+            else
+            {
+                p2 = p1;
+            }
         }
     }
     

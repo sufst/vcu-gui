@@ -75,7 +75,7 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     {
         const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
         const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
-        g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), 1, 1, pointStroke / 2);
+        g.drawEllipse(transformedPoint.getX(), transformedPoint.getY(), 1, 1, 1);
     }
     
     // draw points
@@ -368,6 +368,64 @@ void ThrottleCurveComponent::exportProfile() {
         // TODO: Maybe show a success dialog?
     });
 };
+
+/**
+ * @brief Export the throttle curve to C code
+ */
+void ThrottleCurveComponent::exportCode()
+{
+    // generate interpolated points for every input
+    juce::Array<int> outputs;
+    
+    for (int input = 0; input < ThrottleCurve::getInputMax() + 1; input++)
+    {
+        int toAdd = throttleCurve.getInterpolatedPoint(input).getY();
+        
+        // apply clipping
+        if (toAdd <= ThrottleCurve::getOutputMax())
+        {
+            outputs.add(throttleCurve.getInterpolatedPoint(input).getY());
+        }
+        else
+        {
+            outputs.add(ThrottleCurve::getOutputMax());
+        }
+    }
+    
+    // generate code text
+    int newLineEvery = 16;
+    
+    juce::String code = "static const uint16_t driver_profile [";
+    code += juce::String(ThrottleCurve::getInputMax() + 1);
+    code += "] = {\n\t";
+    
+    for (int i = 0; i < ThrottleCurve::getInputMax() + 1; i++)
+    {
+        // fixed length hex string
+        juce::String hex = juce::String::toHexString(outputs.getReference(i));
+
+        int leadingZeros = 4 - hex.length();
+        hex = juce::String::repeatedString("0", leadingZeros) + hex;
+        
+        // add hex to code
+        code += "0x" + hex + ", ";
+        
+        // new lines every so often for readability
+        if ((i % newLineEvery == newLineEvery - 1) && i != ThrottleCurve::getInputMax())
+        {
+            code += "\n\t";
+        }
+    }
+    
+    code.dropLastCharacters(1);
+    code += "\n};";
+    
+    // copy the code to the clipboard
+    juce::SystemClipboard::copyTextToClipboard(code);
+    
+    // generate an alert window
+    juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", "Lookup table code copied to clipboard");
+}
 
 //============================================================ Internal utility
 
