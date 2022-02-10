@@ -58,7 +58,7 @@ juce::Array<juce::Point<int>>& ThrottleCurve::getPoints()
  */
 void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
 {
-    curve.add(point);
+    curve.addIfNotAlreadyThere(point);
     sortCurve(curve);
 }
 

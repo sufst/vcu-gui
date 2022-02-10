@@ -273,7 +273,7 @@ void ThrottleCurveComponent::importProfile() {
 
         // Check root element is correct
         if (!mapRoot->hasTagName("throttle_map"))
-            return
+            return;
 
         // Search for elements by name
         for (auto* e : mapRoot->getChildIterator())
@@ -287,6 +287,9 @@ void ThrottleCurveComponent::importProfile() {
                 //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
             } else if (e->hasTagName("points"))
             {
+                // Clear all old points
+                throttleCurve.getPoints().clear();
+
                 // Loop through all points
                 for (auto* p : e->getChildIterator())
                 {
@@ -303,6 +306,8 @@ void ThrottleCurveComponent::importProfile() {
                     // Add point
                     throttleCurve.addPoint(point);
                 }
+
+                this->repaint();
             }
         }
     });
