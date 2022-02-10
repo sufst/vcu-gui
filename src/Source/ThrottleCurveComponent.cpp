@@ -270,17 +270,16 @@ void ThrottleCurveComponent::exportProfile() {
         // ..and add our new element to the parent node
         animalsList.addChildElement (giraffe);
     }
-
-    std::unique_ptr<juce::FileChooser> fileChooser;
-
-    fileChooser = std::make_unique<juce::FileChooser> ("Save throttle profile map",
-                                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                       "*.xml",
-                                                       true);
+    
+    fileChooser.reset(new juce::FileChooser("Save throttle profile map",
+                                            juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                            "*.xml",
+                                            true));
 
     auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
                           | juce::FileBrowserComponent::warnAboutOverwriting
                           | juce::FileBrowserComponent::saveMode;
+
 
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this, animalsList] (const juce::FileChooser& chooser)
@@ -293,6 +292,7 @@ void ThrottleCurveComponent::exportProfile() {
 
         // Write XML file to disk
         animalsList.writeTo(mapFilePath, {});
+        
     });
 };
 
