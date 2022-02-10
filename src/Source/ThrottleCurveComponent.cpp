@@ -109,9 +109,10 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     {
         g.setColour(deadzoneLineColour.withLightness(0.9f).withAlpha(0.2f));
         g.fillRect(borderThickness, borderThickness, deadzoneLine.getStartX(), getHeight() - borderThickness * 2);
-        g.setColour(deadzoneLineColour);
-        g.drawLine(deadzoneLine.toFloat(), 1);
     }
+    
+    g.setColour(deadzoneLineColour);
+    g.drawLine(deadzoneLine.toFloat(), 1);
 }
 
 /**
@@ -137,6 +138,7 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
         if (deadzoneHitTest(event.getPosition()))
         {
             currentlyMovingDeadzone = true;
+            showToolTip();
         }
     }
     
@@ -219,8 +221,10 @@ void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
     // move deadzone
     if (currentlyMovingDeadzone)
     {
+        showToolTip();
+        
         int x = transformCanvasPointToCurve(event.getPosition()).getX();
-        int xLim = throttleCurve.getPoints().getReference(1).getX() - 10;
+        int xLim = throttleCurve.getPoints().getReference(1).getX() - minDeadzoneToPointDistance;
         
         // restrict movement
         if (x < 0)
@@ -279,6 +283,7 @@ void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
         if (deadzoneHit)
         {
             setMouseCursor(juce::MouseCursor::LeftRightResizeCursor);
+            showToolTip();
         }
         else if (pointHit)
         {
@@ -286,6 +291,7 @@ void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
         }
         else
         {
+            hideToolTip();
             setMouseCursor(juce::MouseCursor::CrosshairCursor);
         }
     }
