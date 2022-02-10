@@ -22,6 +22,9 @@ ThrottleCurveComponent::ThrottleCurveComponent()
     setWantsKeyboardFocus(true);
     setMouseCursor(juce::MouseCursor::CrosshairCursor);
     addKeyListener(this);
+
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
 }
 
 /**
@@ -29,6 +32,7 @@ ThrottleCurveComponent::ThrottleCurveComponent()
  */
 ThrottleCurveComponent::~ThrottleCurveComponent()
 {
+    // nothing to do
 }
 
 //==================================================================== Graphics
@@ -40,15 +44,8 @@ ThrottleCurveComponent::~ThrottleCurveComponent()
  */
 void ThrottleCurveComponent::paint(juce::Graphics& g)
 {
-
     // fill background
-    juce::Colour backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
     g.fillAll(backgroundColour);
-    
-    // draw border around the component
-    juce::Colour borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
-    g.setColour(borderColour);
-    g.drawRect(0, 0, getWidth(), getHeight());
     
     // draw graph ticks
     g.setColour(juce::Colours::darkgrey);
@@ -66,6 +63,10 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
         float y = i * getHeight() / numTicksY;
         g.drawLine(0, y, getWidth(), y);
     }
+    
+    // draw border around the component
+    g.setColour(borderColour);
+    g.drawRect(0, 0, getWidth(), getHeight(), borderThickness);
     
     // draw interpolated points
     g.setColour(juce::Colours::white);
@@ -237,10 +238,76 @@ bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Compone
     return true;
 }
 
+/**
+ * @brief       Determines whether component will receive file dragging related callbacks
+ *
+ * @param[in]   files   List of files being dragged
+ */
+bool ThrottleCurveComponent::isInterestedInFileDrag(const juce::StringArray &files)
+{
+    return true;
+};
+
+/**
+ * @brief       Receive dropped files
+ *
+ * @param[in]   files   List of dropped files
+ * @param[in]   x       Mouse x position relative to component
+ * @param[in]   y       Mouse y position relative to component
+ */
+void ThrottleCurveComponent::filesDropped(const juce::StringArray& files, int x, int y)
+{
+    // reset background and border
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
+    borderThickness = 1;
+    
+    // get result and load profile
+    juce::File mapFile(files.getReference(0));
+    loadProfile(mapFile);
+    
+    // need to repaint GUI
+    repaint();
+}
+
+/**
+ * @brief       Callback when file drag enters component
+ *
+ * @param[in]   files   List of files being dragged
+ * @param[in]   x       Mouse x position relative to component
+ * @param[in]   y       Mouse y position relative to component
+ */
+void ThrottleCurveComponent::fileDragEnter(const juce::StringArray& files, int x, int y)
+{
+    // brighten the background and border when file drag enters component
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).brighter(fileDragBrightnessFactor);
+    borderColour = juce::Colours::skyblue;
+    borderThickness = 2;
+    
+    // need to repaint GUI
+    repaint();
+}
+
+/**
+ * @brief       Callback when file drag exits component
+ *
+ * @param[in]   files   List of files being dragged
+ */
+void ThrottleCurveComponent::fileDragExit(const juce::StringArray &files)
+{
+    // reset background and border
+    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
+    borderThickness = 1;
+    
+    // need to repaint GUI
+    repaint();
+};
+
 //========================================================= Interface to parent
 
 /**
- * @brief Sets the interpolation method used by the throttle curve
+ * @brief       Sets the interpolation method used by the throttle curve
  *
  * @param[in]   method      Interpolation method
  */
@@ -250,7 +317,12 @@ void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::Interpolation
     repaint();
 }
 
+/**
+ * @brief Called by parent component to import a driver profile on button click
+ */
 void ThrottleCurveComponent::importProfile() {
+    
+    // create and setup a new file chooser
     fileChooser = std::make_unique<juce::FileChooser> ("Open throttle profile map",
                                                        juce::File::getSpecialLocation(juce::File::userHomeDirectory),
                                                        "*.xml",
@@ -262,90 +334,50 @@ void ThrottleCurveComponent::importProfile() {
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this] (const juce::FileChooser& chooser)
     {
-        // get result
         juce::File mapFile = chooser.getResult();
-
-        // Create new XML document
-        static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
-
-        if  (mapRoot == nullptr)
-            return;
-
-        // Check root element is correct
-        if (!mapRoot->hasTagName("throttle_map"))
-            return;
-
-        // Search for elements by name
-        for (auto* e : mapRoot->getChildIterator())
-        {
-            if (e->hasTagName("config"))
-            {
-                // Set interpolation type
-                // TODO: Fix below. We don't have a method to get the interp type from a string of the same name.
-                // I'm sure theres a clever way to do this...
-
-                //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
-            } else if (e->hasTagName("points"))
-            {
-                // Clear all old points
-                throttleCurve.getPoints().clear();
-
-                // Loop through all points
-                for (auto* p : e->getChildIterator())
-                {
-                    // Check element is a point
-                    if (!p->hasTagName("point"))
-                        return;
-
-                    // Create point
-                    int pointX = p->getIntAttribute("x");
-                    int pointY = p->getIntAttribute("y");
-
-                    ThrottleCurve::Point point(pointX, pointY);
-
-                    // Add point
-                    throttleCurve.addPoint(point);
-                }
-
-                this->repaint();
-            }
-        }
+        loadProfile(mapFile);
     });
+    
 };
 
-void ThrottleCurveComponent::exportProfile() {
-    // Create top level element
+/**
+ * @brief Called by parent component to export a driver profile on button click
+ */
+void ThrottleCurveComponent::exportProfile()
+{
+    // create top level element
     juce::XmlElement throttleMap("throttle_map");
 
-    // Second level elements
+    // second level elements
     juce::XmlElement* config = new juce::XmlElement("config");
     juce::XmlElement* pointsList = new juce::XmlElement("points");
 
-    // Fill config element
-    // Create option element
+    // fill config element
+    // create option element
     juce::XmlElement* option = new juce::XmlElement("option");
 
     // TODO: Change second param below to get the interp method from ThrottleCurve class
     option->setAttribute("interpolation_method", "linear");
-
     config->addChildElement(option);
 
-    // Fill points element
+    // fill points element
     for (const auto& point : throttleCurve.getPoints()) {
-        // Create inner point element
+        
+        // create inner point element
         juce::XmlElement* pointElement = new juce::XmlElement("point");
 
         pointElement->setAttribute("x", point.getX());
         pointElement->setAttribute("y", point.getY());
 
-        // Add point element to parent
+        // add point element to parent
         pointsList->addChildElement(pointElement);
     }
 
-    // Add child elements to top level parent
+    // add child elements to top level parent
     throttleMap.addChildElement(config);
     throttleMap.addChildElement(pointsList);
 
+    // create and setup file chooser
     fileChooser = std::make_unique<juce::FileChooser> ("Save throttle profile map",
                                                        juce::File::getSpecialLocation(juce::File::userHomeDirectory),
                                                        "*.xml",
@@ -355,7 +387,6 @@ void ThrottleCurveComponent::exportProfile() {
     | juce::FileBrowserComponent::warnAboutOverwriting
     | juce::FileBrowserComponent::saveMode;
 
-
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this, throttleMap] (const juce::FileChooser& chooser)
     {
@@ -363,10 +394,18 @@ void ThrottleCurveComponent::exportProfile() {
         juce::File mapFile = chooser.getResult();
 
         // Write XML file to disk
-        throttleMap.writeTo(mapFile, {});
-
-        // TODO: Maybe show a success dialog?
+        if (throttleMap.writeTo(mapFile, {}))
+        {
+            // show a success dialog
+            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Success", "Exported map profile");
+        }
+        else
+        {
+            // show a failure dialog
+            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Error", "Error exporting map profile");
+        }
     });
+    
 };
 
 /**
@@ -468,3 +507,51 @@ bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, c
     juce::Point<int> transformedCurvePoint = transformCurvePointToCanvas(curvePoint);
     return (canvasPoint.getDistanceFrom(transformedCurvePoint) < clickRadius);
 }
+
+void ThrottleCurveComponent::loadProfile(juce::File mapFile) {
+    // Create new XML document
+    static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
+
+    if  (mapRoot == nullptr)
+        return;
+
+    // Check root element is correct
+    if (!mapRoot->hasTagName("throttle_map"))
+        return;
+
+    // Search for elements by name
+    for (auto* e : mapRoot->getChildIterator())
+    {
+        if (e->hasTagName("config"))
+        {
+            // Set interpolation type
+            // TODO: Fix below. We don't have a method to get the interp type from a string of the same name.
+            // I'm sure theres a clever way to do this...
+
+            //setInterpolationMethod(e->getStringAttribute("interpolation_method"));
+        } else if (e->hasTagName("points"))
+        {
+            // Clear all old points
+            throttleCurve.getPoints().clear();
+
+            // Loop through all points
+            for (auto* p : e->getChildIterator())
+            {
+                // Check element is a point
+                if (!p->hasTagName("point"))
+                    return;
+
+                // Create point
+                int pointX = p->getIntAttribute("x");
+                int pointY = p->getIntAttribute("y");
+
+                ThrottleCurve::Point point(pointX, pointY);
+
+                // Add point
+                throttleCurve.addPoint(point);
+            }
+
+            this->repaint();
+        }
+    }
+};
