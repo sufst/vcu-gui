@@ -1,6 +1,7 @@
 /******************************************************************************
  * @file   ThrottleCurveComponent.h
  * @author Tim Brewis (tab1g19@soton.ac.uk)
+ * @author Max O'Brien (mao1g19@soton.ac.uk)
  * @date   2022-02-09
  * @brief  Component for drawing throttle curves
  *****************************************************************************/
@@ -64,7 +65,6 @@ private:
     static const int pointSize = 4;
     static const int pointStroke = 4;
     static const int clickRadius = 20;
-    static const int throttleCurveClickRadius = clickRadius * 75;
     static const int minDeadzoneToPointDistance = 5;
     
     // appearance
@@ -99,7 +99,7 @@ private:
         int x = this->getScreenX() + deadzoneLine.getStartX() - 10;
         int y = juce::Desktop::getMousePosition().getY();
         
-        juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(100 * static_cast<float>(throttleCurve.getPoints().getFirst().getX()) / ThrottleCurve::getInputMax(), 3);
+        juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(100 * static_cast<float>(throttleCurve.getPoints().getFirst().getX()) / ThrottleCurve::getInputMax(), 2);
         tipText += "%";
         toolTip->displayTip(juce::Point<int>(x, y), tipText);
         toolTip->setVisible(true);

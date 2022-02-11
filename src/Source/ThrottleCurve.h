@@ -9,7 +9,11 @@
 
 #include <JuceHeader.h>
 #include <vector>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
 #include "../../lib/spline/src/spline.h"
+#pragma GCC diagnostic pop
 
 /**
  * @brief Model of a throttle curve
@@ -32,7 +36,7 @@ public:
     
     // points
     void addPoint(Point& point);
-    void deleteNearbyPoints(const Point& point, int radius);
+    void deletePoint(const Point& point);
     const juce::Array<Point>& getPoints();
     Point* getPointForMove(int index);
     Point* pointMoved(const Point movedPoint);

@@ -66,37 +66,13 @@ void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
 }
 
 /**
- * @brief Deletes points within a certain radius of an input point
+ * @brief       Deletes a point from the curve
  *
- * @param[in]   point   Input point
- * @param[in]   radius  Radius around point within which points will be deleted
+ * @param[in]   point   Point to delete
  */
-void ThrottleCurve::deleteNearbyPoints(const Point& point, int radius)
+void ThrottleCurve::deletePoint(const Point& point)
 {
-    juce::Array<int> toDelete = {};
-    
-    // work out which points to delete
-    for (int i = 0; i < curve.size(); i++)
-    {
-        if (curve.getReference(i).getDistanceFrom(point) < radius)
-        {
-            toDelete.add(i);
-        }
-    }
-    
-    // delete the points (unless they are the first and last ones)
-    int deleteCount = 0;
-    for (const auto index : toDelete)
-    {
-        int realIndex = index - deleteCount;
-        
-        if ((realIndex != 0) && (realIndex != curve.size() - 1))
-        {
-            curve.remove(index - deleteCount);
-            deleteCount++;
-        }
-    }
-    
+    curve.removeFirstMatchingValue(point);    
     cacheValid = false;
 }
 
@@ -325,11 +301,27 @@ ThrottleCurve::Point ThrottleCurve::splineInterpolate(int input, tk::spline::spl
     
     // spline
     std::vector<double> x, y;
+    double currentX;
+    double currentY;
+    double lastX = -1;
     
     for (const auto& point : curve)
     {
-        x.push_back(static_cast<double>(point.getX()));
-        y.push_back(static_cast<double>(point.getY()));
+        currentX = static_cast<double>(point.getX());
+        currentY = static_cast<double>(point.getY());
+        
+        // enforce strict monotonicity
+        if (lastX == currentX)
+        {
+            currentX += 1;
+        }
+        
+        // add points to new lists
+        x.push_back(currentX);
+        y.push_back(currentY);
+        
+        // record last input
+        lastX = currentX;
     }
     
     tk::spline spline(x, y, type);

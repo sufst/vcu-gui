@@ -1,6 +1,7 @@
 /******************************************************************************
  * @file   ThrottleCurveComponent.cpp
  * @author Tim Brewis (tab1g19@soton.ac.uk)
+ * @author Max O'Brien (mao1g19@soton.ac.uk)
  * @date   2022-02-09
  * @brief  Component for drawing throttle curves
  *****************************************************************************/
@@ -166,8 +167,16 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
         // delete
         if (deleteMode)
         {
-            ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
-            throttleCurve.deleteNearbyPoints(point, throttleCurveClickRadius);
+            // check if the event hits any points which should then be deleted
+            for (const auto& point : throttleCurve.getPoints())
+            {
+                auto transformedPoint = transformCurvePointToCanvas(point);
+                
+                if(event.getPosition().getDistanceFrom(transformedPoint) < clickRadius)
+                {
+                    throttleCurve.deletePoint(point);
+                }
+            }
         }
         // add
         else
@@ -647,7 +656,7 @@ bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, c
  */
 bool ThrottleCurveComponent::deadzoneHitTest(const juce::Point<int>& canvasPoint) const
 {
-    return (canvasPoint.getX() <= deadzoneLine.getStartX());
+    return (canvasPoint.getX() - clickRadius / 4 <= deadzoneLine.getStartX());
 }
 
 /**
