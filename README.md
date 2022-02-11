@@ -5,11 +5,11 @@ A cross-platform graphical tool for customising and exporting driver profiles fo
   <img src="./docs/C2 Spline.png" width="90%" class="center">
 </p>
 
-## TODO: Installing
-This tool has been compiled for macOS and Windows as a standalone application. The latest releases are available [here](https://github.com/sufst/vcu-driver-profile/releases), or click the links below for a download:
+## Installing
+This tool has been compiled for macOS and Windows as a standalone application. The latest release is available [here](https://github.com/sufst/vcu-driver-profile/releases), or use one of the links below for a direct download:
 
-- [macOS](todo)
-- [Windows](todo)
+- [macOS](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.app.zip)
+- [Windows](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.exe)
 
 The program can also be compiled and run on Linux using `make` and the JUCE project configuration tool (see: [contributing](#contributing)).
 
