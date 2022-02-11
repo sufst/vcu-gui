@@ -444,7 +444,9 @@ void ThrottleCurveComponent::importProfile() {
 };
 
 /**
- * @brief Called by parent component to export a driver profile on button click
+ * @brief   Called by parent component to export a driver profile on button click
+ *
+ * @note    New XML elements are deleted by the top level element
  */
 void ThrottleCurveComponent::exportProfile()
 {
@@ -452,8 +454,19 @@ void ThrottleCurveComponent::exportProfile()
     juce::XmlElement throttleMap("throttle_map");
 
     // second level elements
+    juce::XmlElement* metadata = new juce::XmlElement("metadata");
     juce::XmlElement* config = new juce::XmlElement("config");
     juce::XmlElement* pointsList = new juce::XmlElement("points");
+    
+    // add metadata
+    juce::XmlElement* appVersion = new juce::XmlElement("app_version");
+    juce::XmlElement* exportDate = new juce::XmlElement("export_date");
+    
+    appVersion->addTextElement(ProjectInfo::versionString);
+    exportDate->addTextElement(juce::Time::getCurrentTime().toString(true, false));
+    
+    metadata->addChildElement(appVersion);
+    metadata->addChildElement(exportDate);
 
     // fill config element
     // create option element
@@ -478,6 +491,7 @@ void ThrottleCurveComponent::exportProfile()
     }
 
     // add child elements to top level parent
+    throttleMap.addChildElement(metadata);
     throttleMap.addChildElement(config);
     throttleMap.addChildElement(pointsList);
 
@@ -494,14 +508,14 @@ void ThrottleCurveComponent::exportProfile()
     // launch file chooser asynchronously
     fileChooser->launchAsync(fileChooserFlags, [this, throttleMap] (const juce::FileChooser& chooser)
     {
-        // get result
-        juce::File mapFile = chooser.getResult();
-        
-        // validate file
-        if (!mapFile.existsAsFile())
+        // validate input
+        if (chooser.getResults().isEmpty())
         {
             return;
         }
+        
+        // get result
+        juce::File mapFile = chooser.getResult();
 
         // write XML file to disk
         if (throttleMap.writeTo(mapFile, {}))

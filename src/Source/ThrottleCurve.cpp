@@ -220,7 +220,7 @@ ThrottleCurve::Point ThrottleCurve::linearInterpolate(int input)
     Point p1(0, 0);
     Point p2(0, 0);
     
-    // find the nearest points
+    // find the nearest points in x position to the input
     for (int i = 0; i < curve.size(); i++)
     {
         auto& point = curve.getReference(i);
@@ -262,7 +262,7 @@ ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
     Point p1(0, 0);
     Point p2(0, 0);
     
-    // find the nearest points
+    // find the nearest points in x position to the input
     for (int i = 0; i < curve.size(); i++)
     {
         auto& point = curve.getReference(i);
@@ -284,7 +284,7 @@ ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
 }
 
 /**
- * @brief   Spline interpolation
+ * @brief       Spline interpolation
  *
  * @param[in]   input   Input in the range [0, inputMax]
  * @param[in]   type    Type of spline to use (cubic or Hermite)
@@ -299,7 +299,7 @@ ThrottleCurve::Point ThrottleCurve::splineInterpolate(int input, tk::spline::spl
         return linearInterpolate(input);
     }
     
-    // spline
+    // spline interpolation
     std::vector<double> x, y;
     double currentX;
     double currentY;
@@ -403,13 +403,15 @@ juce::StringArray ThrottleCurve::validateCurve()
     // add warnings
     if (positiveClipping)
     {
-        float percentStart = 100 * std::round(100 * static_cast<float>(positiveClippingStart) / ThrottleCurve::getInputMax()) / 100;
+        float fractionalStart = static_cast<float>(positiveClippingStart) / ThrottleCurve::getInputMax();
+        float percentStart = 100 * (std::round(100 * fractionalStart) / 100);
         warnings.add("Warning: clipping (above max @ " +  juce::String(percentStart) + "% input)");
     }
     
     if (negativeClipping)
     {
-        float percentStart = 100 * std::round(100 * static_cast<float>(negativeClippingStart) / ThrottleCurve::getInputMax()) / 100;
+        float fractionalStart = static_cast<float>(negativeClippingStart) / ThrottleCurve::getInputMax();
+        float percentStart = 100 * (std::round(100 * fractionalStart) / 100);
         warnings.add("Warning: clipping (below 0 @ " + juce::String(percentStart) + "% input)");
     }
     
