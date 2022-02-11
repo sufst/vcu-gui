@@ -461,12 +461,15 @@ void ThrottleCurveComponent::exportProfile()
     // add metadata
     juce::XmlElement* appVersion = new juce::XmlElement("app_version");
     juce::XmlElement* exportDate = new juce::XmlElement("export_date");
+    juce::XmlElement* userName = new juce::XmlElement("user");
     
     appVersion->addTextElement(ProjectInfo::versionString);
     exportDate->addTextElement(juce::Time::getCurrentTime().toString(true, false));
+    userName->addTextElement(juce::SystemStats::getLogonName());
     
     metadata->addChildElement(appVersion);
     metadata->addChildElement(exportDate);
+    metadata->addChildElement(userName);
 
     // fill config element
     // create option element
