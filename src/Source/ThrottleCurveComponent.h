@@ -65,7 +65,6 @@ private:
     static const int pointSize = 4;
     static const int pointStroke = 4;
     static const int clickRadius = 20;
-    static const int throttleCurveClickRadius = clickRadius * 75;
     static const int minDeadzoneToPointDistance = 5;
     
     // appearance

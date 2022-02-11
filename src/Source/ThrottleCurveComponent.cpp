@@ -167,8 +167,16 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
         // delete
         if (deleteMode)
         {
-            ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
-            throttleCurve.deleteNearbyPoints(point, throttleCurveClickRadius);
+            // check if the event hits any points which should then be deleted
+            for (const auto& point : throttleCurve.getPoints())
+            {
+                auto transformedPoint = transformCurvePointToCanvas(point);
+                
+                if(event.getPosition().getDistanceFrom(transformedPoint) < clickRadius)
+                {
+                    throttleCurve.deletePoint(point);
+                }
+            }
         }
         // add
         else

@@ -36,7 +36,7 @@ public:
     
     // points
     void addPoint(Point& point);
-    void deleteNearbyPoints(const Point& point, int radius);
+    void deletePoint(const Point& point);
     const juce::Array<Point>& getPoints();
     Point* getPointForMove(int index);
     Point* pointMoved(const Point movedPoint);

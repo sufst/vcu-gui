@@ -66,37 +66,13 @@ void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
 }
 
 /**
- * @brief Deletes points within a certain radius of an input point
+ * @brief       Deletes a point from the curve
  *
- * @param[in]   point   Input point
- * @param[in]   radius  Radius around point within which points will be deleted
+ * @param[in]   point   Point to delete
  */
-void ThrottleCurve::deleteNearbyPoints(const Point& point, int radius)
+void ThrottleCurve::deletePoint(const Point& point)
 {
-    juce::Array<int> toDelete = {};
-    
-    // work out which points to delete
-    for (int i = 0; i < curve.size(); i++)
-    {
-        if (curve.getReference(i).getDistanceFrom(point) < radius)
-        {
-            toDelete.add(i);
-        }
-    }
-    
-    // delete the points (unless they are the first and last ones)
-    int deleteCount = 0;
-    for (const auto index : toDelete)
-    {
-        int realIndex = index - deleteCount;
-        
-        if ((realIndex != 0) && (realIndex != curve.size() - 1))
-        {
-            curve.remove(index - deleteCount);
-            deleteCount++;
-        }
-    }
-    
+    curve.removeFirstMatchingValue(point);    
     cacheValid = false;
 }
 
