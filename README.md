@@ -90,7 +90,7 @@ git submodule update
 
 Install [JUCE](https://juce.com/get-juce) (personal or education) on your system. [JUCE's project configuration tool](https://juce.com/discover/projucer) will generate the necessary project files to build, run and debug a project using a variety of exporters (usually an IDE).
 - For macOS, use Xcode.
-- For Windows use Visual Studio (untested).
+- For Windows use Visual Studio.
 - For Linux use make.
 
 ## Dependencies
