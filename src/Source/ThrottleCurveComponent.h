@@ -1,6 +1,7 @@
 /******************************************************************************
  * @file   ThrottleCurveComponent.h
  * @author Tim Brewis (tab1g19@soton.ac.uk)
+ * @author Max O'Brien (mao1g19@soton.ac.uk)
  * @date   2022-02-09
  * @brief  Component for drawing throttle curves
  *****************************************************************************/
