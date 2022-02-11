@@ -3,7 +3,7 @@
 <JUCERPROJECT id="wH6UEG" name="VCU Driver Profile" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="SUFST" companyCopyright="2022" cppLanguageStandard="17"
-              companyWebsite="https://www.sufst.co.uk">
+              companyWebsite="https://www.sufst.co.uk" bundleIdentifier="com.SUFST.VCU.DriverProfile">
   <MAINGROUP id="RxnfqH" name="VCU Driver Profile">
     <GROUP id="{3E9F51AA-4C92-4EB6-CEDC-8A7075BEFB1C}" name="Resources">
       <FILE id="mkXrZL" name="AppIcon_512.png" compile="0" resource="1" file="../res/AppIcon_512.png"/>
