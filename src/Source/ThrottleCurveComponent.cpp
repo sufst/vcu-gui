@@ -647,7 +647,7 @@ bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, c
  */
 bool ThrottleCurveComponent::deadzoneHitTest(const juce::Point<int>& canvasPoint) const
 {
-    return (canvasPoint.getX() <= deadzoneLine.getStartX());
+    return (canvasPoint.getX() - clickRadius / 4 <= deadzoneLine.getStartX());
 }
 
 /**
