@@ -12,7 +12,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
-#include "../../lib/spline/src/spline.h"
+#include "../lib/spline/src/spline.h"
 #pragma GCC diagnostic pop
 
 /**
