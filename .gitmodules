@@ -1,3 +1,6 @@
 [submodule "lib/spline"]
 	path = lib/spline
 	url = https://github.com/ttk592/spline
+[submodule "lib/juce"]
+	path = lib/juce
+	url = https://github.com/juce-framework/juce

@@ -1,42 +1,37 @@
-# Prerequisites
-*.d
+# folders
+/build
 
-# Compiled Object files
+# compilation artefacts and executables
+*.d
 *.slo
 *.lo
 *.o
 *.obj
-
-# Precompiled Headers
 *.gch
 *.pch
-
-# Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
 *.mod
 *.smod
-
-# Compiled Static libraries
 *.lai
 *.la
 *.a
 *.lib
-
-# Executables
 *.exe
 *.out
 *.app
+compile_commands.json
 
-# MacOS
+# vscode
+.vscode
+!.vscode/launch.json
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/c_cpp_properties.json
+
+# macOS
 .DS_Store
-
-# XCode
-*.xcuserstate
-src/Builds/
 
 # LSP
 .ccls-cache/

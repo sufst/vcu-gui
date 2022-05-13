@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Mac (ARM)",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/lib/JUCE/modules/**",
+                "${workspaceFolder}/build/VCU-Driver-Profile_artefacts/JuceLibraryCode/**",
+                "${workspaceFolder}/lib/JUCE/modules"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-arm64",
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "compileCommands": "${workspaceFolder}/compile_commands.json",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
