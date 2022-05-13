@@ -21,9 +21,14 @@
 *.exe
 *.out
 *.app
+compile_commands.json
 
 # vscode
 .vscode
+!.vscode/launch.json
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/c_cpp_properties.json
 
 # macOS
 .DS_Store
