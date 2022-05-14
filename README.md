@@ -6,12 +6,12 @@ A cross-platform graphical tool for customising and exporting driver profiles fo
 </p>
 
 ## Installing
-This tool has been compiled for macOS and Windows as a standalone application. The latest release is available [here](https://github.com/sufst/vcu-driver-profile/releases), or use one of the links below for a direct download:
+This tool has been pre-compiled for macOS and Windows as a standalone application. The latest release is available [here](https://github.com/sufst/vcu-driver-profile/releases), or use one of the links below for a direct download:
 
 - [macOS](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.app.zip)
 - [Windows](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.exe)
 
-The program can also be compiled and run on Linux using `make` and the JUCE project configuration tool (see: [contributing](#contributing)).
+The program can also be compiled and run on Linux using `cmake` and `make` (see: [contributing](#contributing)).
 
 ## Creating a Profile
 
@@ -77,21 +77,36 @@ static const uint16_t driver_profile [1024] = {
 };
 ```
 
-## Contributing
+## Initial Setup and Build Process
 Clone the repo:
-```
+```sh
 git clone https://github.com/sufst/vcu-driver-profile
 ```
 Clone / update submodules:
-```
+```sh
 git submodule init
 git submodule update
 ```
 
-Install [JUCE](https://juce.com/get-juce) (personal or education) on your system. [JUCE's project configuration tool](https://juce.com/discover/projucer) will generate the necessary project files to build, run and debug a project using a variety of exporters (usually an IDE).
-- For macOS, use Xcode.
-- For Windows use Visual Studio.
-- For Linux use make.
+The build process is managed by `cmake` which you will need to have installed, along with `make` and a C++ compiler. Before building, create the build directory:
+```sh
+mkdir build
+```
+To build for debug:
+```sh
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+make
+```
+Similarly to build for release:
+```sh
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make
+```
+
+Tip: for a faster build, run `make -j$(nproc)` to parallelise the build with one job per core on the host machine.
+
 
 ## Dependencies
 - [JUCE](https://github.com/juce-framework/JUCE)
