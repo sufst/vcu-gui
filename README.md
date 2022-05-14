@@ -11,7 +11,7 @@ This tool has been pre-compiled for macOS and Windows as a standalone applicatio
 - [macOS](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.app.zip)
 - [Windows](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.exe)
 
-The program can also be compiled and run on Linux using `cmake` and `make` (see: [contributing](#contributing)).
+The program can also be compiled and run on Linux using `cmake` and `make` (see: [build process](#Initial-Setup-and-Build-Process)).
 
 ## Creating a Profile
 
