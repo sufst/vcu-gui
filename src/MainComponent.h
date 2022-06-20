@@ -7,18 +7,15 @@
 
 #pragma once
 
-#include <JuceHeader.h>
-
 #include "ThrottleCurveComponent.h"
+#include <JuceHeader.h>
 
 /**
  * @breif Main GUI component
  */
-class MainComponent
-    :   public juce::Component
+class MainComponent : public juce::Component
 {
-public:
-    
+  public:
     // constructor / destructor
     MainComponent();
     ~MainComponent() override;
@@ -27,11 +24,10 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
-private:
-    
+  private:
     // constants
     static const int borderSize = 20;
-    
+
     // child components
     ThrottleCurveComponent throttleCurveComponent;
     juce::ComboBox interpolationMethodComboBox;
@@ -40,5 +36,4 @@ private:
     juce::TextButton exportCodeButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
-    
 };

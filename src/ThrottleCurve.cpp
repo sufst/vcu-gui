@@ -18,8 +18,7 @@
  *
  * @details Uses the default interpolation method
  */
-ThrottleCurve::ThrottleCurve()
-    :   interpolation(defaultInterpolationMethod)
+ThrottleCurve::ThrottleCurve() : interpolation(defaultInterpolationMethod)
 {
     resetCurveToDefault(curve);
     interpolate();
@@ -29,7 +28,7 @@ ThrottleCurve::ThrottleCurve()
  * @brief Constructor specifying interpolation method
  */
 ThrottleCurve::ThrottleCurve(InterpolationMethod interpolationMethod)
-    :   interpolation(interpolationMethod)
+    : interpolation(interpolationMethod)
 {
     resetCurveToDefault(curve);
     interpolate();
@@ -72,7 +71,7 @@ void ThrottleCurve::addPoint(ThrottleCurve::Point& point)
  */
 void ThrottleCurve::deletePoint(const Point& point)
 {
-    curve.removeFirstMatchingValue(point);    
+    curve.removeFirstMatchingValue(point);
     cacheValid = false;
 }
 
@@ -87,12 +86,12 @@ ThrottleCurve::Point* ThrottleCurve::getPointForMove(int index)
 }
 
 /**
- * @brief       Update the curve when a point has been moved and return a pointer
- *              to the moved point.
+ * @brief       Update the curve when a point has been moved and return a
+ * pointer to the moved point.
  *
- * @details     This sorts the points in the curve, which necessitates returning a
- *              new pointer to the point which has been moved if a further move
- *              of that point is required.s
+ * @details     This sorts the points in the curve, which necessitates returning
+ * a new pointer to the point which has been moved if a further move of that
+ * point is required.s
  *
  * @param[in]   movedPoint  Copy of the point which has been moved
  *
@@ -128,7 +127,7 @@ void ThrottleCurve::interpolate()
     {
         return;
     }
-    
+
     // otherwise need to re-compute
     for (int input = 0; input < inputMax + 1; input++)
     {
@@ -138,33 +137,35 @@ void ThrottleCurve::interpolate()
             cachedOutputs.at(input) = 0;
             continue;
         }
-        
+
         // normal points
         switch (interpolation)
         {
-            case InterpolationMethod::Linear:
-                cachedOutputs.at(input) = linearInterpolate(input).getY();
-                break;
+        case InterpolationMethod::Linear:
+            cachedOutputs.at(input) = linearInterpolate(input).getY();
+            break;
 
-            case InterpolationMethod::Cosine:
-                cachedOutputs.at(input) = cosineInterpolate(input).getY();
-                break;
-                
-            case InterpolationMethod::Cubic:
-                cachedOutputs.at(input) = splineInterpolate(input, tk::spline::cspline).getY();
-                break;
-            
-            case InterpolationMethod::Hermite:
-                cachedOutputs.at(input) = splineInterpolate(input, tk::spline::cspline_hermite).getY();
-                break;
+        case InterpolationMethod::Cosine:
+            cachedOutputs.at(input) = cosineInterpolate(input).getY();
+            break;
 
-            default:
-                // something hasn't been implemented!
-                jassertfalse;
-                break;
+        case InterpolationMethod::Cubic:
+            cachedOutputs.at(input)
+                = splineInterpolate(input, tk::spline::cspline).getY();
+            break;
+
+        case InterpolationMethod::Hermite:
+            cachedOutputs.at(input)
+                = splineInterpolate(input, tk::spline::cspline_hermite).getY();
+            break;
+
+        default:
+            // something hasn't been implemented!
+            jassertfalse;
+            break;
         }
     }
-    
+
     cacheValid = true;
 }
 
@@ -192,7 +193,8 @@ ThrottleCurve::InterpolationMethod ThrottleCurve::getInterpolationMethod() const
 /**
  * @brief       Get an interpolated point on the curve
  *
- * @details     The method of interpolation can be set using setInterpolationMethod(...).
+ * @details     The method of interpolation can be set using
+ * setInterpolationMethod(...).
  *
  * @param[in]   input   Input in the range [0, inputMax]
  *
@@ -204,7 +206,7 @@ ThrottleCurve::Point ThrottleCurve::getInterpolatedPoint(int input)
     {
         interpolate();
     }
-    
+
     return Point(input, cachedOutputs.at(input));
 }
 
@@ -219,7 +221,7 @@ ThrottleCurve::Point ThrottleCurve::linearInterpolate(int input)
 {
     Point p1(0, 0);
     Point p2(0, 0);
-    
+
     // find the nearest points in x position to the input
     for (int i = 0; i < curve.size(); i++)
     {
@@ -237,16 +239,17 @@ ThrottleCurve::Point ThrottleCurve::linearInterpolate(int input)
             }
         }
     }
-    
+
     // linear interpolation
     int xDiff = p2.getX() - p1.getX();
     int yDiff = p2.getY() - p1.getY();
-    
-    float mu = static_cast<float>(input - p1.getX()) / static_cast<float>(xDiff);
-    float m  = static_cast<float>(yDiff) / static_cast<float>(xDiff);
+
+    float mu
+        = static_cast<float>(input - p1.getX()) / static_cast<float>(xDiff);
+    float m = static_cast<float>(yDiff) / static_cast<float>(xDiff);
 
     int y = p1.getY() + m * mu * xDiff;
-    
+
     return Point(input, y);
 }
 
@@ -261,7 +264,7 @@ ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
 {
     Point p1(0, 0);
     Point p2(0, 0);
-    
+
     // find the nearest points in x position to the input
     for (int i = 0; i < curve.size(); i++)
     {
@@ -272,11 +275,11 @@ ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
             p2 = curve.getReference(i + 1);
         }
     }
-    
+
     // cosine interpolation
-    float mu = static_cast<float>(input - p1.getX()) / static_cast<float>(p2.getX() - p1.getX());
-    
-    
+    float mu = static_cast<float>(input - p1.getX())
+               / static_cast<float>(p2.getX() - p1.getX());
+
     float mu2 = (1 - std::cos(mu * juce::MathConstants<float>::pi)) / 2;
     int y = (p1.getY() * (1 - mu2) + p2.getY() * mu2);
 
@@ -291,41 +294,42 @@ ThrottleCurve::Point ThrottleCurve::cosineInterpolate(int input)
  *
  * @return      Interpolated point
  */
-ThrottleCurve::Point ThrottleCurve::splineInterpolate(int input, tk::spline::spline_type type)
+ThrottleCurve::Point
+ThrottleCurve::splineInterpolate(int input, tk::spline::spline_type type)
 {
     // default to linear if too few points
     if (curve.size() < 3)
     {
         return linearInterpolate(input);
     }
-    
+
     // spline interpolation
     std::vector<double> x, y;
     double currentX;
     double currentY;
     double lastX = -1;
-    
+
     for (const auto& point : curve)
     {
         currentX = static_cast<double>(point.getX());
         currentY = static_cast<double>(point.getY());
-        
+
         // enforce strict monotonicity
         if (lastX == currentX)
         {
             currentX += 1;
         }
-        
+
         // add points to new lists
         x.push_back(currentX);
         y.push_back(currentY);
-        
+
         // record last input
         lastX = currentX;
     }
-    
+
     tk::spline spline(x, y, type);
-    
+
     return Point(input, static_cast<int>(spline(input)));
 }
 
@@ -334,9 +338,11 @@ ThrottleCurve::Point ThrottleCurve::splineInterpolate(int input, tk::spline::spl
 /**
  * @brief   Resets the path to its default state
  *
- * @details By default the throttle curve is a linear mapping between input and output
+ * @details By default the throttle curve is a linear mapping between input and
+ * output
  */
-void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curveToReset)
+void ThrottleCurve::resetCurveToDefault(
+    juce::Array<ThrottleCurve::Point>& curveToReset)
 {
     curveToReset.clear();
     curveToReset.add(Point(defaultDeadzone, 0));
@@ -351,10 +357,10 @@ void ThrottleCurve::resetCurveToDefault(juce::Array<ThrottleCurve::Point>& curve
  */
 void ThrottleCurve::sortCurve(juce::Array<ThrottleCurve::Point>& curveToSort)
 {
-    std::function compareFunc = [] (ThrottleCurve::Point p1, ThrottleCurve::Point p2) {
-        return p1.getX() < p2.getX();
-    };
-    
+    std::function compareFunc
+        = [](ThrottleCurve::Point p1, ThrottleCurve::Point p2)
+    { return p1.getX() < p2.getX(); };
+
     std::sort(curveToSort.begin(), curveToSort.end(), compareFunc);
     cacheValid = false;
 }
@@ -372,13 +378,13 @@ juce::StringArray ThrottleCurve::validateCurve()
     int positiveClippingStart = 0;
     int negativeClippingStart = 0;
     bool strictlyIncreasing = true;
-    
+
     // check curve
     for (int input = 0; input < inputMax + 1; input++)
     {
         // check for clipping
         int output = getInterpolatedPoint(input).getY();
-        
+
         if (!positiveClipping && output > outputMax)
         {
             positiveClipping = true;
@@ -389,7 +395,7 @@ juce::StringArray ThrottleCurve::validateCurve()
             negativeClipping = true;
             negativeClippingStart = input;
         }
-        
+
         // check for strictly increasing
         if (input > 0 && output != 0)
         {
@@ -399,27 +405,31 @@ juce::StringArray ThrottleCurve::validateCurve()
             }
         }
     }
-    
+
     // add warnings
     if (positiveClipping)
     {
-        float fractionalStart = static_cast<float>(positiveClippingStart) / ThrottleCurve::getInputMax();
+        float fractionalStart = static_cast<float>(positiveClippingStart)
+                                / ThrottleCurve::getInputMax();
         float percentStart = 100 * (std::round(100 * fractionalStart) / 100);
-        warnings.add("Warning: clipping (above max @ " +  juce::String(percentStart) + "% input)");
+        warnings.add("Warning: clipping (above max @ "
+                     + juce::String(percentStart) + "% input)");
     }
-    
+
     if (negativeClipping)
     {
-        float fractionalStart = static_cast<float>(negativeClippingStart) / ThrottleCurve::getInputMax();
+        float fractionalStart = static_cast<float>(negativeClippingStart)
+                                / ThrottleCurve::getInputMax();
         float percentStart = 100 * (std::round(100 * fractionalStart) / 100);
-        warnings.add("Warning: clipping (below 0 @ " + juce::String(percentStart) + "% input)");
+        warnings.add("Warning: clipping (below 0 @ "
+                     + juce::String(percentStart) + "% input)");
     }
-    
+
     if (!strictlyIncreasing)
     {
         warnings.add("Warning: curve not strictly increasing");
     }
-    
+
     return warnings;
 }
 
@@ -428,7 +438,8 @@ juce::StringArray ThrottleCurve::validateCurve()
 /**
  * @brief Returns a list of allowed interpolation methods
  */
-const juce::Array<ThrottleCurve::InterpolationMethod>& ThrottleCurve::getAllInterpolationMethods()
+const juce::Array<ThrottleCurve::InterpolationMethod>&
+ThrottleCurve::getAllInterpolationMethods()
 {
     return listOfInterpolationMethods;
 }
@@ -452,7 +463,8 @@ int ThrottleCurve::getOutputMax()
 /**
  * @brief Returns the name of a particular interpolation method as a string
  */
-const juce::String& ThrottleCurve::getInterpolationMethodName(ThrottleCurve::InterpolationMethod method)
+const juce::String& ThrottleCurve::getInterpolationMethodName(
+    ThrottleCurve::InterpolationMethod method)
 {
     return namesOfInterpolationMethods.getReference(static_cast<int>(method));
 }
@@ -460,20 +472,20 @@ const juce::String& ThrottleCurve::getInterpolationMethodName(ThrottleCurve::Int
 /**
  * @brief Returns the default interpolation method
  */
-const ThrottleCurve::InterpolationMethod ThrottleCurve::getDefaultInterpolationMethod()
+const ThrottleCurve::InterpolationMethod
+ThrottleCurve::getDefaultInterpolationMethod()
 {
     return defaultInterpolationMethod;
 }
 
 //================================================================= Static data
 
-const juce::Array<ThrottleCurve::InterpolationMethod> ThrottleCurve::listOfInterpolationMethods = {
-    ThrottleCurve::InterpolationMethod::Linear,
-    ThrottleCurve::InterpolationMethod::Cosine,
-    ThrottleCurve::InterpolationMethod::Cubic,
-    ThrottleCurve::InterpolationMethod::Hermite
-};
+const juce::Array<ThrottleCurve::InterpolationMethod>
+    ThrottleCurve::listOfInterpolationMethods
+    = {ThrottleCurve::InterpolationMethod::Linear,
+       ThrottleCurve::InterpolationMethod::Cosine,
+       ThrottleCurve::InterpolationMethod::Cubic,
+       ThrottleCurve::InterpolationMethod::Hermite};
 
-const juce::Array<juce::String> ThrottleCurve::namesOfInterpolationMethods = {
-    "Linear", "Cosine", "C2 Spline", "Hermite Spline"
-};
+const juce::Array<juce::String> ThrottleCurve::namesOfInterpolationMethods
+    = {"Linear", "Cosine", "C2 Spline", "Hermite Spline"};

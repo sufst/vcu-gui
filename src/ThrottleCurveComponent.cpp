@@ -6,11 +6,11 @@
  * @brief  Component for drawing throttle curves
  *****************************************************************************/
 
+#include "ThrottleCurveComponent.h"
+
 #include <JuceHeader.h>
 #include <algorithm>
 #include <cmath>
-
-#include "ThrottleCurveComponent.h"
 
 //==================================================== Constructor / destructor
 
@@ -25,7 +25,8 @@ ThrottleCurveComponent::ThrottleCurveComponent()
     addKeyListener(this);
 
     // setup appearance
-    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    backgroundColour = getLookAndFeel().findColour(
+        juce::ResizableWindow::backgroundColourId);
     borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
 }
 
@@ -48,37 +49,39 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
 {
     // fill background
     g.fillAll(backgroundColour);
-    
+
     // draw graph ticks
     g.setColour(juce::Colours::darkgrey);
     int numTicksX = 40;
     int numTicksY = 20;
-    
+
     for (int i = 0; i < numTicksX; i++)
     {
         float x = i * getWidth() / numTicksX;
         g.drawLine(x, 0, x, getHeight());
     }
-    
+
     for (int i = 0; i < numTicksY; i++)
     {
         float y = i * getHeight() / numTicksY;
         g.drawLine(0, y, getWidth(), y);
     }
-    
+
     // draw border around the component
     g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight(), borderThickness);
-    
+
     // draw interpolated points
     g.setColour(juce::Colours::white);
     juce::Path path;
 
     for (int input = 0; input < ThrottleCurve::getInputMax(); input += 1)
     {
-        const auto interpolatedPoint = throttleCurve.getInterpolatedPoint(input);
-        const auto transformedPoint = transformCurvePointToCanvas(interpolatedPoint);
-        
+        const auto interpolatedPoint
+            = throttleCurve.getInterpolatedPoint(input);
+        const auto transformedPoint
+            = transformCurvePointToCanvas(interpolatedPoint);
+
         if (input == 0)
         {
             path.startNewSubPath(transformedPoint.toFloat());
@@ -97,21 +100,29 @@ void ThrottleCurveComponent::paint(juce::Graphics& g)
     for (const auto& point : throttleCurve.getPoints())
     {
         auto realPoint = transformCurvePointToCanvas(point);
-        g.drawEllipse(realPoint.getX(), realPoint.getY(), pointSize, pointSize, pointStroke);
+        g.drawEllipse(realPoint.getX(),
+                      realPoint.getY(),
+                      pointSize,
+                      pointSize,
+                      pointStroke);
     }
-    
+
     // draw deadzone
-    auto firstPoint = transformCurvePointToCanvas(throttleCurve.getPoints().getFirst());
-    
+    auto firstPoint
+        = transformCurvePointToCanvas(throttleCurve.getPoints().getFirst());
+
     deadzoneLine.setStart(firstPoint.getX(), borderThickness);
     deadzoneLine.setEnd(firstPoint.getX(), getHeight() - borderThickness * 2);
-    
+
     if (deadzoneLine.getStartX() > 0)
     {
         g.setColour(deadzoneLineColour.withLightness(0.9f).withAlpha(0.2f));
-        g.fillRect(borderThickness, borderThickness, deadzoneLine.getStartX(), getHeight() - borderThickness * 2);
+        g.fillRect(borderThickness,
+                   borderThickness,
+                   deadzoneLine.getStartX(),
+                   getHeight() - borderThickness * 2);
     }
-    
+
     g.setColour(deadzoneLineColour);
     g.drawLine(deadzoneLine.toFloat(), 1);
 }
@@ -142,14 +153,15 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
             showToolTip();
         }
     }
-    
+
     // check if a point already exists in the clicked location
     // if one does and not deleting it, begin a move
     if (!deleteMode && !currentlyMovingDeadzone)
     {
         for (int i = 0; i < throttleCurve.getPoints().size(); i++)
         {
-            // can move any point except the first which is mapped to the deadzone
+            // can move any point except the first which is mapped to the
+            // deadzone
             if (pointHitTest(event.getPosition(), throttleCurve.getPoints()[i])
                 && i != 0)
             {
@@ -160,7 +172,7 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
             }
         }
     }
-    
+
     // add / delete if not moving
     if (!currentlyMovingPoint && !currentlyMovingDeadzone)
     {
@@ -171,8 +183,9 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
             for (const auto& point : throttleCurve.getPoints())
             {
                 auto transformedPoint = transformCurvePointToCanvas(point);
-                
-                if(event.getPosition().getDistanceFrom(transformedPoint) < clickRadius)
+
+                if (event.getPosition().getDistanceFrom(transformedPoint)
+                    < clickRadius)
                 {
                     throttleCurve.deletePoint(point);
                 }
@@ -185,12 +198,10 @@ void ThrottleCurveComponent::mouseDown(const juce::MouseEvent& event)
             throttleCurve.addPoint(point);
         }
     }
-    
+
     // trigger a re-paint
     repaint();
 }
-
-
 
 /**
  * @brief Handle a mouse up event
@@ -223,7 +234,8 @@ void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
     // move a point
     if (currentlyMovingPoint && pMovingPoint != nullptr)
     {
-        ThrottleCurve::Point point = transformCanvasPointToCurve(event.getPosition());
+        ThrottleCurve::Point point
+            = transformCanvasPointToCurve(event.getPosition());
         pMovingPoint->setXY(point.getX(), point.getY());
         pMovingPoint = throttleCurve.pointMoved(*pMovingPoint);
     }
@@ -231,10 +243,11 @@ void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
     if (currentlyMovingDeadzone)
     {
         showToolTip();
-        
+
         int x = transformCanvasPointToCurve(event.getPosition()).getX();
-        int xLim = throttleCurve.getPoints().getReference(1).getX() - minDeadzoneToPointDistance;
-        
+        int xLim = throttleCurve.getPoints().getReference(1).getX()
+                   - minDeadzoneToPointDistance;
+
         // restrict movement
         if (x < 0)
         {
@@ -244,14 +257,13 @@ void ThrottleCurveComponent::mouseDrag(const juce::MouseEvent& event)
         {
             x = xLim;
         }
-        
+
         // move point
         ThrottleCurve::Point* deadzoneStart = throttleCurve.getPointForMove(0);
         deadzoneStart->setXY(x, 0);
         throttleCurve.pointMoved(*deadzoneStart);
-            
     }
-    
+
     // trigger a re-paint
     repaint();
 }
@@ -268,7 +280,7 @@ void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
     {
         bool pointHit = false;
         bool deadzoneHit = false;
-        
+
         // deadzone hit test
         if (deadzoneHitTest(event.getPosition()))
         {
@@ -287,7 +299,7 @@ void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
                 }
             }
         }
-            
+
         // change cursor
         if (deadzoneHit)
         {
@@ -310,20 +322,27 @@ void ThrottleCurveComponent::mouseMove(const juce::MouseEvent& event)
  * @brief Handle a key press event
  *
  * @param[in]   key                     Key pressed
- * @param[in]   originatingComponent    Component from which the key press originated
+ * @param[in]   originatingComponent    Component from which the key press
+ * originated
  */
-bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent)
+bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key,
+                                        juce::Component* originatingComponent)
 {
     // toggle delete mode
     if (key.isKeyCode(juce::KeyPress::backspaceKey))
     {
         deleteMode = !deleteMode;
-        
+
         if (deleteMode)
         {
-            setMouseCursor(juce::MouseCursor(juce::ImageCache::getFromMemory(BinaryData::Delete_png, BinaryData::Delete_pngSize), 1, 7, 5));
+            setMouseCursor(juce::MouseCursor(
+                juce::ImageCache::getFromMemory(BinaryData::Delete_png,
+                                                BinaryData::Delete_pngSize),
+                1,
+                7,
+                5));
         }
-        
+
         else
         {
             setMouseCursor(juce::MouseCursor::CrosshairCursor);
@@ -338,11 +357,13 @@ bool ThrottleCurveComponent::keyPressed(const juce::KeyPress& key, juce::Compone
 }
 
 /**
- * @brief       Determines whether component will receive file dragging related callbacks
+ * @brief       Determines whether component will receive file dragging related
+ * callbacks
  *
  * @param[in]   files   List of files being dragged
  */
-bool ThrottleCurveComponent::isInterestedInFileDrag(const juce::StringArray &files)
+bool ThrottleCurveComponent::isInterestedInFileDrag(
+    const juce::StringArray& files)
 {
     return true;
 };
@@ -354,17 +375,20 @@ bool ThrottleCurveComponent::isInterestedInFileDrag(const juce::StringArray &fil
  * @param[in]   x       Mouse x position relative to component
  * @param[in]   y       Mouse y position relative to component
  */
-void ThrottleCurveComponent::filesDropped(const juce::StringArray& files, int x, int y)
+void ThrottleCurveComponent::filesDropped(const juce::StringArray& files,
+                                          int x,
+                                          int y)
 {
     // reset background and border
-    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    backgroundColour = getLookAndFeel().findColour(
+        juce::ResizableWindow::backgroundColourId);
     borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
     borderThickness = 1;
-    
+
     // get result and load profile
     juce::File mapFile(files.getReference(0));
     loadProfile(mapFile);
-    
+
     // need to repaint GUI
     repaint();
 }
@@ -376,13 +400,18 @@ void ThrottleCurveComponent::filesDropped(const juce::StringArray& files, int x,
  * @param[in]   x       Mouse x position relative to component
  * @param[in]   y       Mouse y position relative to component
  */
-void ThrottleCurveComponent::fileDragEnter(const juce::StringArray& files, int x, int y)
+void ThrottleCurveComponent::fileDragEnter(const juce::StringArray& files,
+                                           int x,
+                                           int y)
 {
     // brighten the background and border when file drag enters component
-    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId).brighter(fileDragBrightnessFactor);
+    backgroundColour
+        = getLookAndFeel()
+              .findColour(juce::ResizableWindow::backgroundColourId)
+              .brighter(fileDragBrightnessFactor);
     borderColour = juce::Colours::skyblue;
     borderThickness = 2;
-    
+
     // need to repaint GUI
     repaint();
 }
@@ -392,13 +421,14 @@ void ThrottleCurveComponent::fileDragEnter(const juce::StringArray& files, int x
  *
  * @param[in]   files   List of files being dragged
  */
-void ThrottleCurveComponent::fileDragExit(const juce::StringArray &files)
+void ThrottleCurveComponent::fileDragExit(const juce::StringArray& files)
 {
     // reset background and border
-    backgroundColour = getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+    backgroundColour = getLookAndFeel().findColour(
+        juce::ResizableWindow::backgroundColourId);
     borderColour = getLookAndFeel().findColour(juce::ComboBox::outlineColourId);
     borderThickness = 1;
-    
+
     // need to repaint GUI
     repaint();
 };
@@ -410,7 +440,8 @@ void ThrottleCurveComponent::fileDragExit(const juce::StringArray &files)
  *
  * @param[in]   method      Interpolation method
  */
-void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::InterpolationMethod method)
+void ThrottleCurveComponent::setInterpolationMethod(
+    ThrottleCurve::InterpolationMethod method)
 {
     throttleCurve.setInterpolationMethod(method);
     repaint();
@@ -419,32 +450,35 @@ void ThrottleCurveComponent::setInterpolationMethod(ThrottleCurve::Interpolation
 /**
  * @brief Called by parent component to import a driver profile on button click
  */
-void ThrottleCurveComponent::importProfile() {
-    
+void ThrottleCurveComponent::importProfile()
+{
+
     // create and setup a new file chooser
-    fileChooser = std::make_unique<juce::FileChooser> ("Open throttle profile map",
-                                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                       "*.xml",
-                                                       true);
+    fileChooser = std::make_unique<juce::FileChooser>(
+        "Open throttle profile map",
+        juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+        "*.xml",
+        true);
 
     auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
                             | juce::FileBrowserComponent::openMode;
 
     // launch file chooser asynchronously
-    fileChooser->launchAsync(fileChooserFlags, [this] (const juce::FileChooser& chooser)
-    {
-        juce::File mapFile = chooser.getResult();
-        
-        if (mapFile.existsAsFile())
-        {
-            loadProfile(mapFile);
-        }
-    });
-    
+    fileChooser->launchAsync(fileChooserFlags,
+                             [this](const juce::FileChooser& chooser)
+                             {
+                                 juce::File mapFile = chooser.getResult();
+
+                                 if (mapFile.existsAsFile())
+                                 {
+                                     loadProfile(mapFile);
+                                 }
+                             });
 };
 
 /**
- * @brief   Called by parent component to export a driver profile on button click
+ * @brief   Called by parent component to export a driver profile on button
+ * click
  *
  * @note    New XML elements are deleted by the top level element
  */
@@ -457,16 +491,17 @@ void ThrottleCurveComponent::exportProfile()
     juce::XmlElement* metadata = new juce::XmlElement("metadata");
     juce::XmlElement* config = new juce::XmlElement("config");
     juce::XmlElement* pointsList = new juce::XmlElement("points");
-    
+
     // add metadata
     juce::XmlElement* appVersion = new juce::XmlElement("app_version");
     juce::XmlElement* exportDate = new juce::XmlElement("export_date");
     juce::XmlElement* userName = new juce::XmlElement("user");
-    
+
     appVersion->addTextElement(ProjectInfo::versionString);
-    exportDate->addTextElement(juce::Time::getCurrentTime().toString(true, false));
+    exportDate->addTextElement(
+        juce::Time::getCurrentTime().toString(true, false));
     userName->addTextElement(juce::SystemStats::getLogonName());
-    
+
     metadata->addChildElement(appVersion);
     metadata->addChildElement(exportDate);
     metadata->addChildElement(userName);
@@ -476,13 +511,15 @@ void ThrottleCurveComponent::exportProfile()
     juce::XmlElement* option = new juce::XmlElement("option");
 
     // interpolation method element
-    juce::String interpolationMethod = throttleCurve.getInterpolationMethodName(throttleCurve.getInterpolationMethod());
+    juce::String interpolationMethod = throttleCurve.getInterpolationMethodName(
+        throttleCurve.getInterpolationMethod());
     option->setAttribute("interpolation_method", interpolationMethod);
     config->addChildElement(option);
 
     // fill points element
-    for (const auto& point : throttleCurve.getPoints()) {
-        
+    for (const auto& point : throttleCurve.getPoints())
+    {
+
         // create inner point element
         juce::XmlElement* pointElement = new juce::XmlElement("point");
 
@@ -499,55 +536,66 @@ void ThrottleCurveComponent::exportProfile()
     throttleMap.addChildElement(pointsList);
 
     // create and setup file chooser
-    fileChooser = std::make_unique<juce::FileChooser> ("Save throttle profile map",
-                                                       juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                       "*.xml",
-                                                       true);
+    fileChooser = std::make_unique<juce::FileChooser>(
+        "Save throttle profile map",
+        juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+        "*.xml",
+        true);
 
     auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
                             | juce::FileBrowserComponent::warnAboutOverwriting
                             | juce::FileBrowserComponent::saveMode;
 
     // launch file chooser asynchronously
-    fileChooser->launchAsync(fileChooserFlags, [this, throttleMap] (const juce::FileChooser& chooser)
-    {
-        // validate input
-        if (chooser.getResults().isEmpty())
+    fileChooser->launchAsync(
+        fileChooserFlags,
+        [this, throttleMap](const juce::FileChooser& chooser)
         {
-            return;
-        }
-        
-        // get result
-        juce::File mapFile = chooser.getResult();
-
-        // write XML file to disk
-        if (throttleMap.writeTo(mapFile, {}))
-        {
-            // validate the curve and get warnings
-            juce::StringArray warnings = throttleCurve.validateCurve();
-            juce::String alert = "Exported throttle curve to file.";
-            
-            if (warnings.size() > 0)
+            // validate input
+            if (chooser.getResults().isEmpty())
             {
-                alert += "\n\n";
-                for (const auto& warning : warnings)
+                return;
+            }
+
+            // get result
+            juce::File mapFile = chooser.getResult();
+
+            // write XML file to disk
+            if (throttleMap.writeTo(mapFile, {}))
+            {
+                // validate the curve and get warnings
+                juce::StringArray warnings = throttleCurve.validateCurve();
+                juce::String alert = "Exported throttle curve to file.";
+
+                if (warnings.size() > 0)
                 {
-                    alert += warning + ".\n";
+                    alert += "\n\n";
+                    for (const auto& warning : warnings)
+                    {
+                        alert += warning + ".\n";
+                    }
+                    juce::AlertWindow::showMessageBoxAsync(
+                        juce::MessageBoxIconType::WarningIcon,
+                        "Info",
+                        alert);
                 }
-                juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Info", alert);
+                else
+                {
+                    juce::AlertWindow::showMessageBoxAsync(
+                        juce::MessageBoxIconType::InfoIcon,
+                        "Info",
+                        alert);
+                }
             }
             else
             {
-                juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", alert);
+                // show a failure dialog
+                juce::AlertWindow::showMessageBoxAsync(
+                    juce::MessageBoxIconType::WarningIcon,
+                    "Error",
+                    "Error exporting map profile");
             }
-        }
-        else
-        {
-            // show a failure dialog
-            juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Error", "Error exporting map profile");
-        }
-    });
-    
+        });
 };
 
 /**
@@ -557,11 +605,11 @@ void ThrottleCurveComponent::exportCode()
 {
     // generate interpolated points for every input
     juce::Array<int> outputs;
-    
+
     for (int input = 0; input < ThrottleCurve::getInputMax() + 1; input++)
     {
         int toAdd = throttleCurve.getInterpolatedPoint(input).getY();
-        
+
         // apply clipping
         if (toAdd <= ThrottleCurve::getOutputMax())
         {
@@ -572,14 +620,14 @@ void ThrottleCurveComponent::exportCode()
             outputs.add(ThrottleCurve::getOutputMax());
         }
     }
-    
+
     // generate code text
     int newLineEvery = 16;
-    
+
     juce::String code = "static const uint16_t driver_profile [";
     code += juce::String(ThrottleCurve::getInputMax() + 1);
     code += "] = {\n\t";
-    
+
     for (int i = 0; i < ThrottleCurve::getInputMax() + 1; i++)
     {
         // fixed length hex string
@@ -587,29 +635,30 @@ void ThrottleCurveComponent::exportCode()
 
         int leadingZeros = 4 - hex.length();
         hex = juce::String::repeatedString("0", leadingZeros) + hex;
-        
+
         // add hex to code
         code += "0x" + hex + ", ";
-        
+
         // new lines every so often for readability
-        if ((i % newLineEvery == newLineEvery - 1) && i != ThrottleCurve::getInputMax())
+        if ((i % newLineEvery == newLineEvery - 1)
+            && i != ThrottleCurve::getInputMax())
         {
             code += "\n\t";
         }
     }
-    
+
     code.dropLastCharacters(1);
     code += "\n};";
-    
+
     // copy the code to the clipboard
     juce::SystemClipboard::copyTextToClipboard(code);
-    
+
     // validate the curve and get warnings
     juce::StringArray warnings = throttleCurve.validateCurve();
-    
+
     // generate an alert window
     juce::String alert = "Lookup table code copied to clipboard.";
-    
+
     if (warnings.size() > 0)
     {
         alert += "\n\n";
@@ -617,44 +666,63 @@ void ThrottleCurveComponent::exportCode()
         {
             alert += warning + ".\n";
         }
-        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::WarningIcon, "Info", alert);
+        juce::AlertWindow::showMessageBoxAsync(
+            juce::MessageBoxIconType::WarningIcon,
+            "Info",
+            alert);
     }
     else
     {
-        juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Info", alert);
+        juce::AlertWindow::showMessageBoxAsync(
+            juce::MessageBoxIconType::InfoIcon,
+            "Info",
+            alert);
     }
-    
 }
 
 //============================================================ Internal utility
 
 /**
- * @brief Transforms a point on a throttle curve to its position on the component
+ * @brief Transforms a point on a throttle curve to its position on the
+ * component
  *
  * @param[in]   point   Point on the throttle curve
  *
  * @return Position to draw the point on the component
  */
-juce::Point<int> ThrottleCurveComponent::transformCurvePointToCanvas(const ThrottleCurve::Point& point) const
+juce::Point<int> ThrottleCurveComponent::transformCurvePointToCanvas(
+    const ThrottleCurve::Point& point) const
 {
-    int x = getWidth() * (static_cast<float>(point.getX()) / static_cast<float>(ThrottleCurve::getInputMax()));
-    int y = getHeight() * (1 - static_cast<float>(point.getY()) / static_cast<float>(ThrottleCurve::getOutputMax()));
-    
+    int x = getWidth()
+            * (static_cast<float>(point.getX())
+               / static_cast<float>(ThrottleCurve::getInputMax()));
+    int y = getHeight()
+            * (1
+               - static_cast<float>(point.getY())
+                     / static_cast<float>(ThrottleCurve::getOutputMax()));
+
     return juce::Point<int>(x, y);
 }
 
 /**
- * @brief Transforms a point on a throttle curve to its position on the component
+ * @brief Transforms a point on a throttle curve to its position on the
+ * component
  *
  * @param[in]   point   Point on the component
  *
  * @return Position to place the point on the throttle curve
  */
-ThrottleCurve::Point ThrottleCurveComponent::transformCanvasPointToCurve(const juce::Point<int>& point) const
+ThrottleCurve::Point ThrottleCurveComponent::transformCanvasPointToCurve(
+    const juce::Point<int>& point) const
 {
-    int x = ThrottleCurve::getInputMax() * (static_cast<float>(point.getX()) / static_cast<float>(getWidth()));
-    int y = ThrottleCurve::getOutputMax() * (1 - static_cast<float>(point.getY()) / static_cast<float>(getHeight()));
-    
+    int x
+        = ThrottleCurve::getInputMax()
+          * (static_cast<float>(point.getX()) / static_cast<float>(getWidth()));
+    int y = ThrottleCurve::getOutputMax()
+            * (1
+               - static_cast<float>(point.getY())
+                     / static_cast<float>(getHeight()));
+
     return ThrottleCurve::Point(x, y);
 }
 
@@ -662,16 +730,20 @@ ThrottleCurve::Point ThrottleCurveComponent::transformCanvasPointToCurve(const j
  * @brief Hit test between a point on the canvas and a point on the curve
  */
 
-bool ThrottleCurveComponent::pointHitTest(const juce::Point<int>& canvasPoint, const ThrottleCurve::Point& curvePoint) const
+bool ThrottleCurveComponent::pointHitTest(
+    const juce::Point<int>& canvasPoint,
+    const ThrottleCurve::Point& curvePoint) const
 {
-    juce::Point<int> transformedCurvePoint = transformCurvePointToCanvas(curvePoint);
+    juce::Point<int> transformedCurvePoint
+        = transformCurvePointToCanvas(curvePoint);
     return (canvasPoint.getDistanceFrom(transformedCurvePoint) < clickRadius);
 }
 
 /**
  * @brief Hit test for the deadzone
  */
-bool ThrottleCurveComponent::deadzoneHitTest(const juce::Point<int>& canvasPoint) const
+bool ThrottleCurveComponent::deadzoneHitTest(
+    const juce::Point<int>& canvasPoint) const
 {
     return (canvasPoint.getX() - clickRadius / 4 <= deadzoneLine.getStartX());
 }
@@ -684,10 +756,11 @@ bool ThrottleCurveComponent::deadzoneHitTest(const juce::Point<int>& canvasPoint
 void ThrottleCurveComponent::loadProfile(juce::File mapFile)
 {
     // create new XML document
-    static std::unique_ptr<juce::XmlElement> mapRoot = juce::XmlDocument::parse(mapFile);
+    static std::unique_ptr<juce::XmlElement> mapRoot
+        = juce::XmlDocument::parse(mapFile);
 
     // validate file
-    if  (mapRoot == nullptr)
+    if (mapRoot == nullptr)
         return;
 
     if (!mapRoot->hasTagName("throttle_map"))
@@ -703,11 +776,15 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
                 if (p->hasAttribute("interpolation_method"))
                 {
                     // set interpolation type
-                    juce::String interpolationMethodName = p->getStringAttribute("interpolation_method");
+                    juce::String interpolationMethodName
+                        = p->getStringAttribute("interpolation_method");
 
-                    for (const auto& method : ThrottleCurve::getAllInterpolationMethods())
+                    for (const auto& method :
+                         ThrottleCurve::getAllInterpolationMethods())
                     {
-                        if (interpolationMethodName == ThrottleCurve::getInterpolationMethodName(method))
+                        if (interpolationMethodName
+                            == ThrottleCurve::getInterpolationMethodName(
+                                method))
                         {
                             setInterpolationMethod(method);
                             break;
@@ -716,7 +793,6 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
                     break;
                 }
             }
-
         }
         else if (e->hasTagName("points"))
         {
@@ -742,13 +818,12 @@ void ThrottleCurveComponent::loadProfile(juce::File mapFile)
 
             // need to repaint GUI after loading new points
             this->repaint();
-            
+
             // need to inform parent component of changes via callback
             if (onProfileLoad != nullptr)
             {
                 onProfileLoad(throttleCurve.getInterpolationMethod());
             }
-        
         }
     }
 };
