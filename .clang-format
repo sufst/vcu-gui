@@ -42,6 +42,7 @@ BinPackParameters: false
 BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Allman
 BreakStringLiterals: true
+EmptyLineAfterAccessModifier: Always
 
 # spaces
 BitFieldColonSpacing: Both
