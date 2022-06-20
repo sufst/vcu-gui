@@ -6,10 +6,9 @@
 
 #include "Application.h"
 
-
 /**
  * @brief       Initialises the application
- * 
+ *
  * @param[in]   commandLine     Command line arguments string
  */
 void Application::initialise(const juce::String& commandLine)
@@ -34,9 +33,9 @@ void Application::systemRequestedQuit()
 }
 
 /**
- * @brief       Called when another instance of the application is launched 
+ * @brief       Called when another instance of the application is launched
  *              while this instance is running
- * 
+ *
  * @param[in]   commandLine     Command line arguments string of other instance
  */
 void Application::anotherInstanceStarted(const juce::String& /*commandLine*/)

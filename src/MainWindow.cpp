@@ -5,21 +5,21 @@
  *****************************************************************************/
 
 #include "MainWindow.h"
-#include "MainComponent.h"
 
+#include "MainComponent.h"
 #include <climits>
 
 /**
  * @brief       Constructor
- * 
+ *
  * @param[in]   name    Window name
  */
 MainWindow::MainWindow(const juce::String& name)
     : juce::DocumentWindow(
-                name,
-                juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
-                    juce::ResizableWindow::backgroundColourId),
-                DocumentWindow::allButtons)
+        name,
+        juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
+            juce::ResizableWindow::backgroundColourId),
+        DocumentWindow::allButtons)
 {
     setUsingNativeTitleBar(true);
     setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);

@@ -14,17 +14,13 @@
 class MainWindow : public juce::DocumentWindow
 {
 public:
-
     MainWindow(const juce::String& name);
 
     void closeButtonPressed() override;
 
 private:
-
     static const int minWidth = 500;
     static const int minHeight = 350;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
-
-
 };
