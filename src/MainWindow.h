@@ -14,11 +14,13 @@
 class MainWindow : public juce::DocumentWindow
 {
 public:
+
     MainWindow(const juce::String& name);
 
     void closeButtonPressed() override;
 
 private:
+
     static const int minWidth = 500;
     static const int minHeight = 350;
 

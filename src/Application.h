@@ -16,6 +16,7 @@
 class Application : public juce::JUCEApplication
 {
 public:
+
     Application() = default;
 
     void initialise(const juce::String& commandLine) override;
@@ -28,5 +29,6 @@ public:
     bool moreThanOneInstanceAllowed() override;
 
 private:
+
     std::unique_ptr<MainWindow> mainWindow;
 };

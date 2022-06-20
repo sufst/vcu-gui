@@ -15,7 +15,8 @@
  */
 class MainComponent : public juce::Component
 {
-  public:
+public:
+
     // constructor / destructor
     MainComponent();
     ~MainComponent() override;
@@ -24,7 +25,8 @@ class MainComponent : public juce::Component
     void paint(juce::Graphics&) override;
     void resized() override;
 
-  private:
+private:
+
     // constants
     static const int borderSize = 20;
 

@@ -20,7 +20,8 @@
  */
 class ThrottleCurve
 {
-  public:
+public:
+
     // types
     enum class InterpolationMethod
     {
@@ -60,7 +61,8 @@ class ThrottleCurve
     getInterpolationMethodName(ThrottleCurve::InterpolationMethod method);
     static const InterpolationMethod getDefaultInterpolationMethod();
 
-  private:
+private:
+
     // constants
     static const int inputResolution = 10;
     static const int outputResolution = 15;
