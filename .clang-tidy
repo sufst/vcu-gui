@@ -1,0 +1,61 @@
+###############################################################################
+#                 :
+#   File          :   .clang-tidy
+#                 :
+#   Author(s)     :   Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
+#                 :
+#   Description   :   clang-tidy linter configuration
+#                 :
+###############################################################################
+
+Checks:
+
+    # included
+    cppcoreguidelines-*,
+    google-*,
+    modernize-*,
+    performance-*,
+    readability-*,
+
+    # excluded
+    -cppcoreguidelines-avoid-magic-numbers,
+
+CheckOptions:
+
+    # naming
+    -   key: readability-identifier-naming.ClassCase
+        value: CamelCase
+    -   key: readability-identifier-naming.ConstantCase
+        value: camelBack
+    -   key: readability-identifier-naming.ClassMemberCase
+        value: camelBack
+    -   key: readability-identifier-naming.ConstantCase
+        value: camelBack
+    -   key: readability-identifier-naming.EnumCase
+        value: CamelCase
+    -   key: readability-identifier-naming.FunctionCase
+        value: camelBack
+    -   key: readability-identifier-naming.MacroCase
+        value: UPPER_CASE
+    -   key: readability-identifier-naming.MethodCase
+        value: camelBack
+    -   key: readability-identifier-naming.NamespaceCase
+        value: camelBack
+    -   key: readability-identifier-naming.Parametercase
+        value: camelBack
+    -   key: readability-identifier-naming.StructCase
+        value: CamelCase
+    -   key: readability-identifier-naming.UnionCase
+        value: CamelCase
+    -   key: readability-identifier-naming.VariableCase
+        value: camelBack
+    -   key: readability-identifier-naming.MinimumVariableNameLength
+        value: 3
+    -   key: readability-identifier-naming.MinimumParameterNameLength
+        value: 3
+    -   key: readability-identifier-naming.IgnoredParameterNames
+        value: ^[ng]$
+
+    # literals
+    -   key: readability-uppercase-literal-suffix.NewSuffixes
+        value: f
