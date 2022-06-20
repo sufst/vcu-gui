@@ -1,0 +1,78 @@
+###############################################################################
+#                 :
+#   File          :   .clang-format
+#                 :
+#   Author(s)     :   Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
+#                 :
+#   Description   :   clang-format formatter configuration
+#                 :
+###############################################################################
+
+---
+Language: Cpp
+
+# indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# alignment
+AlignAfterOpenBracket: Align
+AlignConsecutiveMacros: AcrossEmptyLines
+AlignEscapedNewlines: Left
+AlignOperands: Align
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# line breaks
+AllowAllArgumentsOnNextLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: All
+BreakBeforeBraces: Allman
+BreakStringLiterals: true
+
+# spaces
+BitFieldColonSpacing: Both
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeSquareBrackets: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInParentheses: false
+
+# braces
+BraceWrapping:
+    AfterCaseLabel: true
+    AfterEnum: true
+    AfterFunction: true
+    AfterStruct: true
+    AfterUnion: true
+    BeforeElse: true
+    BeforeWhile: false
+    IndentBraces: false
+    SplitEmptyFunction: true
+    SplitEmptyRecord: true
+
+# include blocks
+IncludeBlocks: Regroup
+SortIncludes: CaseSensitive
+IncludeCategories:
+    -   Regex: '^<([A-Za-z0-9.\/-_])+>'
+        Priority: 1
+        SortPriority: 1
+        CaseSensitive: true
