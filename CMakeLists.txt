@@ -25,6 +25,7 @@ target_sources(${TARGET_NAME}
         src/Application.cpp
         src/Main.cpp
         src/MainComponent.cpp
+        src/MainWindow.cpp
         src/ThrottleCurveComponent.cpp
         src/ThrottleCurve.cpp
 )
