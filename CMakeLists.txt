@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE INTERNAL "" FORCE)
+set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE INTERNAL "" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(VCU-Driver-Profile VERSION 1.0.1)
@@ -22,8 +22,10 @@ juce_generate_juce_header(${TARGET_NAME})
 # source files
 target_sources(${TARGET_NAME}
     PRIVATE 
+        src/Application.cpp
         src/Main.cpp
         src/MainComponent.cpp
+        src/MainWindow.cpp
         src/ThrottleCurveComponent.cpp
         src/ThrottleCurve.cpp
 )

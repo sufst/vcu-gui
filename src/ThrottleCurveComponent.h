@@ -21,7 +21,8 @@ class ThrottleCurveComponent : public juce::Component,
                                public juce::KeyListener,
                                public juce::FileDragAndDropTarget
 {
-  public:
+public:
+
     // constructor / destructor
     ThrottleCurveComponent();
     ~ThrottleCurveComponent() override;
@@ -53,7 +54,8 @@ class ThrottleCurveComponent : public juce::Component,
     std::function<void(ThrottleCurve::InterpolationMethod)> onProfileLoad
         = nullptr;
 
-  private:
+private:
+
     ThrottleCurve throttleCurve;
     std::unique_ptr<juce::FileChooser> fileChooser;
     std::unique_ptr<juce::TooltipWindow> toolTip;

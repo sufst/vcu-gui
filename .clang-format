@@ -17,6 +17,7 @@ TabWidth: 4
 UseTab: Never
 
 # alignment
+AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignConsecutiveMacros: AcrossEmptyLines
 AlignEscapedNewlines: Left
@@ -41,6 +42,7 @@ BinPackParameters: false
 BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Allman
 BreakStringLiterals: true
+EmptyLineAfterAccessModifier: Always
 
 # spaces
 BitFieldColonSpacing: Both
