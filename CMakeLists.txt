@@ -22,6 +22,7 @@ juce_generate_juce_header(${TARGET_NAME})
 # source files
 target_sources(${TARGET_NAME}
     PRIVATE 
+        src/Application.cpp
         src/Main.cpp
         src/MainComponent.cpp
         src/ThrottleCurveComponent.cpp
