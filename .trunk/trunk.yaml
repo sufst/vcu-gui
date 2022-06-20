@@ -1,0 +1,16 @@
+version: 0.1
+cli:
+  version: 0.13.1-beta
+lint:
+  enabled:
+    - gitleaks@8.8.7
+    - clang-tidy@14.0.0
+    - clang-format@13.0.0
+    - prettier@2.7.1
+  compile_commands: json
+  ignore:
+    - linters: [ALL]
+      paths:
+        - build/**
+        - lib/**
+        - profiles/**
