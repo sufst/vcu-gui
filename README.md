@@ -1,5 +1,5 @@
 # VCU Driver Profile Tool
-A cross-platform graphical tool for customising and exporting driver profiles for the VCU throttle response.
+A cross-platform graphical tool for customising and exporting driver profiles for the VCU pedal torque response.
 
 <p align="center">
   <img src="./docs/C2 Spline.png" width="90%" class="center">
@@ -34,8 +34,8 @@ Tips for getting a good profile:
 
 A warning will be generated when exporting if there is a major issue with the generated curve.
 
-## Throttle 'Dead-Zone'
-The blue region at the left of the curve defines the 'dead-zone' for the throttle. An input in this region will produce no output torque from the motor. A small dead-zone is required to guarantee that the car will not move when the throttle is fully released as slight mechanical misalignments or voltage measurement errors may still produce a small input to the VCU.
+## Pedal 'Dead-Zone'
+The blue region at the left of the curve defines the 'dead-zone' for the pedal. An input in this region will produce no output torque from the motor. A small dead-zone is required to guarantee that the car will not move when the pedal is fully released as slight mechanical misalignments or voltage measurement errors may still produce a small input to the VCU.
 
 <p align="center">
   <img src="./docs/Deadzone.gif" width="50%" class="center">
@@ -43,7 +43,7 @@ The blue region at the left of the curve defines the 'dead-zone' for the throttl
 
 ## Interpolation Algorithms
 
-[Interpolation](http://paulbourke.net/miscellaneous/interpolation/) is used to work out the values of the throttle curve between manually placed points. The choice of interpolation algorithm will affect the calculated throttle response and change the way the curve behaves when you interact with it.
+[Interpolation](http://paulbourke.net/miscellaneous/interpolation/) is used to work out the values of the torque curve between manually placed points. The choice of interpolation algorithm will affect the calculated response and change the way the curve behaves when you interact with it.
 
 <p align="center">
   <img src="./docs/Linear.png" width="45%" class="center">
@@ -65,7 +65,7 @@ Created profiles can be exported to an XML document by pressing the 'export prof
 </p>
 
 ## Exporting Source Code
-The 'export code' button will generate a `uint16_t` C array mapping 2¹⁰ integer input values onto the interpolated curve and copy it to the clipboard. This is used as a look-up table in the VCU to map the scaled 10-bit analogue reading from the throttle to the desired output torque.
+The 'export code' button will generate a `uint16_t` C array mapping 2¹⁰ integer input values onto the interpolated curve and copy it to the clipboard. This is used as a look-up table in the VCU to map the scaled 10-bit analogue reading from the pedal to the desired output torque.
 
 ```C
 static const uint16_t driver_profile [1024] = {
