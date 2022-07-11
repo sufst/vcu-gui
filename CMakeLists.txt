@@ -5,7 +5,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE INTERNAL "" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project(VCU-Driver-Profile VERSION 1.0.1)
+project(VCU-GUI VERSION 1.0.1)
 set(TARGET_NAME ${PROJECT_NAME})
 
 # JUCE application setup
@@ -26,8 +26,6 @@ target_sources(${TARGET_NAME}
         src/Main.cpp
         src/MainComponent.cpp
         src/MainWindow.cpp
-        src/ThrottleCurveComponent.cpp
-        src/ThrottleCurve.cpp
 )
 
 # binary data

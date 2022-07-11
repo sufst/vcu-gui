@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/src/**",
                 "${workspaceFolder}/lib/JUCE/modules/**",
-                "${workspaceFolder}/build/VCU-Driver-Profile_artefacts/JuceLibraryCode/**",
+                "${workspaceFolder}/build/VCU-GUI_artefacts/JuceLibraryCode/**",
                 "${workspaceFolder}/lib/JUCE/modules"
             ],
             "defines": [],
