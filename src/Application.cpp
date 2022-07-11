@@ -13,7 +13,7 @@
  */
 void Application::initialise(const juce::String& commandLine)
 {
-    mainWindow = std::make_unique<MainWindow>(getApplicationName());
+    mainWindow = std::make_unique<gui::MainWindow>(getApplicationName());
 }
 
 /**

@@ -8,6 +8,9 @@
 
 #include <JuceHeader.h>
 
+namespace gui
+{
+
 /**
  * @brief Main GUI window
  */
@@ -26,3 +29,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
 };
+
+} // namespace gui

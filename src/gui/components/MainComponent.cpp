@@ -7,6 +7,9 @@
 
 #include "MainComponent.h"
 
+namespace gui
+{
+
 /**
  * @brief Default constructor
  */
@@ -41,3 +44,5 @@ void MainComponent::paint(juce::Graphics& g)
 void MainComponent::resized()
 {
 }
+
+} // namespace gui

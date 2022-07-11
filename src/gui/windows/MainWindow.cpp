@@ -9,6 +9,9 @@
 #include "../components/MainComponent.h"
 #include <climits>
 
+namespace gui
+{
+
 /**
  * @brief       Constructor
  *
@@ -37,3 +40,5 @@ void MainWindow::closeButtonPressed()
 {
     JUCEApplication::getInstance()->systemRequestedQuit();
 }
+
+} // namespace gui

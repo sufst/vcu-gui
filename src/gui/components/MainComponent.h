@@ -9,8 +9,11 @@
 
 #include <JuceHeader.h>
 
+namespace gui
+{
+
 /**
- * @breif Main GUI component
+ * @brief Main GUI component
  */
 class MainComponent : public juce::Component
 {
@@ -31,3 +34,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
+
+} // namespace gui
