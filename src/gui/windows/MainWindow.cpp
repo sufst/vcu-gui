@@ -6,7 +6,7 @@
 
 #include "MainWindow.h"
 
-#include "MainComponent.h"
+#include "../components/MainComponent.h"
 #include <climits>
 
 /**

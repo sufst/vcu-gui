@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "MainWindow.h"
+#include "gui/windows/MainWindow.h"
 #include <JuceHeader.h>
 #include <limits.h>
 

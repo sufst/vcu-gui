@@ -1,3 +1,13 @@
+###############################################################################
+#                   :
+#   File            :   CMakeLists.txt
+#                   :
+#   Author(s)       :   Tim Brewis (@t-bre)
+#                   :
+#   Description     :   Top level CMakeLists for project
+#                   :
+###############################################################################
+
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,11 +32,11 @@ juce_generate_juce_header(${TARGET_NAME})
 # source files
 target_sources(${TARGET_NAME}
     PRIVATE 
-        src/Application.cpp
+        src/Application.cpp 
         src/Main.cpp
-        src/MainComponent.cpp
-        src/MainWindow.cpp
 )
+
+add_subdirectory(src/gui)
 
 # binary data
 juce_add_binary_data(${TARGET_NAME}Data

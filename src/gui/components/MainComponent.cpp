@@ -7,7 +7,6 @@
 
 #include "MainComponent.h"
 
-
 /**
  * @brief Default constructor
  */
