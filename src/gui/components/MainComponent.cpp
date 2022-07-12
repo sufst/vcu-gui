@@ -16,6 +16,7 @@ namespace gui
 MainComponent::MainComponent()
 {
     setSize(600, 400);
+    addAndMakeVisible(graphComponent);
 }
 
 /**
@@ -43,6 +44,9 @@ void MainComponent::paint(juce::Graphics& g)
  */
 void MainComponent::resized()
 {
+    auto bounds = getLocalBounds();
+
+    graphComponent.setBounds(bounds.reduced(20));
 }
 
 } // namespace gui

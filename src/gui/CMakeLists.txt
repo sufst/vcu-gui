@@ -11,5 +11,6 @@
 target_sources(${TARGET_NAME}
     PRIVATE 
         components/MainComponent.cpp 
+        components/GraphComponent.cpp
         windows/MainWindow.cpp
 )

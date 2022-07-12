@@ -9,6 +9,8 @@
 
 #include <JuceHeader.h>
 
+#include "GraphComponent.h"
+
 namespace gui
 {
 
@@ -31,6 +33,9 @@ private:
 
     // constants
     static const int borderSize = 20;
+
+    // children
+    GraphComponent graphComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
