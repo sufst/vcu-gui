@@ -34,6 +34,7 @@ target_sources(${TARGET_NAME}
     PRIVATE 
         src/Application.cpp 
         src/Main.cpp
+        src/VCUConfiguration.cpp
 )
 
 add_subdirectory(src/gui)

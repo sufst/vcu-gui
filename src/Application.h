@@ -7,6 +7,7 @@
 #pragma once
 
 #include "gui/windows/MainWindow.h"
+#include "VCUConfiguration.h"
 #include <JuceHeader.h>
 #include <limits.h>
 
@@ -31,4 +32,6 @@ public:
 private:
 
     std::unique_ptr<gui::MainWindow> mainWindow;
+
+    VCUConfiguration config;
 };
