@@ -66,3 +66,22 @@ bool Application::moreThanOneInstanceAllowed()
 {
     return false;
 }
+
+/**
+ * @brief Returns a reference to the global application instance
+ */
+Application& Application::getApplication()
+{
+    auto* pApp = static_cast<Application*>(JUCEApplication::getInstance());
+    jassert(pApp);
+    return *pApp;
+}
+
+/**
+ * @brief Returns a reference to the global VCU configuration instance
+ */
+VCUConfiguration& Application::getConfig()
+{
+    auto& app = getApplication();
+    return app.config;
+}

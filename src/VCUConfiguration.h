@@ -4,6 +4,8 @@
  * @brief  Data model for VCU configuration
  *****************************************************************************/
 
+#pragma once
+
 #include <JuceHeader.h>
 
 class VCUConfiguration
@@ -19,6 +21,8 @@ public:
     static const juce::Identifier TorqueMapInputValue;
     static const juce::Identifier TorqueMapOutputValue;
     static const juce::Identifier ProfileName;
+
+    static juce::ValueTree createTorqueMapPoint(int input, int output);
 
 private:
 

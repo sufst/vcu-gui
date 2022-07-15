@@ -29,6 +29,9 @@ public:
     const juce::String getApplicationVersion() override;
     bool moreThanOneInstanceAllowed() override;
 
+    static Application& getApplication();
+    static VCUConfiguration& getConfig();
+
 private:
 
     std::unique_ptr<gui::MainWindow> mainWindow;
