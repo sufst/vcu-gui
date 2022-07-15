@@ -15,6 +15,7 @@ Language: Cpp
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
+ColumnLimit: 120
 
 # alignment
 AccessModifierOffset: -4
