@@ -6,6 +6,7 @@
  *****************************************************************************/
 
 #include "MainComponent.h"
+#include "../../Application.h"
 
 namespace gui
 {
@@ -14,9 +15,10 @@ namespace gui
  * @brief Default constructor
  */
 MainComponent::MainComponent()
+    : torqueMapGraph(Application::getConfig())
 {
     setSize(600, 400);
-    addAndMakeVisible(graphComponent);
+    addAndMakeVisible(torqueMapGraph);
 }
 
 /**
@@ -46,7 +48,7 @@ void MainComponent::resized()
 {
     auto bounds = getLocalBounds();
 
-    graphComponent.setBounds(bounds.reduced(20));
+    torqueMapGraph.setBounds(bounds.reduced(20));
 }
 
 } // namespace gui

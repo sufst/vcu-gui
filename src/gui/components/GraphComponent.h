@@ -13,7 +13,7 @@ namespace gui
 {
 
 /**
- * @brief   Graph drawing component
+ * @brief   A graph drawing component which is optionally editable by mouse events
  * 
  * @details Currently supports only a graph in the positive x/y quadrant, but should easily be extendible to all four
  *          quadrants
@@ -29,6 +29,7 @@ public:
     {
         setRangeX(0, 1);
         setRangeY(0, 1);
+        setEditable(true);
     }
 
     /**
@@ -98,7 +99,7 @@ public:
     /**
      * @brief Implements juce::Component::paint()
      */
-    void paint(juce::Graphics& g)
+    void paint(juce::Graphics& g) override
     {
         paintBackground(g);
         paintTicks(g);
@@ -106,7 +107,120 @@ public:
         paintCurve(g);
     }
 
+    /**
+     * @brief   Implements juce::Component::mouseDown()
+     * 
+     * @details If near an existing point, it will be grabbed for move.
+     *          Otherwise, a new point will be created.
+     */
+    void mouseDown(const juce::MouseEvent& event) override 
+    {
+        // check if should create new
+        if (pointEditState == PointEditingState::None)
+        {
+            movingPointIndex = mouseEventIsNearAnyPoint(event);
+
+            if (movingPointIndex == -1)
+            {
+                pointEditState = PointEditingState::Create;
+            }
+        }
+
+        // create new
+        if (pointEditState == PointEditingState::Create)
+        {
+            const auto newPoint = transformPointToGraph(event.getPosition());
+            addPoint(newPoint);
+
+            // TODO: this re-searches for the point that was just added
+            //       better to instead take note of which index the point was added at
+            movingPointIndex = mouseEventIsNearAnyPoint(event);
+        }
+
+        // immediately begin move (including after creation)
+        pointEditState = PointEditingState::Move;
+        setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+    }
+
+    /**
+     * @brief   Implements juce::Component::mouseDrag
+     * 
+     * @details This handles the dragging of points when grabbed for move
+     */
+    void mouseDrag(const juce::MouseEvent& event) override
+    {
+        if (pointEditState == PointEditingState::Move)
+        {
+            jassert(movingPointIndex != -1 && movingPointIndex < points.size());
+
+            auto& point = points.getReference(movingPointIndex);
+            point = transformPointToGraph(event.getPosition());
+            repaint();
+        }
+    }
+
+    /**
+     * @brief   Implements juce::Component::mouseMove
+     * 
+     * @details This changes the cursor depending on the current edit context
+     */
+    void mouseMove(const juce::MouseEvent& event) override 
+    {
+        if (pointEditState == PointEditingState::Move || mouseEventIsNearAnyPoint(event) != -1) 
+            // note first check guarantees second is true and is much faster
+        {
+            setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+        }
+        else 
+        {
+            setMouseCursor(juce::MouseCursor::CrosshairCursor);
+        }
+    }
+
+    /**
+     * @brief   Implements juce::Component::mouseUp()
+     * 
+     * @details This ends a point move event
+     */
+    void mouseUp(const juce::MouseEvent& /*event*/) override 
+    {
+        pointEditState = PointEditingState::None;
+        setMouseCursor(juce::MouseCursor::CrosshairCursor);
+    }
+
+    /**
+     * @brief Allows the points on the graph to be edited by mouse events
+     */
+    void setEditable(bool shouldBeEditable = true)
+    {
+        editable = shouldBeEditable;
+        setInterceptsMouseClicks(shouldBeEditable, shouldBeEditable);
+    }
+
+    /**
+     * @brief Returns whether or not the graph is editable
+     */
+    bool isEditable() const 
+    {
+        return editable;
+    }
+
+protected:
+
+    juce::Rectangle<ValueType> valueBounds;
+    juce::Array<juce::Point<ValueType>> points;
+
 private:
+
+    /**
+     * @brief 
+     */
+    enum class PointEditingState
+    {
+        None,
+        Create,
+        Move,
+    };
 
     /**
      * @brief       Paint graph background
@@ -164,7 +278,7 @@ private:
     void paintCurve(juce::Graphics& g) const
     {
         auto bounds = getLocalBounds().toFloat();
-        const int circleSize = 10;
+        const int circleSize = 4;
         const int circleShift = circleSize / 2;
 
         for (const auto& point : points)
@@ -174,7 +288,7 @@ private:
             int x = transformedPoint.getX() - circleShift;
             int y = transformedPoint.getY() - circleShift;
 
-            g.drawEllipse(x, y, circleSize, circleSize, 2);
+            g.drawEllipse(x, y, circleSize, circleSize, circleSize);
         }
     }
 
@@ -185,7 +299,7 @@ private:
      * @param[in]   point   Point on the graph
      */
     juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
-                                                  const juce::Point<ValueType>& point) const
+                                            const juce::Point<ValueType>& point) const
     {
         const float xScale = bounds.getWidth() / valueBounds.getWidth();
         const float yScale = bounds.getHeight() / valueBounds.getHeight();
@@ -196,8 +310,83 @@ private:
         return {x, y};
     }
 
-    juce::Rectangle<ValueType> valueBounds;
-    juce::Array<juce::Point<ValueType>> points;
+    /**
+     * @brief       Transforms a GUI point to the coordinates system of the graph
+     * 
+     * @details     Use this in combination with mouse events to let the user add points to the graph
+     *  
+     * @param[in]   point   The point to transform
+     */
+    juce::Point<ValueType> transformPointToGraph(const juce::Point<int>& point) const
+    {
+        const float xScale = static_cast<float>(getMaxX()) / getWidth();
+        const float yScale = static_cast<float>(getMaxY()) / getHeight();
+
+        auto x = static_cast<ValueType>(point.getX() * xScale);
+        auto y = getMaxY() - static_cast<ValueType>(point.getY() * yScale);
+
+        return {x, y};
+    }
+
+    /**
+     * @brief 
+     * 
+     * @param[in]   guiPoint        Point in the component's coordinate system
+     * @param[in]   graphPoint      Point in the graph's coordinate system
+     * 
+     * @return      true            The component point is equivalent to the graph point
+     * @return      false           The component point is not equivalent to the graph point
+     */
+    bool pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const
+    {
+        const int clickRadius = 10;
+
+        auto transformedPoint = transformPointForPaint(getLocalBounds().toFloat(), graphPoint);
+        int distance = transformedPoint.getDistanceFrom(guiPoint);
+
+        return distance < clickRadius;
+    }
+
+    /**
+     * @brief       Checks if a mouse event is near a point on the graph, returning the index of the point if it does 
+     *              and -1 otherwise
+     * 
+     * @param[in]   event   Mouse event
+     * 
+     * @return      -1      Mouse event is not near any points
+     * @return      >0      Mouse event is near the point with the returned index
+     */
+    int mouseEventIsNearAnyPoint(const juce::MouseEvent& event)
+    {
+        const auto eventPosition = event.getPosition().toInt();
+
+        for (int i = 0; i < points.size(); i++)
+        {
+            const auto& point = points.getReference(i);
+
+            if (pointHitTest(eventPosition, point))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * @brief Determines whether or not the graph is editable and handles mouse events
+     */
+    bool editable;
+
+    /**
+     * @brief State of point editing
+     */
+    PointEditingState pointEditState = PointEditingState::None;
+
+    /**
+     * @brief Index of point currently being moved
+     */
+    int movingPointIndex = -1;
 };
 
 } // namespace gui

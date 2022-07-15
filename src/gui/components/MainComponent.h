@@ -9,7 +9,7 @@
 
 #include <JuceHeader.h>
 
-#include "GraphComponent.h"
+#include "TorqueMapComponent.h"
 
 namespace gui
 {
@@ -35,7 +35,7 @@ private:
     static const int borderSize = 20;
 
     // children
-    GraphComponent graphComponent;
+    TorqueMapComponent torqueMapGraph;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
