@@ -14,11 +14,12 @@ namespace gui
 
 /**
  * @brief   A graph drawing component which is optionally editable by mouse events
- * 
+ *
  * @details Currently supports only a graph in the positive x/y quadrant, but should easily be extendible to all four
  *          quadrants
  */
-template <typename ValueType> class GraphComponent : public juce::Component
+template <typename ValueType>
+class GraphComponent : public juce::Component, public juce::KeyListener
 {
 public:
 
@@ -41,6 +42,8 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
     void mouseUp(const juce::MouseEvent& event) override;
+    bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
+    bool keyPressed(const juce::KeyPress& key) override;
 
 protected:
 
@@ -53,6 +56,8 @@ private:
     void paintTicks(juce::Graphics& g) const;
     void paintBorder(juce::Graphics& g) const;
     void paintCurve(juce::Graphics& g) const;
+
+    void updateCursor();
 
     juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
                                             const juce::Point<ValueType>& point) const;
@@ -67,15 +72,16 @@ private:
     enum class PointEditingState
     {
         None,
+        OverPoint,
         Create,
         Move,
+        Delete,
     };
 
     bool editable;
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
 };
-
 
 /**
  * @brief Default constructor
@@ -86,6 +92,9 @@ GraphComponent<ValueType>::GraphComponent()
     setRangeX(0, 1);
     setRangeY(0, 1);
     setEditable(true);
+    setWantsKeyboardFocus(true);
+
+    addKeyListener(this);
 }
 
 /**
@@ -118,7 +127,7 @@ void GraphComponent<ValueType>::setRangeY(ValueType min, ValueType max)
  * @brief Returns the maximum value of the x-axis
  */
 template <typename ValueType>
-ValueType GraphComponent<ValueType>::getMaxX() const 
+ValueType GraphComponent<ValueType>::getMaxX() const
 {
     return valueBounds.getWidth();
 }
@@ -127,7 +136,7 @@ ValueType GraphComponent<ValueType>::getMaxX() const
  * @brief Returns the maximum value of the y-axis
  */
 template <typename ValueType>
-ValueType GraphComponent<ValueType>::getMaxY() const 
+ValueType GraphComponent<ValueType>::getMaxY() const
 {
     return valueBounds.getHeight();
 }
@@ -172,43 +181,50 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 
 /**
  * @brief   Implements juce::Component::mouseDown()
- * 
+ *
  * @details If near an existing point, it will be grabbed for move.
  *          Otherwise, a new point will be created.
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event) 
+void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
 {
-    // check if should create new
-    if (pointEditState == PointEditingState::None)
-    {
-        movingPointIndex = mouseEventIsNearAnyPoint(event);
+    int pointIndex = mouseEventIsNearAnyPoint(event);
 
-        if (movingPointIndex == -1)
+    // check if should create new or move
+    if (pointEditState == PointEditingState::None || pointEditState == PointEditingState::OverPoint)
+    {
+        // create new
+        if (pointIndex == -1)
         {
-            pointEditState = PointEditingState::Create;
+            const auto newPoint = transformPointToGraph(event.getPosition());
+            addPoint(newPoint);
+
+            // TODO: this effectively searches for the point that was just added, could be made more efficient
+            movingPointIndex = mouseEventIsNearAnyPoint(event);
         }
+        // move
+        else 
+        {
+            movingPointIndex = pointIndex;
+        }
+
+        // always move, including after creation
+        pointEditState = PointEditingState::Move;
     }
 
-    // create new
-    if (pointEditState == PointEditingState::Create)
+    // check if should delete AFTER previous, since this goes to None state
+    if (pointEditState == PointEditingState::Delete && pointIndex != -1)
     {
-        const auto newPoint = transformPointToGraph(event.getPosition());
-        addPoint(newPoint);
-
-        // TODO: this re-searches for the point that was just added
-        //       better to instead take note of which index the point was added at
-        movingPointIndex = mouseEventIsNearAnyPoint(event);
+        points.remove(pointIndex);
+        repaint();
     }
 
-    // immediately begin move (including after creation)
-    pointEditState = PointEditingState::Move;
-    setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+    updateCursor();
 }
 
 /**
  * @brief   Implements juce::Component::mouseDrag
- * 
+ *
  * @details This handles the dragging of points when grabbed for move
  */
 template <typename ValueType>
@@ -225,34 +241,101 @@ void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
 }
 
 /**
- * @brief   Implements juce::Component::mouseMove
- * 
+ * @brief   Implements juce::Component::mouseMove()
+ *
  * @details This changes the cursor depending on the current edit context
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::mouseMove(const juce::MouseEvent& event) 
+void GraphComponent<ValueType>::mouseMove(const juce::MouseEvent& event)
 {
-    if (pointEditState == PointEditingState::Move || mouseEventIsNearAnyPoint(event) != -1) 
-        // note first check guarantees second is true and is much faster
+    bool nearPoint = mouseEventIsNearAnyPoint(event) != -1;
+
+    if (pointEditState == PointEditingState::None && nearPoint)
     {
-        setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+        pointEditState = PointEditingState::OverPoint;
     }
-    else 
+    else if (pointEditState == PointEditingState::OverPoint && !nearPoint)
     {
-        setMouseCursor(juce::MouseCursor::CrosshairCursor);
+        pointEditState = PointEditingState::None;
     }
+
+    updateCursor();
 }
 
 /**
  * @brief   Implements juce::Component::mouseUp()
- * 
+ *
  * @details This ends a point move event
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::mouseUp(const juce::MouseEvent& /*event*/) 
+void GraphComponent<ValueType>::mouseUp(const juce::MouseEvent& /*event*/)
 {
-    pointEditState = PointEditingState::None;
-    setMouseCursor(juce::MouseCursor::CrosshairCursor);
+    if (pointEditState != PointEditingState::Delete)
+    {
+        pointEditState = PointEditingState::None;
+    }
+
+    updateCursor();
+}
+
+/**
+ * @brief   Implements juce::KeyListener::keyPressed()
+ *
+ * @details This is used to check for a 'delete' key press, toggling the delete point mode if the graph is editable
+ */
+template <typename ValueType>
+bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key, juce::Component* /*originatingComponent*/)
+{
+    if (editable && key.isKeyCode(juce::KeyPress::backspaceKey))
+    {
+        pointEditState
+            = (pointEditState == PointEditingState::Delete) ? PointEditingState::None : PointEditingState::Delete;
+
+        updateCursor();
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * @brief   Implements juce::KeyListener::keyPressed()
+ *
+ * @note    This second definition is needed to prevent -Woverloaded-virtual
+ */
+template <typename ValueType>
+bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key)
+{
+    return keyPressed(key, nullptr);
+}
+
+/**
+ * @brief Updates the cursor based on the point editing state
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::updateCursor() 
+{
+    switch (pointEditState)
+    {
+        case PointEditingState::Delete:
+            setMouseCursor(
+                juce::MouseCursor(juce::ImageCache::getFromMemory(BinaryData::Delete_png, BinaryData::Delete_pngSize),
+                                  1,
+                                  7,
+                                  5));
+            break;
+
+        case PointEditingState::Move:
+        case PointEditingState::OverPoint:
+            setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+            break;
+
+        case PointEditingState::Create:
+        case PointEditingState::None:
+        default:
+            setMouseCursor(juce::MouseCursor::CrosshairCursor);
+            break;
+    }
 }
 
 /**
@@ -269,7 +352,7 @@ void GraphComponent<ValueType>::setEditable(bool shouldBeEditable)
  * @brief Returns whether or not the graph is editable
  */
 template <typename ValueType>
-bool GraphComponent<ValueType>::isEditable() const 
+bool GraphComponent<ValueType>::isEditable() const
 {
     return editable;
 }
@@ -356,7 +439,7 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
  */
 template <typename ValueType>
 juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::Rectangle<float>& bounds,
-                                        const juce::Point<ValueType>& point) const
+                                                                   const juce::Point<ValueType>& point) const
 {
     const float xScale = bounds.getWidth() / valueBounds.getWidth();
     const float yScale = bounds.getHeight() / valueBounds.getHeight();
@@ -369,9 +452,9 @@ juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::R
 
 /**
  * @brief       Transforms a GUI point to the coordinates system of the graph
- * 
+ *
  * @details     Use this in combination with mouse events to let the user add points to the graph
- *  
+ *
  * @param[in]   point   The point to transform
  */
 template <typename ValueType>
@@ -387,13 +470,13 @@ juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const ju
 }
 
 /**
- * @brief       Checks if a mouse event is near a point on the graph, returning the index of the point if it does 
+ * @brief       Checks if a mouse event is near a point on the graph, returning the index of the point if it does
  *              and -1 otherwise
- * 
+ *
  * @note        TOOD: this function is weirdly named
- * 
+ *
  * @param[in]   event   Mouse event
- * 
+ *
  * @return      -1      Mouse event is not near any points
  * @return      >0      Mouse event is near the point with the returned index
  */
@@ -417,15 +500,16 @@ int GraphComponent<ValueType>::mouseEventIsNearAnyPoint(const juce::MouseEvent& 
 
 /**
  * @brief       Checks if a point in the GUI is equivalent to a point on the graph
- * 
+ *
  * @param[in]   guiPoint        Point in the component's coordinate system
  * @param[in]   graphPoint      Point in the graph's coordinate system
- * 
+ *
  * @return      true            The component point is equivalent to the graph point
  * @return      false           The component point is not equivalent to the graph point
  */
 template <typename ValueType>
-bool GraphComponent<ValueType>::pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const
+bool GraphComponent<ValueType>::pointHitTest(const juce::Point<int>& guiPoint,
+                                             const juce::Point<ValueType>& graphPoint) const
 {
     const int clickRadius = 10;
 
