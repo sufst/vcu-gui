@@ -13,6 +13,10 @@
 namespace gui
 {
 
+using utility::Interpolator; // TODO: does this pollute the namespace when #include'ing this file?
+using utility::InterpolatorFactory;
+using utility::SplineInterpolator;
+
 /**
  * @brief   A graph drawing component which is optionally editable by mouse events
  *
@@ -29,6 +33,7 @@ public:
     void setRangeX(ValueType min, ValueType max);
     void setRangeY(ValueType min, ValueType max);
     void setEditable(bool shouldBeEditable = true);
+    void setInterpolationMethod(const juce::Identifier& identifier);
 
     ValueType getMaxX() const;
     ValueType getMaxY() const;
@@ -65,7 +70,6 @@ private:
 
     void updateCursor();
 
-
     /**
      * @brief State representing current graph editing action
      */
@@ -82,7 +86,7 @@ private:
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
 
-    mutable utility::SplineInterpolator<ValueType> interpolator;
+    std::unique_ptr<Interpolator<int>> interpolator;
 };
 
 /**
@@ -95,6 +99,8 @@ GraphComponent<ValueType>::GraphComponent()
     setRangeY(0, 1);
     setEditable(true);
     setWantsKeyboardFocus(true);
+
+    setInterpolationMethod(SplineInterpolator<ValueType>::identifier);
 
     addKeyListener(this);
 }
@@ -166,8 +172,20 @@ void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
     static PointComparator<ValueType> comparator;
     points.addSorted(comparator, point);
 
-    interpolator.invalidateCache();
+    interpolator->invalidateCache();
     repaint();
+}
+
+/**
+ * @brief       Changes the interpolation method
+ * 
+ * @param[in]   identifier     The new interpolator to use
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::setInterpolationMethod(const juce::Identifier& identifier)
+{
+    interpolator = InterpolatorFactory<ValueType>::makeInterpolator(identifier);
+    jassert(interpolator);
 }
 
 /**
@@ -218,7 +236,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
     if (pointEditState == PointEditingState::Delete && pointIndex != -1)
     {
         points.remove(pointIndex);
-        interpolator.invalidateCache();
+        interpolator->invalidateCache();
         repaint();
     }
 
@@ -256,7 +274,7 @@ void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
         }
 
         // need to re-compute curve
-        interpolator.invalidateCache();
+        interpolator->invalidateCache();
         repaint();
     }
 }
@@ -448,9 +466,9 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
         auto start = transformPointForPaint(bounds, points.getFirst());
         p.startNewSubPath(start.getX(), start.getY());
 
-        interpolator.process(points, 100);
+        interpolator->process(points, 100);
 
-        for (const auto& point : interpolator.getInterpolatedPoints())
+        for (const auto& point : interpolator->getInterpolatedPoints())
         {
             auto transformedPoint = transformPointForPaint(bounds, point);
             p.lineTo(transformedPoint.toFloat());

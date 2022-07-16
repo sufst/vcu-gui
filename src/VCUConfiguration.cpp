@@ -5,6 +5,7 @@
  *****************************************************************************/
 
 #include "VCUConfiguration.h"
+#include "Interpolator.h"
 
 /**
  * @brief Default constructor
@@ -24,10 +25,7 @@ juce::ValueTree VCUConfiguration::createEmptyConfiguration()
     root.addChild(torqueMapTree, 0, nullptr);
     root.setProperty(ProfileName, "New Profile", nullptr);
 
-    for (int i = 0; i < 10; i++)
-    {
-        torqueMapTree.addChild(createTorqueMapPoint(i * 100, i * 50), i, nullptr);
-    }
+    torqueMapTree.setProperty(InterpolationMethod, utility::SplineInterpolator<int>::identifier.toString(), nullptr);
 
     return root;
 }
@@ -59,9 +57,10 @@ juce::ValueTree VCUConfiguration::createTorqueMapPoint(int input, int output)
 /*
  * property identifiers
  */
-const juce::Identifier VCUConfiguration::Root = juce::Identifier("VCUConfiguration");
-const juce::Identifier VCUConfiguration::TorqueMap = juce::Identifier("TorqueMap");
-const juce::Identifier VCUConfiguration::TorqueMapPoint = juce::Identifier("TorqueMapPoint");
-const juce::Identifier VCUConfiguration::TorqueMapInputValue = juce::Identifier("TorqueMapInput");
-const juce::Identifier VCUConfiguration::TorqueMapOutputValue = juce::Identifier("TorqueMapOutput");
-const juce::Identifier VCUConfiguration::ProfileName = juce::Identifier("ProfileName");
+const juce::Identifier VCUConfiguration::Root = "VCUConfiguration";
+const juce::Identifier VCUConfiguration::TorqueMap = "TorqueMap";
+const juce::Identifier VCUConfiguration::TorqueMapPoint = "TorqueMapPoint";
+const juce::Identifier VCUConfiguration::TorqueMapInputValue = "TorqueMapInput";
+const juce::Identifier VCUConfiguration::TorqueMapOutputValue = "TorqueMapOutput";
+const juce::Identifier VCUConfiguration::ProfileName = "ProfileName";
+const juce::Identifier VCUConfiguration::InterpolationMethod = "InterpolationMethod";

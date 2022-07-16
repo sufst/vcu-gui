@@ -6,7 +6,8 @@
  *****************************************************************************/
 
 #include "MainComponent.h"
-#include "../../Application.h"
+
+#include "../../Interpolator.h"
 
 namespace gui
 {
@@ -14,11 +15,15 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent()
-    : torqueMapGraph(Application::getConfig())
+MainComponent::MainComponent() : torqueMap(Application::getConfig().getTorqueMap()), torqueMapGraph(Application::getConfig())
+
 {
     setSize(600, 400);
+
+    setupInterpolationCombo();
+
     addAndMakeVisible(torqueMapGraph);
+    addAndMakeVisible(interpolationCombo);
 }
 
 /**
@@ -30,6 +35,32 @@ MainComponent::~MainComponent()
 }
 
 /**
+ * @brief Setup interpolation method combo box
+ */
+void MainComponent::setupInterpolationCombo()
+{
+    const auto& interpolationMethods = utility::InterpolatorFactory<int>::getAllIdentifiers();
+
+    for (unsigned i = 0; i < interpolationMethods.size(); i++)
+    {
+        const int itemId = static_cast<int>(i + 1);
+        const auto& method = interpolationMethods.at(i);
+        interpolationCombo.addItem(method.toString(), itemId);
+
+        if (method.toString() == torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString())
+        {
+            interpolationCombo.setSelectedId(itemId);
+        }
+    }
+
+    interpolationCombo.onChange = [this]() {
+        int selectedIndex = this->interpolationCombo.getSelectedItemIndex();
+        auto value = this->interpolationCombo.getItemText(selectedIndex);
+        this->torqueMap.setProperty(VCUConfiguration::InterpolationMethod, value, nullptr);
+    };  
+}
+
+/**
  * @brief Painter
  *
  * @param[in]   g   Graphics context
@@ -37,8 +68,7 @@ MainComponent::~MainComponent()
 void MainComponent::paint(juce::Graphics& g)
 {
     // fill background
-    g.fillAll(
-        getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
 /**
@@ -46,9 +76,14 @@ void MainComponent::paint(juce::Graphics& g)
  */
 void MainComponent::resized()
 {
-    auto bounds = getLocalBounds();
+    auto bounds = getLocalBounds().reduced(20);
+    auto footer = bounds.removeFromBottom(32);
+    footer.removeFromTop(10);
+    footer.removeFromBottom(2);
 
-    torqueMapGraph.setBounds(bounds.reduced(20));
+    interpolationCombo.setBounds(footer.removeFromLeft(100));
+
+    torqueMapGraph.setBounds(bounds);
 }
 
 } // namespace gui

@@ -9,6 +9,7 @@
 
 #include <JuceHeader.h>
 
+#include "../../Application.h"
 #include "TorqueMapComponent.h"
 
 namespace gui
@@ -31,11 +32,16 @@ public:
 
 private:
 
+    void setupInterpolationCombo();
+
+    juce::ValueTree torqueMap;
+
     // constants
     static const int borderSize = 20;
 
     // children
     TorqueMapComponent torqueMapGraph;
+    juce::ComboBox interpolationCombo;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

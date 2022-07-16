@@ -19,12 +19,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <vector>
 
 namespace utility
 {
 
-//------------------------------------------------------------------------- base
+//----------------------------------------------------------------------------------------------------------------- base
 
 /**
  * @brief   Base class for interpolation algorithms
@@ -37,6 +38,7 @@ class Interpolator
 public:
 
     Interpolator() = default;
+    virtual ~Interpolator() = default;
 
     /**
      * @brief       Processes the interpolation for a set of samples
@@ -104,9 +106,11 @@ protected:
 private:
 
     bool cacheValid = false;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Interpolator)
 };
 
-//----------------------------------------------------------------------- linear
+//--------------------------------------------------------------------------------------------------------------- linear
 
 /**
  * @brief   Simple linear interpolator
@@ -149,9 +153,14 @@ public:
             this->setCacheValid(true);
         }
     }
+
+    static const juce::Identifier identifier;
 };
 
-//----------------------------------------------------------------------- cosine
+template <typename ValueType>
+const juce::Identifier LinearInterpolator<ValueType>::identifier = "Linear";
+
+//--------------------------------------------------------------------------------------------------------------- cosine
 
 /**
  * @brief   Cosine interpolator
@@ -193,9 +202,14 @@ public:
         this->outputSamples.add(inputSamples.getLast());
         this->setCacheValid(true);
     }
+
+    static const juce::Identifier identifier;
 };
 
-//----------------------------------------------------------------------- spline
+template <typename ValueType>
+const juce::Identifier CosineInterpolator<ValueType>::identifier = "Cosine";
+
+//--------------------------------------------------------------------------------------------------------------- spline
 
 /**
  * @brief   Spline interpolator
@@ -260,6 +274,8 @@ public:
         }
     }
 
+    static const juce::Identifier identifier;
+
 private:
 
     /**
@@ -275,6 +291,61 @@ private:
         using spline_type = tk::spline::spline_type;
         return (numInputSamples > 2) ? spline_type::cspline : spline_type::linear;
     }
+};
+
+template <typename ValueType>
+const juce::Identifier SplineInterpolator<ValueType>::identifier = "Spline";
+
+//-------------------------------------------------------------------------------------------------------------- factory
+
+/**
+ * @brief Factory for creating interpolators from their identifiers
+ */
+template <typename ValueType>
+class InterpolatorFactory
+{
+public:
+
+    /**
+     * @brief       Creates an interpolator
+     *
+     * @param[in]   identifier  Identifier for the interpolator
+     */
+    static std::unique_ptr<Interpolator<ValueType>> makeInterpolator(const juce::Identifier& identifier)
+    {
+        // TODO: this is probably fine for just 3 interpolator types, but could be made more efficient / compact
+
+        if (identifier == LinearInterpolator<ValueType>::identifier)
+        {
+            return std::make_unique<LinearInterpolator<ValueType>>();
+        }
+
+        if (identifier == CosineInterpolator<ValueType>::identifier)
+        {
+            return std::make_unique<CosineInterpolator<ValueType>>();
+        }
+
+        if (identifier == SplineInterpolator<ValueType>::identifier)
+        {
+            return std::make_unique<SplineInterpolator<ValueType>>();
+        }
+
+        return nullptr;
+    }
+
+    /**
+     * @brief Returns all valid identifiers for interpolator classes
+     */
+    static std::array<juce::Identifier, 3> getAllIdentifiers()
+    {
+        return {LinearInterpolator<ValueType>::identifier,
+                CosineInterpolator<ValueType>::identifier,
+                SplineInterpolator<ValueType>::identifier};
+    }
+
+private:
+
+    InterpolatorFactory() = delete;
 };
 
 } // namespace utility

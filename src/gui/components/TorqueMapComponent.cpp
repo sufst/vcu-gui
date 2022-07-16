@@ -16,7 +16,10 @@ namespace gui
  */
 TorqueMapComponent::TorqueMapComponent(VCUConfiguration& config) : deadzonePosition(defaultDeadzone)
 {
-    torqueMapData = config.getTorqueMap();
+    torqueMap = config.getTorqueMap();
+    torqueMap.addListener(this);
+
+    setInterpolationMethod(torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString());
 
     setRangeX(0, inputMax);
     setRangeY(0, outputMax);
@@ -200,6 +203,22 @@ void TorqueMapComponent::showDeadzoneTooltip()
 void TorqueMapComponent::hideDeadzoneTooltip()
 {
     deadzoneTooltip.reset();
+}
+
+/**
+ * @brief Implements juce::ValueTree::Listener::valueTreePropertyChanged()
+ */
+void TorqueMapComponent::valueTreePropertyChanged(juce::ValueTree& changedTree, const juce::Identifier& property)
+{
+    if (changedTree == torqueMap)
+    {
+        if (property == VCUConfiguration::InterpolationMethod)
+        {
+            juce::String newInterpolationMethod = torqueMap.getProperty(property);
+            setInterpolationMethod(newInterpolationMethod);
+            repaint();
+        }
+    }
 }
 
 } // namespace gui

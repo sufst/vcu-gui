@@ -21,6 +21,7 @@ public:
     static const juce::Identifier TorqueMapInputValue;
     static const juce::Identifier TorqueMapOutputValue;
     static const juce::Identifier ProfileName;
+    static const juce::Identifier InterpolationMethod;
 
     static juce::ValueTree createTorqueMapPoint(int input, int output);
 
