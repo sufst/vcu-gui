@@ -18,11 +18,31 @@ public:
 
     TorqueMapComponent(VCUConfiguration& config);
 
+    void paint(juce::Graphics& g) override;
+
+    void mouseDown(const juce::MouseEvent& event) override;
+    void mouseUp(const juce::MouseEvent& event) override;
+    void mouseDrag(const juce::MouseEvent& event) override;
+    void mouseMove(const juce::MouseEvent& event) override;
+
 private:
 
-    juce::Point<int> transformPointToGraph(const juce::Point<int>& point) const;
+    juce::Rectangle<int> getDeadzoneBounds() const;
+    void paintDeadzoneOverlay(juce::Graphics& g) const;
+    bool mouseEventInDeadzone(const juce::MouseEvent& event) const;
+    void showDeadzoneTooltip();
+    void hideDeadzoneTooltip();
 
     juce::ValueTree torqueMapData;
+    int deadzonePosition;
+    bool movingDeadzone = false;
+    std::unique_ptr<juce::TooltipWindow> deadzoneTooltip;
+
+    static const int inputResolution = 10;
+    static const int outputResolution = 15;
+    static const int inputMax = (1 << inputResolution) - 1;
+    static const int outputMax = (1 << outputResolution) - 1;
+    static const int defaultDeadzone = static_cast<int>(0.05f * inputMax);
 };
 
 } // namespace gui

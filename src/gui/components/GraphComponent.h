@@ -51,6 +51,10 @@ protected:
     juce::Rectangle<ValueType> valueBounds;
     juce::Array<juce::Point<ValueType>> points;
 
+    juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
+                                            const juce::Point<ValueType>& point) const;
+    juce::Point<ValueType> transformPointToGraph(const juce::Point<int>& point) const;
+
 private:
 
     void paintTicks(juce::Graphics& g) const;
@@ -58,10 +62,6 @@ private:
     void paintCurve(juce::Graphics& g) const;
 
     void updateCursor();
-
-    juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
-                                            const juce::Point<ValueType>& point) const;
-    juce::Point<ValueType> transformPointToGraph(const juce::Point<int>& point) const;
 
     bool pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const;
     int mouseEventIsNearAnyPoint(const juce::MouseEvent& event) const;
