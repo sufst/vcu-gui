@@ -53,7 +53,6 @@ protected:
 
 private:
 
-    void paintBackground(juce::Graphics& g) const;
     void paintTicks(juce::Graphics& g) const;
     void paintBorder(juce::Graphics& g) const;
     void paintCurve(juce::Graphics& g) const;
@@ -177,7 +176,6 @@ void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
 template <typename ValueType>
 void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
-    paintBackground(g);
     paintTicks(g);
     paintBorder(g);
     paintCurve(g);
@@ -381,17 +379,6 @@ bool GraphComponent<ValueType>::isEditable() const
 }
 
 /**
- * @brief       Paint graph background
- *
- * @param[in]   g   JUCE graphics context
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::paintBackground(juce::Graphics& g) const
-{
-    g.fillAll(juce::Colours::white);
-}
-
-/**
  * @brief       Paint graph ticks
  *
  * @param[in]   g   JUCE graphics context
@@ -404,7 +391,7 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
 
     auto bounds = getLocalBounds().toFloat();
 
-    g.setColour(juce::Colours::lightgrey);
+    g.setColour(juce::Colours::darkgrey);
 
     for (int i = 0; i < numTicksX; i++)
     {
@@ -427,8 +414,8 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
 template <typename ValueType>
 void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
 {
-    g.setColour(juce::Colours::lightblue);
-    g.drawRect(0, 0, getWidth(), getHeight(), 2);
+    g.setColour(getLookAndFeel().findColour(juce::ComboBox::outlineColourId));
+    g.drawRect(0, 0, getWidth(), getHeight(), 1);
 }
 
 /**
@@ -442,6 +429,8 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
     auto bounds = getLocalBounds().toFloat();
     const int circleSize = 4;
     const int circleShift = circleSize / 2;
+
+    g.setColour(juce::Colours::white);
 
     for (const auto& point : points)
     {
