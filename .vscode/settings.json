@@ -39,6 +39,12 @@
         "string_view": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "future": "cpp",
+        "istream": "cpp",
+        "locale": "cpp",
+        "thread": "cpp",
+        "variant": "cpp",
+        "__functional_base": "cpp"
     }
 }

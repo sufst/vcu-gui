@@ -35,6 +35,20 @@
 				"fmt",
 				"${relativeFile}",
 			]
+		},
+		{
+			"type": "shell",
+			"label": "trunk: check current file",
+			"command": "trunk",
+			"args": [
+				"check",
+				"${relativeFile}",
+				"-j",
+				"$(nproc)"
+			],
+			"problemMatcher": {
+				"base": "$gcc"
+			}
 		}
 	]
 }
