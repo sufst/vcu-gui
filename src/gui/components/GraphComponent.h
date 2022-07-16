@@ -5,6 +5,7 @@
  * @brief  Component for drawing a graph
  *****************************************************************************/
 
+#include "../../Interpolator.h"
 #include "../utility/PointComparator.h"
 #include <JuceHeader.h>
 #include <memory>
@@ -81,6 +82,8 @@ private:
     bool editable;
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
+
+    mutable utility::LinearInterpolator<ValueType> interpolator;
 };
 
 /**
@@ -164,6 +167,7 @@ void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
     static PointComparator<ValueType> comparator;
     points.addSorted(comparator, point);
 
+    interpolator.invalidateCache();
     repaint();
 }
 
@@ -203,7 +207,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
             movingPointIndex = mouseEventIsNearAnyPoint(event);
         }
         // move
-        else 
+        else
         {
             movingPointIndex = pointIndex;
         }
@@ -216,6 +220,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
     if (pointEditState == PointEditingState::Delete && pointIndex != -1)
     {
         points.remove(pointIndex);
+        interpolator.invalidateCache();
         repaint();
     }
 
@@ -234,8 +239,26 @@ void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
     {
         jassert(movingPointIndex != -1 && movingPointIndex < points.size());
 
+        // move the point
         auto& point = points.getReference(movingPointIndex);
         point = transformPointToGraph(event.getPosition());
+
+        // check if point has moved past the x-coordinate of another point
+        // swap them if this is the case
+        if (movingPointIndex != 0 && points[movingPointIndex - 1].getX() > point.getX())
+        {
+            points.swap(movingPointIndex, movingPointIndex - 1);
+            movingPointIndex = movingPointIndex - 1;
+        }
+        else if (movingPointIndex != points.size() - 1
+                 && points[movingPointIndex].getX() > points[movingPointIndex + 1].getX())
+        {
+            points.swap(movingPointIndex, movingPointIndex + 1);
+            movingPointIndex = movingPointIndex + 1;
+        }
+
+        // need to re-compute curve
+        interpolator.invalidateCache();
         repaint();
     }
 }
@@ -313,28 +336,28 @@ bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key)
  * @brief Updates the cursor based on the point editing state
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::updateCursor() 
+void GraphComponent<ValueType>::updateCursor()
 {
     switch (pointEditState)
     {
-        case PointEditingState::Delete:
-            setMouseCursor(
-                juce::MouseCursor(juce::ImageCache::getFromMemory(BinaryData::Delete_png, BinaryData::Delete_pngSize),
-                                  1,
-                                  7,
-                                  5));
-            break;
+    case PointEditingState::Delete:
+        setMouseCursor(
+            juce::MouseCursor(juce::ImageCache::getFromMemory(BinaryData::Delete_png, BinaryData::Delete_pngSize),
+                              1,
+                              7,
+                              5));
+        break;
 
-        case PointEditingState::Move:
-        case PointEditingState::OverPoint:
-            setMouseCursor(juce::MouseCursor::DraggingHandCursor);
-            break;
+    case PointEditingState::Move:
+    case PointEditingState::OverPoint:
+        setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+        break;
 
-        case PointEditingState::Create:
-        case PointEditingState::None:
-        default:
-            setMouseCursor(juce::MouseCursor::CrosshairCursor);
-            break;
+    case PointEditingState::Create:
+    case PointEditingState::None:
+    default:
+        setMouseCursor(juce::MouseCursor::CrosshairCursor);
+        break;
     }
 }
 
@@ -428,6 +451,23 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
         int y = transformedPoint.getY() - circleShift;
 
         g.drawEllipse(x, y, circleSize, circleSize, circleSize);
+    }
+
+    if (points.size() > 1)
+    {
+        juce::Path p;
+        auto start = transformPointForPaint(bounds, points.getFirst());
+        p.startNewSubPath(start.getX(), start.getY());
+
+        interpolator.process(points, 5);
+
+        for (const auto& point : interpolator.getInterpolatedPoints())
+        {
+            auto transformedPoint = transformPointForPaint(bounds, point);
+            p.lineTo(transformedPoint.toFloat());
+        }
+
+        g.strokePath(p, juce::PathStrokeType(2));
     }
 }
 
