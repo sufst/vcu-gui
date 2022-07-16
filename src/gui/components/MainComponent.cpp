@@ -15,15 +15,18 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent() : torqueMap(Application::getConfig().getTorqueMap()), torqueMapGraph(Application::getConfig())
+MainComponent::MainComponent()
+    : torqueMap(Application::getConfig().getTorqueMap()), torqueMapGraph(Application::getConfig())
 
 {
     setSize(600, 400);
 
     setupInterpolationCombo();
+    setupButtons();
 
     addAndMakeVisible(torqueMapGraph);
     addAndMakeVisible(interpolationCombo);
+    addAndMakeVisible(exportProfileButton);
 }
 
 /**
@@ -53,11 +56,46 @@ void MainComponent::setupInterpolationCombo()
         }
     }
 
-    interpolationCombo.onChange = [this]() {
+    interpolationCombo.onChange = [this]()
+    {
         int selectedIndex = this->interpolationCombo.getSelectedItemIndex();
         auto value = this->interpolationCombo.getItemText(selectedIndex);
         this->torqueMap.setProperty(VCUConfiguration::InterpolationMethod, value, nullptr);
-    };  
+    };
+}
+
+/**
+ * @brief Sets up the buttons
+ */
+void MainComponent::setupButtons()
+{
+    exportProfileButton.setButtonText("Export Profile");
+
+    exportProfileButton.onClick = [this]()
+    {
+        fileChooser
+            = std::make_unique<juce::FileChooser>("Save VCU configuration",
+                                                  juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                                  "*.xml",
+                                                  true);
+
+        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+                                | juce::FileBrowserComponent::warnAboutOverwriting
+                                | juce::FileBrowserComponent::saveMode;
+
+        fileChooser->launchAsync(fileChooserFlags,
+                                 [](const juce::FileChooser& chooser)
+                                 {
+                                     if (chooser.getResults().isEmpty())
+                                     {
+                                         return;
+                                     }
+                                     
+                                     auto xml = Application::getConfig().exportXml();
+                                     auto file = chooser.getResult();
+                                     xml->getDocumentElement()->writeTo(file);
+                                 });
+    };
 }
 
 /**
@@ -77,13 +115,25 @@ void MainComponent::paint(juce::Graphics& g)
 void MainComponent::resized()
 {
     auto bounds = getLocalBounds().reduced(20);
-    auto footer = bounds.removeFromBottom(32);
+    auto footer = bounds.removeFromBottom(42);
     footer.removeFromTop(10);
     footer.removeFromBottom(2);
 
-    interpolationCombo.setBounds(footer.removeFromLeft(100));
-
+    // graph
     torqueMapGraph.setBounds(bounds);
+
+    // footer
+    std::initializer_list<juce::Component*> footerComponents = {&interpolationCombo, &exportProfileButton};
+
+    const int numFooterComponents = static_cast<int>(footerComponents.size());
+    const int footerItemSpacing = borderSize / numFooterComponents;
+    const int footerItemWidth = (footer.getWidth() - footerItemSpacing) / numFooterComponents;
+
+    for (juce::Component* component : footerComponents)
+    {
+        component->setBounds(footer.removeFromLeft(footerItemWidth));
+        footer.removeFromLeft(footerItemSpacing);
+    }
 }
 
 } // namespace gui

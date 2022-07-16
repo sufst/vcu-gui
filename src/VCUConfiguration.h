@@ -7,6 +7,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <memory>
 
 class VCUConfiguration
 {
@@ -15,6 +16,8 @@ public:
     VCUConfiguration();
 
     juce::ValueTree getTorqueMap() const;
+
+    std::unique_ptr<juce::XmlDocument> exportXml() const;
 
     static const juce::Identifier TorqueMap;
     static const juce::Identifier TorqueMapPoint;

@@ -54,6 +54,14 @@ juce::ValueTree VCUConfiguration::createTorqueMapPoint(int input, int output)
     return point;
 }
 
+/**
+ * @brief   Exports the configuration to an XML document
+ */
+std::unique_ptr<juce::XmlDocument> VCUConfiguration::exportXml() const
+{
+    return std::make_unique<juce::XmlDocument>(tree.toXmlString());
+}
+
 /*
  * property identifiers
  */

@@ -33,8 +33,10 @@ public:
 private:
 
     void setupInterpolationCombo();
+    void setupButtons();
 
     juce::ValueTree torqueMap;
+    std::unique_ptr<juce::FileChooser> fileChooser;
 
     // constants
     static const int borderSize = 20;
@@ -42,6 +44,7 @@ private:
     // children
     TorqueMapComponent torqueMapGraph;
     juce::ComboBox interpolationCombo;
+    juce::TextButton exportProfileButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
