@@ -83,7 +83,7 @@ private:
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
 
-    mutable utility::LinearInterpolator<ValueType> interpolator;
+    mutable utility::CosineInterpolator<ValueType> interpolator;
 };
 
 /**
@@ -459,7 +459,7 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
         auto start = transformPointForPaint(bounds, points.getFirst());
         p.startNewSubPath(start.getX(), start.getY());
 
-        interpolator.process(points, 5);
+        interpolator.process(points, 100);
 
         for (const auto& point : interpolator.getInterpolatedPoints())
         {
@@ -467,7 +467,7 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
             p.lineTo(transformedPoint.toFloat());
         }
 
-        g.strokePath(p, juce::PathStrokeType(2));
+        g.strokePath(p, juce::PathStrokeType(1));
     }
 }
 
