@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "build (debug)",
+			"label": "build: debug",
 			"command": "cd ${workspaceFolder}/build; cmake .. -DCMAKE_BUILD_TYPE=Debug; make -j$(nproc)",
 			"group": {
 				"kind": "build",
@@ -16,7 +16,7 @@
 		},
         {
 			"type": "shell",
-			"label": "build (release)",
+			"label": "build: release",
 			"command": "cd ${workspaceFolder}/build; cmake .. -DCMAKE_BUILD_TYPE=Release; make -j$(nproc)",
 			"group": {
 				"kind": "build",
@@ -27,5 +27,14 @@
 				"fileLocation": ["absolute"]
 			},
 		},
+		{
+			"type": "shell",
+			"label": "trunk: format current file",
+			"command": "trunk",
+			"args": [
+				"fmt",
+				"${relativeFile}",
+			]
+		}
 	]
 }
