@@ -54,11 +54,10 @@ void TorqueMapComponent::paintDeadzoneOverlay(juce::Graphics& g) const
     auto deadzoneBounds = getDeadzoneBounds();
 
     g.setColour(juce::Colours::skyblue.withLightness(0.9f).withAlpha(0.2f));
-    g.fillRect(deadzoneBounds);
+    g.fillRect(deadzoneBounds.expanded(0, 5));
 
     g.setColour(juce::Colours::skyblue);
     g.drawVerticalLine(deadzoneBounds.getWidth(), 0, deadzoneBounds.getHeight());
-
 }
 
 /**
@@ -75,7 +74,7 @@ void TorqueMapComponent::mouseDown(const juce::MouseEvent& event)
             movingDeadzone = true;
         }
     }
-    else
+    else if (!shouldPreventPointEdit(event))
     {
         GraphComponent<int>::mouseDown(event);
     }
@@ -92,7 +91,7 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
     {
         movingDeadzone = false;
     }
-    else
+    else if (!shouldPreventPointEdit(event))
     {
         GraphComponent<int>::mouseUp(event);
     }
@@ -122,7 +121,7 @@ void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
 
         showDeadzoneTooltip();
     }
-    else
+    else if (!shouldPreventPointEdit(event))
     {
         GraphComponent<int>::mouseDrag(event);
     }
@@ -140,7 +139,7 @@ void TorqueMapComponent::mouseMove(const juce::MouseEvent& event)
         setMouseCursor(juce::MouseCursor::LeftRightResizeCursor);
         showDeadzoneTooltip();
     }
-    else
+    else if (!shouldPreventPointEdit(event))
     {
         hideDeadzoneTooltip();
         GraphComponent<int>::mouseMove(event);
@@ -157,6 +156,19 @@ bool TorqueMapComponent::mouseEventInDeadzone(const juce::MouseEvent& event) con
     const int deadzoneEdgeOffset = 2;
     auto point = transformPointToGraph(event.getPosition());
     return point.getX() < deadzonePosition + deadzoneEdgeOffset;
+}
+
+/**
+ * @brief       Checks if the mouse event is near a point which should not be edited
+ *
+ * @details     The first and last points should not be edited
+ *
+ * @param[in]   event   The mouse event
+ */
+bool TorqueMapComponent::shouldPreventPointEdit(const juce::MouseEvent& event) const
+{
+    return (pointHitTest(event.getPosition(), points.getFirst())
+            || pointHitTest(event.getPosition(), points.getLast()));
 }
 
 /**

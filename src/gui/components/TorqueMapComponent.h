@@ -30,6 +30,7 @@ private:
     juce::Rectangle<int> getDeadzoneBounds() const;
     void paintDeadzoneOverlay(juce::Graphics& g) const;
     bool mouseEventInDeadzone(const juce::MouseEvent& event) const;
+    bool shouldPreventPointEdit(const juce::MouseEvent& event) const;
     void showDeadzoneTooltip();
     void hideDeadzoneTooltip();
 

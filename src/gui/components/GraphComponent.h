@@ -54,6 +54,8 @@ protected:
     juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
                                             const juce::Point<ValueType>& point) const;
     juce::Point<ValueType> transformPointToGraph(const juce::Point<int>& point) const;
+    bool pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const;
+    int getPointNearMouseEvent(const juce::MouseEvent& event) const;
 
 private:
 
@@ -63,8 +65,6 @@ private:
 
     void updateCursor();
 
-    bool pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const;
-    int mouseEventIsNearAnyPoint(const juce::MouseEvent& event) const;
 
     /**
      * @brief State representing current graph editing action
@@ -190,7 +190,7 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 template <typename ValueType>
 void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
 {
-    int pointIndex = mouseEventIsNearAnyPoint(event);
+    int pointIndex = getPointNearMouseEvent(event);
 
     // check if should create new or move
     if (pointEditState == PointEditingState::None || pointEditState == PointEditingState::OverPoint)
@@ -202,7 +202,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
             addPoint(newPoint);
 
             // TODO: this effectively searches for the point that was just added, could be made more efficient
-            movingPointIndex = mouseEventIsNearAnyPoint(event);
+            movingPointIndex = getPointNearMouseEvent(event);
         }
         // move
         else
@@ -269,7 +269,7 @@ void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
 template <typename ValueType>
 void GraphComponent<ValueType>::mouseMove(const juce::MouseEvent& event)
 {
-    bool nearPoint = mouseEventIsNearAnyPoint(event) != -1;
+    bool nearPoint = getPointNearMouseEvent(event) != -1;
 
     if (pointEditState == PointEditingState::None && nearPoint)
     {
@@ -502,15 +502,13 @@ juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const ju
  * @brief       Checks if a mouse event is near a point on the graph, returning the index of the point if it does
  *              and -1 otherwise
  *
- * @note        TOOD: this function is weirdly named
- *
  * @param[in]   event   Mouse event
  *
  * @return      -1      Mouse event is not near any points
  * @return      >0      Mouse event is near the point with the returned index
  */
 template <typename ValueType>
-int GraphComponent<ValueType>::mouseEventIsNearAnyPoint(const juce::MouseEvent& event) const
+int GraphComponent<ValueType>::getPointNearMouseEvent(const juce::MouseEvent& event) const
 {
     const auto eventPosition = event.getPosition().toInt();
 
