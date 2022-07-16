@@ -83,7 +83,7 @@ private:
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
 
-    mutable utility::CosineInterpolator<ValueType> interpolator;
+    mutable utility::SplineInterpolator<ValueType> interpolator;
 };
 
 /**

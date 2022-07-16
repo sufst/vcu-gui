@@ -37,6 +37,10 @@ target_sources(${TARGET_NAME}
         src/VCUConfiguration.cpp
 )
 
+target_include_directories(${TARGET_NAME} 
+    PRIVATE lib/spline/src
+)
+
 add_subdirectory(src/gui)
 
 # binary data
