@@ -59,6 +59,7 @@ private:
     juce::ComboBox interpolationCombo;
     juce::TextButton exportProfileButton;
     juce::TextButton importProfileButton;
+    juce::TextButton exportCodeButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

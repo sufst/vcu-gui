@@ -23,6 +23,7 @@ public:
     juce::ValueTree getChildWithName(const juce::Identifier& identifier) const;
 
     std::unique_ptr<juce::XmlDocument> exportXml() const;
+    juce::String exportCode() const;
     void loadFromFile(const juce::File& file);
     static juce::ValueTree createTorqueMapPoint(int input, int output);
 

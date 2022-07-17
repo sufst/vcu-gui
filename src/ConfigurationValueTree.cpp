@@ -8,6 +8,9 @@
 
 #include "Interpolator.h"
 
+using utility::LinearInterpolator;
+using utility::InterpolatorFactory;
+
 /**
  * @brief Default constructor
  */
@@ -86,6 +89,68 @@ juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input, int outp
 std::unique_ptr<juce::XmlDocument> ConfigurationValueTree::exportXml() const
 {
     return std::make_unique<juce::XmlDocument>(tree.toXmlString());
+}
+
+/**
+ * @brief Exports all auto-generated code required to implement the configuration on the VCU
+ * 
+ * @note  TODO: this is temporary and needs a serious rewrite!
+ */
+juce::String ConfigurationValueTree::exportCode() const
+{
+    juce::ValueTree torqueMap = tree.getChildWithName(Children::TorqueMap);
+
+    // extract points from the torque map, filling with leading zeros
+    juce::Array<juce::Point<int>> points;
+
+    for (const auto& child : torqueMap)
+    {
+        if (child.isValid() && child.hasType(Children::TorqueMapPoint))
+        {
+            const int input = child.getProperty(Properties::InputValue);
+            const int output = child.getProperty(Properties::OutputValue);
+
+            points.add({input, output});
+        }
+    }
+
+    for (int i = 0; i < points[i].getX(); i++)
+    {
+        points.add({i, 0});
+    }
+
+    // run interpolator
+    juce::String interpolationMethod = torqueMap.getProperty(Properties::InterpolationMethod);
+    auto interpolator = InterpolatorFactory<int>::makeInterpolator(interpolationMethod);
+    
+    interpolator->process(points, points.getLast().getX());
+
+    // produce code
+    juce::String code = "const uint32_t torque_map[] = {\n\t";
+
+    int rowIndex = 0;
+    const int itemsPerRow = 8;
+
+    for (const auto& point : interpolator->getInterpolatedPoints())
+    {
+        juce::String hex = juce::String::toHexString(point.getY());
+        int leadingZeros = 4 - hex.length();
+        hex = juce::String::repeatedString("0", leadingZeros) + hex;
+        
+        code += "0x" + hex + ", ";
+
+        rowIndex++;
+
+        if (rowIndex == itemsPerRow)
+        {
+            code += "\n\t";
+            rowIndex = 0;
+        }
+    }
+
+    code = code.substring(0, code.length() - 1); // remove last \t
+    code += "};\n";
+    return code;
 }
 
 /**
