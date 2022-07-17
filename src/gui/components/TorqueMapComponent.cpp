@@ -166,6 +166,7 @@ void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
             deadzonePosition = utility::clip(newDeadzonePosition, 0, maxDeadzonePosition);
             points.getReference(0).setX(deadzonePosition);
 
+            pointsChanged();
             repaint();
         }
 

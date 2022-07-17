@@ -63,6 +63,8 @@ protected:
     bool pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const;
     int getPointNearMouseEvent(const juce::MouseEvent& event) const;
 
+    void pointsChanged();
+
 private:
 
     void paintTicks(juce::Graphics& g) const;
@@ -173,8 +175,7 @@ void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
     static PointComparator<ValueType> comparator;
     points.addSorted(comparator, point);
 
-    interpolator->invalidateCache();
-    repaint();
+    pointsChanged();
 }
 
 /**
@@ -246,8 +247,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
     if (pointEditState == PointEditingState::Delete && pointIndex != -1)
     {
         points.remove(pointIndex);
-        interpolator->invalidateCache();
-        repaint();
+        pointsChanged();
     }
 
     updateCursor();
@@ -283,9 +283,7 @@ void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
             movingPointIndex = movingPointIndex + 1;
         }
 
-        // need to re-compute curve
-        interpolator->invalidateCache();
-        repaint();
+        pointsChanged();
     }
 }
 
@@ -404,6 +402,16 @@ template <typename ValueType>
 bool GraphComponent<ValueType>::isEditable() const
 {
     return editable;
+}
+
+/**
+ * @brief   Call this when the points have changed (in derived class)
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::pointsChanged()
+{
+    interpolator->invalidateCache();
+    repaint();
 }
 
 /**
