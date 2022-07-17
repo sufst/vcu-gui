@@ -132,8 +132,15 @@ void MainComponent::setupButtons()
  */
 void MainComponent::paint(juce::Graphics& g)
 {
-    // fill background
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    auto& lf = getLookAndFeel();
+    auto backgroundColour =  lf.findColour(juce::ResizableWindow::backgroundColourId);
+
+    if (fileIsBeingDragged)
+    {
+        backgroundColour = backgroundColour.brighter(0.05f);
+    }
+
+    g.fillAll(backgroundColour);
 }
 
 /**
@@ -162,6 +169,57 @@ void MainComponent::resized()
         component->setBounds(footer.removeFromLeft(footerItemWidth));
         footer.removeFromLeft(footerItemSpacing);
     }
+}
+
+/**
+ * @brief   Implements juce::FileDragAndDropTarget::isInterestedInFileDrag()
+ * 
+ * @details Only accepts:
+ *          - A single file
+ *          - Ending with .xml
+ */
+bool MainComponent::isInterestedInFileDrag(const juce::StringArray& files)
+{
+    if (files.size() != 1)
+    {
+        return false;
+    }
+
+    return files[0].endsWithIgnoreCase(".xml");
+}
+
+/**
+ * @brief   Implements juce::FileDragAndDropTarget::filesDropped()
+ */
+void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int /*y*/)
+{
+    const auto& fileName = files[0];
+    jassert(fileName.endsWithIgnoreCase(".xml"));
+
+    auto& config = Application::getConfig();
+    auto xml = juce::XmlDocument(juce::File(fileName));
+    config.loadFromXml(xml);
+
+    fileIsBeingDragged = false;
+    repaint();
+}
+
+/**
+ * @brief   Implements juce::FileDragAndDropTarget::fileDragEnter()
+ */
+void MainComponent::fileDragEnter(const juce::StringArray& /*files*/, int /*x*/, int /*y*/)
+{
+    fileIsBeingDragged = true;
+    repaint();
+}
+
+/**
+ * @brief   Implements juce::FileDragAndDropTarget::fileDragExit()
+ */
+void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
+{
+    fileIsBeingDragged = false;
+    repaint();
 }
 
 } // namespace gui
