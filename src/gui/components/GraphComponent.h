@@ -484,7 +484,7 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
         auto start = transformPointForPaint(bounds, points.getFirst());
         p.startNewSubPath(start.getX(), start.getY());
 
-        interpolator->process(points, 100);
+        interpolator->process(points, 500);
 
         for (const auto& point : interpolator->getInterpolatedPoints())
         {
