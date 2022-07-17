@@ -25,6 +25,8 @@ juce_add_gui_app(${TARGET_NAME}
     PRODUCT_NAME "${PROJECT_NAME}"
     COMPANY_NAME "SUFST"
     BUNDLE_ID "com.sufst.${PROJECT_NAME}"
+    ICON_SMALL res/AppIcon_512.png
+    ICON_LARGE res/AppIcon_1024.png
 )
 
 juce_generate_juce_header(${TARGET_NAME})
