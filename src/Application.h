@@ -29,12 +29,8 @@ public:
     const juce::String getApplicationVersion() override;
     bool moreThanOneInstanceAllowed() override;
 
-    static Application& getApplication();
-    static ConfigurationValueTree& getConfig();
-
 private:
 
     std::unique_ptr<gui::MainWindow> mainWindow;
-
-    ConfigurationValueTree config;
+    std::shared_ptr<ConfigurationValueTree> configValueTree;
 };

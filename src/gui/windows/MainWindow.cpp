@@ -17,7 +17,7 @@ namespace gui
  *
  * @param[in]   name    Window name
  */
-MainWindow::MainWindow(const juce::String& name)
+MainWindow::MainWindow(const juce::String& name, std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
     : juce::DocumentWindow(
         name,
         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
@@ -30,7 +30,7 @@ MainWindow::MainWindow(const juce::String& name)
     setVisible(true);
     centreWithSize(getWidth(), getHeight());
 
-    setContentOwned(new MainComponent(), true);
+    setContentOwned(new MainComponent(sharedConfigValueTree), true);
 }
 
 /**

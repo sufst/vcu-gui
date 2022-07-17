@@ -15,9 +15,10 @@ namespace gui
 /**
  * @brief Constructor
  */
-TorqueMapComponent::TorqueMapComponent(ConfigurationValueTree& config)
+TorqueMapComponent::TorqueMapComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree)
 {
-    config.addChangeListener(this);
+    configValueTree->addListener(this);
 
     setRangeX(0, inputMax);
     setRangeY(0, outputMax);
@@ -31,10 +32,9 @@ TorqueMapComponent::TorqueMapComponent(ConfigurationValueTree& config)
 void TorqueMapComponent::loadTorqueMapData()
 {
     // interpolation method
-    torqueMap = Application::getConfig().getTorqueMap();
+    auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
 
-    setInterpolationMethod(torqueMap.getProperty(ConfigurationValueTree::InterpolationMethod).toString());
-    DBG("Load");
+    setInterpolationMethod(torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod).toString());
 
     // data points
     clear();
@@ -45,11 +45,10 @@ void TorqueMapComponent::loadTorqueMapData()
     {
         const auto& child = torqueMap.getChild(i);
 
-        if (child.hasType(ConfigurationValueTree::TorqueMapPoint))
+        if (child.hasType(ConfigurationValueTree::Children::TorqueMapPoint))
         {
-            DBG("Add point");
-            int input = child.getProperty(ConfigurationValueTree::TorqueMapInputValue);
-            int output = child.getProperty(ConfigurationValueTree::TorqueMapOutputValue);
+            int input = child.getProperty(ConfigurationValueTree::Properties::InputValue);
+            int output = child.getProperty(ConfigurationValueTree::Properties::OutputValue);
 
             addPoint({input, output});
         }
@@ -66,6 +65,7 @@ void TorqueMapComponent::syncTorqueMapData()
 {
     // TODO: this function isn't called that often, but rewriting the entire set of points is not a very efficient way
     //       to update the tree
+    auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
     torqueMap.removeAllChildren(nullptr);
 
     for (const auto& point : points)
@@ -144,7 +144,6 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
     {
         GraphComponent<int>::mouseUp(event);
         syncTorqueMapData();
-        DBG("Sync!");
     }
 }
 
@@ -254,14 +253,28 @@ void TorqueMapComponent::hideDeadzoneTooltip()
 }
 
 /**
- * @brief   Implements juce::ChangeListener::changeListenerCallback()
- * 
- * @details This will be called when the VCU configuration is loaded from a file 
+ * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
  */
-void TorqueMapComponent::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
+void TorqueMapComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 {
     loadTorqueMapData();
-    repaint();
+}
+
+/**
+ * @brief Implements juce::ValueTree::Listener::valueTreePropertyChanged()
+ */
+void TorqueMapComponent::valueTreePropertyChanged(juce::ValueTree& changedTree, const juce::Identifier& property)
+{
+    auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+    
+    if (changedTree == torqueMap)
+    {
+        if (property == ConfigurationValueTree::Properties::InterpolationMethod)
+        {
+            setInterpolationMethod(torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod).toString());
+            repaint();
+        }
+    }
 }
 
 } // namespace gui

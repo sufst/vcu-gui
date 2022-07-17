@@ -18,12 +18,12 @@ namespace gui
 /**
  * @brief Main GUI component
  */
-class MainComponent : public juce::Component, public juce::FileDragAndDropTarget
+class MainComponent : public juce::Component, public juce::FileDragAndDropTarget, public juce::ValueTree::Listener
 {
 public:
 
     // constructor / destructor
-    MainComponent();
+    MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
     ~MainComponent() override;
 
     // graphics
@@ -36,11 +36,18 @@ public:
     void fileDragEnter(const juce::StringArray& files, int x, int y) override;
     void fileDragExit(const juce::StringArray& files) override;
 
+    // config value tree
+    void valueTreeRedirected(juce::ValueTree& redirectedTree) override;
+
 private:
 
     void setupInterpolationCombo();
     void setupButtons();
 
+    // shared config state
+    std::shared_ptr<ConfigurationValueTree> configValueTree;
+
+    // file import/export
     std::unique_ptr<juce::FileChooser> fileChooser;
     bool fileIsBeingDragged = false;
 

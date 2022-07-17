@@ -13,7 +13,8 @@
  */
 void Application::initialise(const juce::String& commandLine)
 {
-    mainWindow = std::make_unique<gui::MainWindow>(getApplicationName());
+    configValueTree = std::make_shared<ConfigurationValueTree>();
+    mainWindow = std::make_unique<gui::MainWindow>(getApplicationName(), configValueTree);
 }
 
 /**
@@ -65,23 +66,4 @@ const juce::String Application::getApplicationVersion()
 bool Application::moreThanOneInstanceAllowed()
 {
     return false;
-}
-
-/**
- * @brief Returns a reference to the global application instance
- */
-Application& Application::getApplication()
-{
-    auto* pApp = static_cast<Application*>(JUCEApplication::getInstance());
-    jassert(pApp);
-    return *pApp;
-}
-
-/**
- * @brief Returns a reference to the global VCU configuration instance
- */
-ConfigurationValueTree& Application::getConfig()
-{
-    auto& app = getApplication();
-    return app.config;
 }

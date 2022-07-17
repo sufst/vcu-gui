@@ -7,6 +7,9 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <memory>
+
+#include "../../ConfigurationValueTree.h"
 
 namespace gui
 {
@@ -18,7 +21,7 @@ class MainWindow : public juce::DocumentWindow
 {
 public:
 
-    MainWindow(const juce::String& name);
+    MainWindow(const juce::String& name, std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
 
     void closeButtonPressed() override;
 

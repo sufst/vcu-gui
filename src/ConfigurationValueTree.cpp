@@ -13,6 +13,7 @@
  */
 ConfigurationValueTree::ConfigurationValueTree() : tree(createEmptyConfiguration())
 {
+    DBG(tree.toXmlString());
 }
 
 /**
@@ -20,25 +21,47 @@ ConfigurationValueTree::ConfigurationValueTree() : tree(createEmptyConfiguration
  */
 juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
 {
-    juce::ValueTree root(Root);
-    juce::ValueTree torqueMapTree(TorqueMap);
+    juce::ValueTree rootTree(Root);
+    juce::ValueTree torqueMapTree(Children::TorqueMap);
 
-    root.addChild(torqueMapTree, 0, nullptr);
-    root.setProperty(ProfileName, "New Profile", nullptr);
+    rootTree.addChild(torqueMapTree, 0, nullptr);
+    rootTree.setProperty(Properties::ProfileName, "New Profile", nullptr);
 
-    torqueMapTree.setProperty(InterpolationMethod, utility::SplineInterpolator<int>::identifier.toString(), nullptr);
+    torqueMapTree.setProperty(Properties::InterpolationMethod, utility::SplineInterpolator<int>::identifier.toString(), nullptr);
     torqueMapTree.addChild(createTorqueMapPoint(0, 0), 0, nullptr);
     torqueMapTree.addChild(createTorqueMapPoint(1023, 32767), 1, nullptr);
-
-    return root;
+    
+    return rootTree;
 }
 
 /**
- * @brief Returns a reference to the juce::ValueTree containing the torque map
+ * @brief   Adds a listener to the root juce::ValueTree
+ * 
+ * @note    This should be used to register juce::ValueTree::Listener objects as it adds a listener to the root value
+ *          tree owned by this object. If getRoot().addListener() or similar is used, when a new profile is loaded the
+ *          valueTreeRedirected() callback will not be called!
  */
-juce::ValueTree ConfigurationValueTree::getTorqueMap() const
+void ConfigurationValueTree::addListener(juce::ValueTree::Listener* newListener)
 {
-    return tree.getChildWithName(TorqueMap);
+    tree.addListener(newListener);
+}
+
+/**
+ * @brief Returns the root tree
+ */
+juce::ValueTree ConfigurationValueTree::getRoot() const
+{
+    return tree;
+}
+
+/**
+ * @brief       Returns the first child tree with the specified name, if it exists
+ * 
+ * @param[in]   identifier  Identifier name of the child
+ */
+juce::ValueTree ConfigurationValueTree::getChildWithName(const juce::Identifier& identifier) const 
+{
+    return tree.getChildWithName(identifier);
 }
 
 /**
@@ -49,10 +72,10 @@ juce::ValueTree ConfigurationValueTree::getTorqueMap() const
  */
 juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input, int output)
 {
-    juce::ValueTree point(TorqueMapPoint);
+    juce::ValueTree point(Children::TorqueMapPoint);
 
-    point.setProperty(TorqueMapInputValue, input, nullptr);
-    point.setProperty(TorqueMapOutputValue, output, nullptr);
+    point.setProperty(Properties::InputValue, input, nullptr);
+    point.setProperty(Properties::OutputValue, output, nullptr);
 
     return point;
 }
@@ -66,24 +89,15 @@ std::unique_ptr<juce::XmlDocument> ConfigurationValueTree::exportXml() const
 }
 
 /**
- * @brief       Load a configuration from an XML document
+ * @brief       Load a configuration from a file
+ * 
+ * @note        This will cause juce::ValueTree::Listener objects registered with addListener() to receive the
+ *              valueTreeRedirected() callback which should handle loading of a new profile
  *
  * @param[in]   xml     XML document
  */
-void ConfigurationValueTree::loadFromXml(juce::XmlDocument& xml)
+void ConfigurationValueTree::loadFromFile(const juce::File& file)
 {
-    tree.copyPropertiesAndChildrenFrom(juce::ValueTree::fromXml(xml.getDocumentElement()->toString()), nullptr);
-    DBG(tree.toXmlString());
-    sendSynchronousChangeMessage();
+    juce::XmlDocument xml(file);
+    tree = juce::ValueTree::fromXml(xml.getDocumentElement()->toString());
 }
-
-/*
- * property identifiers
- */
-const juce::Identifier ConfigurationValueTree::Root = "VCUConfiguration";
-const juce::Identifier ConfigurationValueTree::TorqueMap = "TorqueMap";
-const juce::Identifier ConfigurationValueTree::TorqueMapPoint = "TorqueMapPoint";
-const juce::Identifier ConfigurationValueTree::TorqueMapInputValue = "TorqueMapInput";
-const juce::Identifier ConfigurationValueTree::TorqueMapOutputValue = "TorqueMapOutput";
-const juce::Identifier ConfigurationValueTree::ProfileName = "ProfileName";
-const juce::Identifier ConfigurationValueTree::InterpolationMethod = "InterpolationMethod";

@@ -12,31 +12,65 @@
 /**
  * @brief Stores the VCU configuration profile and notifies registered listeners when it changes
  */
-class ConfigurationValueTree : public juce::ChangeBroadcaster
+class ConfigurationValueTree final
 {
 public:
 
     ConfigurationValueTree();
 
-    juce::ValueTree getTorqueMap() const;
+    void addListener(juce::ValueTree::Listener* newListener);
+    juce::ValueTree getRoot() const;
+    juce::ValueTree getChildWithName(const juce::Identifier& identifier) const;
 
     std::unique_ptr<juce::XmlDocument> exportXml() const;
-    void loadFromXml(juce::XmlDocument& xml);
-
-    static const juce::Identifier TorqueMap;
-    static const juce::Identifier TorqueMapPoint;
-    static const juce::Identifier TorqueMapInputValue;
-    static const juce::Identifier TorqueMapOutputValue;
-    static const juce::Identifier ProfileName;
-    static const juce::Identifier InterpolationMethod;
-
+    void loadFromFile(const juce::File& file);
     static juce::ValueTree createTorqueMapPoint(int input, int output);
+
+    /**
+     * @brief Property type identifiers
+     */
+    class Properties
+    {
+    public:
+
+        // metadata
+        inline static const juce::Identifier ProfileName = "ProfileName";
+        inline static const juce::Identifier ApplicationVersion = "ApplicationVersion";
+
+        // torque map
+        inline static const juce::Identifier InterpolationMethod = "InterpolationMethod";
+        inline static const juce::Identifier InputValue = "InputValue";
+        inline static const juce::Identifier OutputValue = "OutputValue";
+
+    private:
+
+        Properties() = default;
+
+    };
+
+    /**
+     * @brief Child type identifiers
+     */
+    class Children
+    {
+    public:
+
+        inline static const juce::Identifier TorqueMap = "TorqueMap";
+        inline static const juce::Identifier TorqueMapPoint = "TorqueMapPoint";
+
+    private:
+
+        Children() = default;
+
+    };
+
+    /**
+     * @brief Tree root identifier
+     */
+    inline static const juce::Identifier Root = "VCUConfiguration";
 
 private:
 
     static juce::ValueTree createEmptyConfiguration();
-
-    static const juce::Identifier Root;
-
     juce::ValueTree tree;
 };

@@ -15,11 +15,12 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent()
-    : torqueMapGraph(Application::getConfig())
-
+MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree), torqueMapGraph(sharedConfigValueTree)
 {
     setSize(600, 400);
+
+    configValueTree->addListener(this);
 
     setupInterpolationCombo();
     setupButtons();
@@ -45,23 +46,29 @@ void MainComponent::setupInterpolationCombo()
 {
     const auto& interpolationMethods = utility::InterpolatorFactory<int>::getAllIdentifiers();
 
+    juce::ValueTree torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+    const juce::String selectedMethod = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+
     for (unsigned i = 0; i < interpolationMethods.size(); i++)
     {
-        const int itemId = static_cast<int>(i + 1);
-        const auto& method = interpolationMethods.at(i);
-        interpolationCombo.addItem(method.toString(), itemId);
+        const auto itemId = static_cast<int>(i + 1);
+        const auto& method = interpolationMethods.at(i).toString();
 
-        if (method.toString() == Application::getConfig().getTorqueMap().getProperty(ConfigurationValueTree::InterpolationMethod).toString())
+        interpolationCombo.addItem(method, itemId);
+
+        if (method == selectedMethod)
         {
             interpolationCombo.setSelectedId(itemId);
         }
     }
 
-    interpolationCombo.onChange = [this]()
+    interpolationCombo.onChange = [this]() mutable
     {
-        int selectedIndex = this->interpolationCombo.getSelectedItemIndex();
-        auto value = this->interpolationCombo.getItemText(selectedIndex);
-        Application::getConfig().getTorqueMap().setProperty(ConfigurationValueTree::InterpolationMethod, value, nullptr);
+        int selectedIndex = interpolationCombo.getSelectedItemIndex();
+        juce::String value = interpolationCombo.getItemText(selectedIndex);
+        auto map = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+
+        map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod, value, nullptr);
     };
 }
 
@@ -85,15 +92,16 @@ void MainComponent::setupButtons()
                                 | juce::FileBrowserComponent::saveMode;
 
         fileChooser->launchAsync(fileChooserFlags,
-                                 [](const juce::FileChooser& chooser)
+                                 [this](const juce::FileChooser& chooser)
                                  {
                                      if (chooser.getResults().isEmpty())
                                      {
                                          return;
                                      }
 
-                                     auto xml = Application::getConfig().exportXml();
+                                     auto xml = configValueTree->exportXml();
                                      auto file = chooser.getResult();
+
                                      xml->getDocumentElement()->writeTo(file);
                                  });
     };
@@ -112,15 +120,14 @@ void MainComponent::setupButtons()
                                 | juce::FileBrowserComponent::openMode;
 
         fileChooser->launchAsync(fileChooserFlags,
-                                 [](const juce::FileChooser& chooser)
+                                 [this](const juce::FileChooser& chooser)
                                  {
                                      if (chooser.getResults().isEmpty())
                                      {
                                          return;
                                      }
-                                     auto& config = Application::getConfig();
-                                     auto xml = juce::XmlDocument(chooser.getResult());
-                                     config.loadFromXml(xml);
+                                     
+                                     configValueTree->loadFromFile(chooser.getResult());
                                  });
     };
 }
@@ -133,7 +140,7 @@ void MainComponent::setupButtons()
 void MainComponent::paint(juce::Graphics& g)
 {
     auto& lf = getLookAndFeel();
-    auto backgroundColour =  lf.findColour(juce::ResizableWindow::backgroundColourId);
+    auto backgroundColour = lf.findColour(juce::ResizableWindow::backgroundColourId);
 
     if (fileIsBeingDragged)
     {
@@ -173,7 +180,7 @@ void MainComponent::resized()
 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::isInterestedInFileDrag()
- * 
+ *
  * @details Only accepts:
  *          - A single file
  *          - Ending with .xml
@@ -196,9 +203,7 @@ void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int 
     const auto& fileName = files[0];
     jassert(fileName.endsWithIgnoreCase(".xml"));
 
-    auto& config = Application::getConfig();
-    auto xml = juce::XmlDocument(juce::File(fileName));
-    config.loadFromXml(xml);
+    configValueTree->loadFromFile(juce::File(fileName));
 
     fileIsBeingDragged = false;
     repaint();
@@ -220,6 +225,29 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
 {
     fileIsBeingDragged = false;
     repaint();
+}
+
+/**
+ * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
+ */
+void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
+{
+    if (redirectedTree == configValueTree->getRoot())
+    {
+        auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+
+        // TODO: this should be replaced by something (1) faster (2) that is its own function!
+        juce::String interpolationMethod = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+        
+        for (int i = 0; i < interpolationCombo.getNumItems(); i++)
+        {
+            if (interpolationCombo.getItemText(i) == interpolationMethod)
+            {
+                interpolationCombo.setSelectedItemIndex(i);
+                break;
+            }
+        }
+    }
 }
 
 } // namespace gui
