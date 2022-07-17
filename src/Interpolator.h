@@ -17,6 +17,7 @@
 #undef NDEBUG
 #pragma GCC diagnostic pop
 
+#include "utility/linspace.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -43,10 +44,44 @@ public:
     /**
      * @brief       Processes the interpolation for a set of samples
      *
-     * @param[in]   inputSamples    Input samples
-     * @param[in]   speedRatio      Increase in sample rate
+     * @param[in]   inputSamples        Input samples
+     * @param[in]   numOutputSamples    The number of output samples to generate
      */
-    virtual void process(const juce::Array<juce::Point<ValueType>>& inputSamples, int speedRatio) = 0;
+    virtual void process(const juce::Array<juce::Point<ValueType>>& inputSamples, int numOutputSamples)
+    {
+        jassert(inputSamples.size() >= 2);
+
+        if (!this->getCacheValid())
+        {
+            prepare(inputSamples);
+            this->resetSamples(numOutputSamples);
+
+            auto outputX
+                = linspace<ValueType>(inputSamples.getFirst().getX(), inputSamples.getLast().getX(), numOutputSamples);
+
+            int leftIndex = 0;
+            int rightIndex = 1;
+
+            for (const auto& x : outputX)
+            {
+                while (x >= inputSamples[rightIndex].getX() && rightIndex != inputSamples.size())
+                {
+                    leftIndex++;
+                    rightIndex++;
+                }
+
+                const auto& p1 = inputSamples[leftIndex];
+                const auto& p2 = inputSamples[rightIndex];
+
+                const auto y = interpolate(x, p1, p2);
+
+                this->outputSamples.add({x, y});
+            }
+
+            this->outputSamples.add(inputSamples.getLast());
+            this->setCacheValid(true);
+        }
+    }
 
     /**
      * @brief   Returns the interpolated points
@@ -67,6 +102,23 @@ public:
     }
 
 protected:
+
+    /**
+     * @brief       Internal function implemented by derived classes to compute an interpolated value between two points
+     *
+     * @param[in]   input       Input to interpolate
+     * @param[in]   leftPoint   Nearest point with x-coordinate to left of input
+     * @param[in]   rightPoint  Nearest point with x-coordinate to right of input
+     */
+    virtual ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint)
+        = 0;
+
+    /**
+     * @brief       Internal function implemented by derived classes to prepare for calls to interpolate()
+     * 
+     * @param[in]   inputSamples    The input samples for interpolation
+     */
+    virtual void prepare(const juce::Array<juce::Point<ValueType>>& inputSamples) = 0;
 
     /**
      * @brief       Validates or invalidates the cache
@@ -123,42 +175,30 @@ class LinearInterpolator : public Interpolator<ValueType>
 public:
 
     /**
-     * @brief Implements Interpolator::process()
+     * @brief Implements Interpolator::prepare()
      */
-    void process(const juce::Array<juce::Point<ValueType>>& inputSamples, int speedRatio) override
+    void prepare(const juce::Array<juce::Point<ValueType>>& /*inputSamples*/) override
     {
-        if (!this->getCacheValid())
-        {
-            this->resetSamples(inputSamples.size() * speedRatio);
-
-            for (int i = 0; i < inputSamples.size() - 1; i++)
-            {
-                const auto& p1 = inputSamples[i];
-                const auto& p2 = inputSamples[i + 1];
-
-                const ValueType xDiff = p2.getX() - p1.getX();
-                const ValueType yDiff = p2.getY() - p1.getY();
-
-                for (int j = 0; j < speedRatio; j++)
-                {
-                    const float mu = static_cast<float>(j) / speedRatio;
-                    auto x = static_cast<ValueType>(p1.getX() + mu * xDiff);
-                    auto y = static_cast<ValueType>(p1.getY() + mu * yDiff);
-
-                    this->outputSamples.add({x, y});
-                }
-            }
-
-            this->outputSamples.add(inputSamples.getLast());
-            this->setCacheValid(true);
-        }
+        // nothing to do
     }
 
-    static const juce::Identifier identifier;
-};
+    /**
+     * @brief Implements Interpolator::interpolate()
+     */
+    ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint) override
+    {
+        const ValueType xDiff = rightPoint.getX() - leftPoint.getX();
+        const ValueType yDiff = rightPoint.getY() - leftPoint.getY();
 
-template <typename ValueType>
-const juce::Identifier LinearInterpolator<ValueType>::identifier = "Linear";
+        const float mu = static_cast<float>(input - leftPoint.getX()) / xDiff;
+        return static_cast<ValueType>(leftPoint.getY() + mu * yDiff);
+    }
+
+    /**
+     * @brief Identifier / name for algorithm
+     */
+    inline static const juce::Identifier identifier = "Linear";
+};
 
 //--------------------------------------------------------------------------------------------------------------- cosine
 
@@ -173,41 +213,31 @@ class CosineInterpolator : public Interpolator<ValueType>
 public:
 
     /**
-     * @brief Implements Interpolator::process()
+     * @brief Implements Interpolator::prepare()
      */
-    void process(const juce::Array<juce::Point<ValueType>>& inputSamples, int speedRatio) override
+    void prepare(const juce::Array<juce::Point<ValueType>>& /*inputSamples*/) override
     {
-        this->resetSamples(inputSamples.size() * speedRatio);
-
-        for (int i = 0; i < inputSamples.size() - 1; i++)
-        {
-            const auto& p1 = inputSamples[i];
-            const auto& p2 = inputSamples[i + 1];
-
-            const ValueType xDiff = p2.getX() - p1.getX();
-            // const ValueType yDiff = p2.getY() - p1.getY();
-
-            for (int j = 0; j < speedRatio; j++)
-            {
-                const float mu = static_cast<float>(j) / speedRatio;
-                const float mu2 = (1 - std::cos(mu * juce::MathConstants<float>::pi)) / 2;
-
-                auto x = static_cast<ValueType>(p1.getX() + mu * xDiff);
-                auto y = static_cast<ValueType>(p1.getY() * (1 - mu2) + p2.getY() * mu2);
-
-                this->outputSamples.add({x, y});
-            }
-        }
-
-        this->outputSamples.add(inputSamples.getLast());
-        this->setCacheValid(true);
+        // nothing to do
     }
 
-    static const juce::Identifier identifier;
-};
+    /**
+     * @brief Implements Interpolator::interpolate()
+     */
+    ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint) override
+    {
+        const ValueType xDiff = rightPoint.getX() - leftPoint.getX();
 
-template <typename ValueType>
-const juce::Identifier CosineInterpolator<ValueType>::identifier = "Cosine";
+        const float mu = static_cast<float>(input - leftPoint.getX()) / xDiff;
+        const float mu2 = (1 - std::cos(mu * juce::MathConstants<float>::pi)) / 2;
+
+        return static_cast<ValueType>(leftPoint.getY() * (1 - mu2) + rightPoint.getY() * mu2);
+    }
+
+    /**
+     * @brief Identifier / name for algorithm
+     */
+    inline static const juce::Identifier identifier = "Cosine";
+};
 
 //--------------------------------------------------------------------------------------------------------------- spline
 
@@ -222,59 +252,45 @@ class SplineInterpolator : public Interpolator<ValueType>
 public:
 
     /**
-     * @brief Implements Interpolator::process()
+     * @brief Implements Interpolator::prepare()
      */
-    void process(const juce::Array<juce::Point<ValueType>>& inputSamples, int speedRatio) override
+    void prepare(const juce::Array<juce::Point<ValueType>>&  inputSamples) override
     {
-        const int numInputSamples = inputSamples.size();
-        const int numOutputSamples = numInputSamples * speedRatio;
+        const size_t numInputSamples = static_cast<size_t>(inputSamples.size());
 
-        this->resetSamples(numOutputSamples);
+        xInputs.resize(numInputSamples);
+        yInputs.resize(numInputSamples);
 
-        std::vector<double> xInputs; // spline lib requires double
-        std::vector<double> yInputs;
-        xInputs.reserve(static_cast<size_t>(numInputSamples));
-        yInputs.reserve(static_cast<size_t>(numInputSamples));
-
-        std::for_each(inputSamples.begin(),
-                      inputSamples.end(),
-                      [&xInputs, &yInputs](const juce::Point<ValueType>& point)
-                      {
-                          // hack to enforce strict monotonicity
-                          if (xInputs.back() == point.getX())
-                          {
-                              xInputs.push_back(point.getX() + 1);
-                          }
-                          else
-                          {
-                              xInputs.push_back(point.getX());
-                          }
-
-                          yInputs.push_back(point.getY());
-                      });
-
-        tk::spline spline(xInputs, yInputs, getRequiredSplineType(numInputSamples));
-
-        for (int i = 0; i < numInputSamples - 1; i++)
+        for (unsigned i = 0; i < numInputSamples; i++)
         {
-            const auto& p1 = inputSamples[i];
-            const auto& p2 = inputSamples[i + 1];
+            const auto& inputPoint = inputSamples[static_cast<int>(i)];
 
-            const ValueType xDiff = p2.getX() - p1.getX();
+            xInputs[i] = inputPoint.getX();
+            yInputs[i] = inputPoint.getY();
 
-            for (int j = 0; j < speedRatio; j++)
+            // hack to enforce strict monotonicity in x
+            if (i != 0 && xInputs[i - 1] == xInputs[i])
             {
-                const float mu = static_cast<float>(j) / speedRatio;
-
-                auto x = static_cast<ValueType>(p1.getX() + mu * xDiff);
-                auto y = static_cast<ValueType>(spline(x));
-
-                this->outputSamples.add({x, y});
+                xInputs[i] += 1;
             }
+
         }
+
+        spline = tk::spline(xInputs, yInputs, getRequiredSplineType(numInputSamples));
     }
 
-    static const juce::Identifier identifier;
+    /**
+     * @brief Implements Interpolator::interpolate()
+     */
+    ValueType interpolate(ValueType input, juce::Point<ValueType> /*leftPoint*/, juce::Point<ValueType> /*rightPoint*/) override
+    {
+        return static_cast<ValueType>(spline(input));
+    }
+
+    /**
+     * @brief Identifier / name for algorithm
+     */
+    inline static const juce::Identifier identifier = "Spline";
 
 private:
 
@@ -286,15 +302,17 @@ private:
      *
      * @param[in]   numInputSamples     Number of input samples
      */
-    tk::spline::spline_type getRequiredSplineType(int numInputSamples) const
+    tk::spline::spline_type getRequiredSplineType(size_t numInputSamples) const
     {
         using spline_type = tk::spline::spline_type;
         return (numInputSamples > 2) ? spline_type::cspline : spline_type::linear;
     }
-};
 
-template <typename ValueType>
-const juce::Identifier SplineInterpolator<ValueType>::identifier = "Spline";
+    // prepared state
+    std::vector<double> xInputs;
+    std::vector<double> yInputs;
+    tk::spline spline;
+};
 
 //-------------------------------------------------------------------------------------------------------------- factory
 
