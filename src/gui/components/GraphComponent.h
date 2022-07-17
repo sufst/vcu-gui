@@ -41,6 +41,7 @@ public:
 
     void addPoint(ValueType x, ValueType y);
     void addPoint(const juce::Point<ValueType>& point);
+    void clear();
 
     void paint(juce::Graphics& g) override;
 
@@ -174,6 +175,15 @@ void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
 
     interpolator->invalidateCache();
     repaint();
+}
+
+/**
+ * @brief Clears all points from the graph
+ */
+template <typename ValueType> 
+void GraphComponent<ValueType>::clear()
+{
+    points.clear();
 }
 
 /**

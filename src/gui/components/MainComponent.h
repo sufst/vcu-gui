@@ -45,6 +45,7 @@ private:
     TorqueMapComponent torqueMapGraph;
     juce::ComboBox interpolationCombo;
     juce::TextButton exportProfileButton;
+    juce::TextButton importProfileButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

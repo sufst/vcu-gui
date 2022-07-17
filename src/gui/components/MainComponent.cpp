@@ -27,6 +27,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(torqueMapGraph);
     addAndMakeVisible(interpolationCombo);
     addAndMakeVisible(exportProfileButton);
+    addAndMakeVisible(importProfileButton);
 }
 
 /**
@@ -69,15 +70,15 @@ void MainComponent::setupInterpolationCombo()
  */
 void MainComponent::setupButtons()
 {
+    // export profile
     exportProfileButton.setButtonText("Export Profile");
 
     exportProfileButton.onClick = [this]()
     {
-        fileChooser
-            = std::make_unique<juce::FileChooser>("Save VCU configuration",
-                                                  juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                  "*.xml",
-                                                  true);
+        fileChooser = std::make_unique<juce::FileChooser>("Save VCU configuration",
+                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                                          "*.xml",
+                                                          true);
 
         auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
                                 | juce::FileBrowserComponent::warnAboutOverwriting
@@ -90,10 +91,36 @@ void MainComponent::setupButtons()
                                      {
                                          return;
                                      }
-                                     
+
                                      auto xml = Application::getConfig().exportXml();
                                      auto file = chooser.getResult();
                                      xml->getDocumentElement()->writeTo(file);
+                                 });
+    };
+
+    // import profile
+    importProfileButton.setButtonText("Import Profile");
+
+    importProfileButton.onClick = [this]() {
+
+        fileChooser = std::make_unique<juce::FileChooser>("Load VCU configuration",
+                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+                                                          "*.xml",
+                                                          true);
+
+        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+                                | juce::FileBrowserComponent::openMode;
+
+        fileChooser->launchAsync(fileChooserFlags,
+                                 [](const juce::FileChooser& chooser)
+                                 {
+                                     if (chooser.getResults().isEmpty())
+                                     {
+                                         return;
+                                     }
+                                     auto& config = Application::getConfig();
+                                     auto xml = juce::XmlDocument(chooser.getResult());
+                                     config.loadFromXml(xml);
                                  });
     };
 }
@@ -123,7 +150,8 @@ void MainComponent::resized()
     torqueMapGraph.setBounds(bounds);
 
     // footer
-    std::initializer_list<juce::Component*> footerComponents = {&interpolationCombo, &exportProfileButton};
+    std::initializer_list<juce::Component*> footerComponents
+        = {&interpolationCombo, &exportProfileButton, &importProfileButton};
 
     const int numFooterComponents = static_cast<int>(footerComponents.size());
     const int footerItemSpacing = borderSize / numFooterComponents;

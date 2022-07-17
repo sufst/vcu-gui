@@ -5,6 +5,7 @@
  *****************************************************************************/
 
 #include "VCUConfiguration.h"
+
 #include "Interpolator.h"
 
 /**
@@ -26,6 +27,8 @@ juce::ValueTree VCUConfiguration::createEmptyConfiguration()
     root.setProperty(ProfileName, "New Profile", nullptr);
 
     torqueMapTree.setProperty(InterpolationMethod, utility::SplineInterpolator<int>::identifier.toString(), nullptr);
+    torqueMapTree.addChild(createTorqueMapPoint(0, 0), 0, nullptr);
+    torqueMapTree.addChild(createTorqueMapPoint(1023, 32767), 1, nullptr);
 
     return root;
 }
@@ -40,7 +43,7 @@ juce::ValueTree VCUConfiguration::getTorqueMap() const
 
 /**
  * @brief       Creates a new value tree representing a torque map point
- * 
+ *
  * @param[in]   input   Input value
  * @param[in]   output  Output value (input -> torque map -> output)
  */
@@ -60,6 +63,18 @@ juce::ValueTree VCUConfiguration::createTorqueMapPoint(int input, int output)
 std::unique_ptr<juce::XmlDocument> VCUConfiguration::exportXml() const
 {
     return std::make_unique<juce::XmlDocument>(tree.toXmlString());
+}
+
+/**
+ * @brief       Load a configuration from an XML document
+ *
+ * @param[in]   xml     XML document
+ */
+void VCUConfiguration::loadFromXml(juce::XmlDocument& xml)
+{
+    tree = juce::ValueTree::fromXml(xml.getDocumentElement()->toString());
+    DBG(tree.toXmlString());
+    sendSynchronousChangeMessage();
 }
 
 /*

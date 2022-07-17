@@ -14,18 +14,46 @@ namespace gui
 /**
  * @brief Constructor
  */
-TorqueMapComponent::TorqueMapComponent(VCUConfiguration& config) : deadzonePosition(defaultDeadzone)
+TorqueMapComponent::TorqueMapComponent(VCUConfiguration& config)
 {
     torqueMap = config.getTorqueMap();
-    torqueMap.addListener(this);
-
-    setInterpolationMethod(torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString());
+    
+    config.addChangeListener(this);
 
     setRangeX(0, inputMax);
     setRangeY(0, outputMax);
 
-    addPoint(defaultDeadzone, 0);
-    addPoint(inputMax, outputMax);
+    loadTorqueMapData();
+}
+
+/**
+ * @brief Loads torque map data from the value tree
+ */
+void TorqueMapComponent::loadTorqueMapData()
+{
+    // interpolation method
+    setInterpolationMethod(torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString());
+
+    // data points
+    clear();
+
+    int numChildren = torqueMap.getNumChildren();
+
+    for (int i = 0; i < numChildren; i++)
+    {
+        const auto& child = torqueMap.getChild(i);
+
+        if (child.hasType(VCUConfiguration::TorqueMapPoint))
+        {
+            int input = child.getProperty(VCUConfiguration::TorqueMapInputValue);
+            int output = child.getProperty(VCUConfiguration::TorqueMapOutputValue);
+
+            addPoint({input, output});
+        }
+    }
+
+    // deadzone
+    deadzonePosition = points.getFirst().getX();
 }
 
 /**
@@ -206,19 +234,13 @@ void TorqueMapComponent::hideDeadzoneTooltip()
 }
 
 /**
- * @brief Implements juce::ValueTree::Listener::valueTreePropertyChanged()
+ * @brief   Implements juce::ChangeListener::changeListenerCallback()
+ * 
+ * @details This will be called when the VCU configuration is loaded from a file 
  */
-void TorqueMapComponent::valueTreePropertyChanged(juce::ValueTree& changedTree, const juce::Identifier& property)
+void TorqueMapComponent::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
-    if (changedTree == torqueMap)
-    {
-        if (property == VCUConfiguration::InterpolationMethod)
-        {
-            juce::String newInterpolationMethod = torqueMap.getProperty(property);
-            setInterpolationMethod(newInterpolationMethod);
-            repaint();
-        }
-    }
+    loadTorqueMapData();
 }
 
 } // namespace gui

@@ -12,7 +12,7 @@
 namespace gui
 {
 
-class TorqueMapComponent : public GraphComponent<int>, juce::ValueTree::Listener
+class TorqueMapComponent : public GraphComponent<int>, juce::ChangeListener
 {
 public:
 
@@ -25,7 +25,8 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
 
-    void valueTreePropertyChanged(juce::ValueTree& changedTree, const juce::Identifier& property) override;
+    void loadTorqueMapData();
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
 
@@ -37,7 +38,7 @@ private:
     void hideDeadzoneTooltip();
 
     juce::ValueTree torqueMap;
-    int deadzonePosition;
+    int deadzonePosition = 0;
     bool movingDeadzone = false;
     std::unique_ptr<juce::TooltipWindow> deadzoneTooltip;
 
@@ -45,7 +46,6 @@ private:
     static const int outputResolution = 15;
     static const int inputMax = (1 << inputResolution) - 1;
     static const int outputMax = (1 << outputResolution) - 1;
-    static const int defaultDeadzone = static_cast<int>(0.05f * inputMax);
 };
 
 } // namespace gui

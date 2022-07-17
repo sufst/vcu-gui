@@ -9,7 +9,10 @@
 #include <JuceHeader.h>
 #include <memory>
 
-class VCUConfiguration
+/**
+ * @brief Stores the VCU configuration profile and notifies registered listeners when it changes
+ */
+class VCUConfiguration : public juce::ChangeBroadcaster
 {
 public:
 
@@ -18,6 +21,7 @@ public:
     juce::ValueTree getTorqueMap() const;
 
     std::unique_ptr<juce::XmlDocument> exportXml() const;
+    void loadFromXml(juce::XmlDocument& xml);
 
     static const juce::Identifier TorqueMap;
     static const juce::Identifier TorqueMapPoint;
