@@ -25,7 +25,6 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
 
-    void loadTorqueMapData();
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
@@ -36,6 +35,9 @@ private:
     bool shouldPreventPointEdit(const juce::MouseEvent& event) const;
     void showDeadzoneTooltip();
     void hideDeadzoneTooltip();
+
+    void loadTorqueMapData();
+    void syncTorqueMapData();
 
     juce::ValueTree torqueMap;
     int deadzonePosition = 0;

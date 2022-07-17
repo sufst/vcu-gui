@@ -7,6 +7,7 @@
 #include "TorqueMapComponent.h"
 
 #include "../utility/clip.h"
+#include "../../Application.h"
 
 namespace gui
 {
@@ -16,8 +17,6 @@ namespace gui
  */
 TorqueMapComponent::TorqueMapComponent(VCUConfiguration& config)
 {
-    torqueMap = config.getTorqueMap();
-    
     config.addChangeListener(this);
 
     setRangeX(0, inputMax);
@@ -32,7 +31,10 @@ TorqueMapComponent::TorqueMapComponent(VCUConfiguration& config)
 void TorqueMapComponent::loadTorqueMapData()
 {
     // interpolation method
+    torqueMap = Application::getConfig().getTorqueMap();
+
     setInterpolationMethod(torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString());
+    DBG("Load");
 
     // data points
     clear();
@@ -45,6 +47,7 @@ void TorqueMapComponent::loadTorqueMapData()
 
         if (child.hasType(VCUConfiguration::TorqueMapPoint))
         {
+            DBG("Add point");
             int input = child.getProperty(VCUConfiguration::TorqueMapInputValue);
             int output = child.getProperty(VCUConfiguration::TorqueMapOutputValue);
 
@@ -54,6 +57,21 @@ void TorqueMapComponent::loadTorqueMapData()
 
     // deadzone
     deadzonePosition = points.getFirst().getX();
+}
+
+/**
+ * @brief Updates the torque map when the points on the graph change
+ */
+void TorqueMapComponent::syncTorqueMapData()
+{
+    // TODO: this function isn't called that often, but rewriting the entire set of points is not a very efficient way
+    //       to update the tree
+    torqueMap.removeAllChildren(nullptr);
+
+    for (const auto& point : points)
+    {
+        torqueMap.addChild(VCUConfiguration::createTorqueMapPoint(point.getX(), point.getY()), -1, nullptr);
+    }
 }
 
 /**
@@ -125,6 +143,8 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
     else if (!shouldPreventPointEdit(event))
     {
         GraphComponent<int>::mouseUp(event);
+        syncTorqueMapData();
+        DBG("Sync!");
     }
 }
 
@@ -238,9 +258,10 @@ void TorqueMapComponent::hideDeadzoneTooltip()
  * 
  * @details This will be called when the VCU configuration is loaded from a file 
  */
-void TorqueMapComponent::changeListenerCallback(juce::ChangeBroadcaster* source)
+void TorqueMapComponent::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
 {
     loadTorqueMapData();
+    repaint();
 }
 
 } // namespace gui

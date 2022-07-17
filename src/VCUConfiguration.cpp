@@ -72,7 +72,7 @@ std::unique_ptr<juce::XmlDocument> VCUConfiguration::exportXml() const
  */
 void VCUConfiguration::loadFromXml(juce::XmlDocument& xml)
 {
-    tree = juce::ValueTree::fromXml(xml.getDocumentElement()->toString());
+    tree.copyPropertiesAndChildrenFrom(juce::ValueTree::fromXml(xml.getDocumentElement()->toString()), nullptr);
     DBG(tree.toXmlString());
     sendSynchronousChangeMessage();
 }

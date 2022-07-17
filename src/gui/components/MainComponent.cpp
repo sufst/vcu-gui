@@ -16,7 +16,7 @@ namespace gui
  * @brief Default constructor
  */
 MainComponent::MainComponent()
-    : torqueMap(Application::getConfig().getTorqueMap()), torqueMapGraph(Application::getConfig())
+    : torqueMapGraph(Application::getConfig())
 
 {
     setSize(600, 400);
@@ -51,7 +51,7 @@ void MainComponent::setupInterpolationCombo()
         const auto& method = interpolationMethods.at(i);
         interpolationCombo.addItem(method.toString(), itemId);
 
-        if (method.toString() == torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString())
+        if (method.toString() == Application::getConfig().getTorqueMap().getProperty(VCUConfiguration::InterpolationMethod).toString())
         {
             interpolationCombo.setSelectedId(itemId);
         }
@@ -61,7 +61,7 @@ void MainComponent::setupInterpolationCombo()
     {
         int selectedIndex = this->interpolationCombo.getSelectedItemIndex();
         auto value = this->interpolationCombo.getItemText(selectedIndex);
-        this->torqueMap.setProperty(VCUConfiguration::InterpolationMethod, value, nullptr);
+        Application::getConfig().getTorqueMap().setProperty(VCUConfiguration::InterpolationMethod, value, nullptr);
     };
 }
 

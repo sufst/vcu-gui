@@ -41,7 +41,6 @@ private:
     void setupInterpolationCombo();
     void setupButtons();
 
-    juce::ValueTree torqueMap;
     std::unique_ptr<juce::FileChooser> fileChooser;
     bool fileIsBeingDragged = false;
 
