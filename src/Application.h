@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "gui/windows/MainWindow.h"
 #include "ConfigurationValueTree.h"
+#include "gui/windows/MainWindow.h"
 #include <JuceHeader.h>
 #include <limits.h>
 

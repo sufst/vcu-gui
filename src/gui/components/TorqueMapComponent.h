@@ -9,7 +9,6 @@
 #include <JuceHeader.h>
 #include <memory>
 
-
 namespace gui
 {
 

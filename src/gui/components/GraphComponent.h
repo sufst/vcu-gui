@@ -181,7 +181,7 @@ void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
 /**
  * @brief Clears all points from the graph
  */
-template <typename ValueType> 
+template <typename ValueType>
 void GraphComponent<ValueType>::clear()
 {
     points.clear();
@@ -189,7 +189,7 @@ void GraphComponent<ValueType>::clear()
 
 /**
  * @brief       Changes the interpolation method
- * 
+ *
  * @param[in]   identifier     The new interpolator to use
  */
 template <typename ValueType>

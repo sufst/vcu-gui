@@ -7,10 +7,9 @@
 
 #pragma once
 
-#include <JuceHeader.h>
-
 #include "../../Application.h"
 #include "TorqueMapComponent.h"
+#include <JuceHeader.h>
 
 namespace gui
 {

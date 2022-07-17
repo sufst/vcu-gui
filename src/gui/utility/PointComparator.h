@@ -13,17 +13,17 @@ namespace gui
 
 /**
  * @brief   Implements juce::ElementComparator for two juce::Point objects
- * 
+ *
  * @tparam  ValueType   Type of point data
  */
-template<typename ValueType>
+template <typename ValueType>
 class PointComparator
 {
 public:
 
     /**
      * @brief       Compares two points based on their x-coordinate
-     * 
+     *
      * @param[in]   p1      First point
      * @param[in]   p2      Second point
      */
@@ -44,4 +44,4 @@ public:
     }
 };
 
-}
+} // namespace gui

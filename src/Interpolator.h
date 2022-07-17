@@ -115,7 +115,7 @@ protected:
 
     /**
      * @brief       Internal function implemented by derived classes to prepare for calls to interpolate()
-     * 
+     *
      * @param[in]   inputSamples    The input samples for interpolation
      */
     virtual void prepare(const juce::Array<juce::Point<ValueType>>& inputSamples) = 0;
@@ -254,7 +254,7 @@ public:
     /**
      * @brief Implements Interpolator::prepare()
      */
-    void prepare(const juce::Array<juce::Point<ValueType>>&  inputSamples) override
+    void prepare(const juce::Array<juce::Point<ValueType>>& inputSamples) override
     {
         const size_t numInputSamples = static_cast<size_t>(inputSamples.size());
 
@@ -273,7 +273,6 @@ public:
             {
                 xInputs[i] += 1;
             }
-
         }
 
         spline = tk::spline(xInputs, yInputs, getRequiredSplineType(numInputSamples));
@@ -282,7 +281,8 @@ public:
     /**
      * @brief Implements Interpolator::interpolate()
      */
-    ValueType interpolate(ValueType input, juce::Point<ValueType> /*leftPoint*/, juce::Point<ValueType> /*rightPoint*/) override
+    ValueType
+    interpolate(ValueType input, juce::Point<ValueType> /*leftPoint*/, juce::Point<ValueType> /*rightPoint*/) override
     {
         return static_cast<ValueType>(spline(input));
     }

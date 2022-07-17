@@ -110,15 +110,14 @@ void MainComponent::setupButtons()
     // import profile
     importProfileButton.setButtonText("Import Profile");
 
-    importProfileButton.onClick = [this]() {
-
+    importProfileButton.onClick = [this]()
+    {
         fileChooser = std::make_unique<juce::FileChooser>("Load VCU configuration",
                                                           juce::File::getSpecialLocation(juce::File::userHomeDirectory),
                                                           "*.xml",
                                                           true);
 
-        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
-                                | juce::FileBrowserComponent::openMode;
+        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::openMode;
 
         fileChooser->launchAsync(fileChooserFlags,
                                  [this](const juce::FileChooser& chooser)
@@ -127,7 +126,7 @@ void MainComponent::setupButtons()
                                      {
                                          return;
                                      }
-                                     
+
                                      configValueTree->loadFromFile(chooser.getResult());
                                  });
     };
@@ -135,8 +134,8 @@ void MainComponent::setupButtons()
     // export code
     exportCodeButton.setButtonText("Export Code");
 
-    exportCodeButton.onClick = [this]() {
-
+    exportCodeButton.onClick = [this]()
+    {
         fileChooser = std::make_unique<juce::FileChooser>("Export Code",
                                                           juce::File::getSpecialLocation(juce::File::userHomeDirectory),
                                                           "*.c",
@@ -159,9 +158,7 @@ void MainComponent::setupButtons()
 
                                      file.replaceWithText(code);
                                  });
-
     };
-
 }
 
 /**
@@ -269,8 +266,9 @@ void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
         auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
 
         // TODO: this should be replaced by something (1) faster (2) that is its own function!
-        juce::String interpolationMethod = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
-        
+        juce::String interpolationMethod
+            = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+
         for (int i = 0; i < interpolationCombo.getNumItems(); i++)
         {
             if (interpolationCombo.getItemText(i) == interpolationMethod)

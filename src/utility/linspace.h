@@ -10,14 +10,14 @@
 
 /**
  * @brief       Creates a vector of linearly spaced values
- * 
+ *
  * @note        When used with integers, rounding may result in duplicate points or slightly non-linear spacing,
  *              depending on the number and range of values. Choose parameters carefully for sensible results.
- * 
+ *
  * @see         Heavily based on various gists on GitHub, see:
  *              - https://gist.github.com/lorenzoriano/5414671
  *              - https://gist.github.com/parequena/689dbfe2a4fca9c8203c76ab715bf75c
- * 
+ *
  * @param[in]   start   First value in the space
  * @param[in]   end     Last value in the space
  * @param[in]   num     Total number of values in the space
@@ -33,7 +33,7 @@ std::vector<T> linspace(T start, T end, int num)
         return linspaced;
     }
 
-    if (num == 1) 
+    if (num == 1)
     {
         linspaced.push_back(static_cast<T>(start));
     }

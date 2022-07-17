@@ -20,8 +20,7 @@ namespace gui
 MainWindow::MainWindow(const juce::String& name, std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
     : juce::DocumentWindow(
         name,
-        juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
-            juce::ResizableWindow::backgroundColourId),
+        juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons)
 {
     setUsingNativeTitleBar(true);

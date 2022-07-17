@@ -46,7 +46,6 @@ public:
     private:
 
         Properties() = default;
-
     };
 
     /**
@@ -62,7 +61,6 @@ public:
     private:
 
         Children() = default;
-
     };
 
     /**

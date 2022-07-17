@@ -6,8 +6,8 @@
 
 #include "TorqueMapComponent.h"
 
-#include "../utility/clip.h"
 #include "../../Application.h"
+#include "../utility/clip.h"
 
 namespace gui
 {
@@ -267,12 +267,13 @@ void TorqueMapComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 void TorqueMapComponent::valueTreePropertyChanged(juce::ValueTree& changedTree, const juce::Identifier& property)
 {
     auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-    
+
     if (changedTree == torqueMap)
     {
         if (property == ConfigurationValueTree::Properties::InterpolationMethod)
         {
-            setInterpolationMethod(torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod).toString());
+            setInterpolationMethod(
+                torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod).toString());
             repaint();
         }
     }

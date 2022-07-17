@@ -13,9 +13,9 @@ namespace utility
 
 /**
  * @brief Clips a value to the range [min, max]
- * 
+ *
  * @tparam T    Value type
- * 
+ *
  * @param[in]   value   Value to clip
  * @param[in]   min     Lower bound on value
  * @param[in]   max     Upper bound on value

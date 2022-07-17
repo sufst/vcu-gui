@@ -6,10 +6,9 @@
 
 #pragma once
 
+#include "../../ConfigurationValueTree.h"
 #include <JuceHeader.h>
 #include <memory>
-
-#include "../../ConfigurationValueTree.h"
 
 namespace gui
 {
