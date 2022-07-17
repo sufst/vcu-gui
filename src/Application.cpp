@@ -80,7 +80,7 @@ Application& Application::getApplication()
 /**
  * @brief Returns a reference to the global VCU configuration instance
  */
-VCUConfiguration& Application::getConfig()
+ConfigurationValueTree& Application::getConfig()
 {
     auto& app = getApplication();
     return app.config;

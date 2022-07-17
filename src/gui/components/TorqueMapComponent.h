@@ -4,7 +4,7 @@
  * @brief  Component for drawing the torque map
  *****************************************************************************/
 
-#include "../../VCUConfiguration.h"
+#include "../../ConfigurationValueTree.h"
 #include "GraphComponent.h"
 #include <JuceHeader.h>
 #include <memory>
@@ -16,7 +16,7 @@ class TorqueMapComponent : public GraphComponent<int>, juce::ChangeListener
 {
 public:
 
-    TorqueMapComponent(VCUConfiguration& config);
+    TorqueMapComponent(ConfigurationValueTree& config);
 
     void paint(juce::Graphics& g) override;
 

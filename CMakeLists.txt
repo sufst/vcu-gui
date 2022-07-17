@@ -34,7 +34,7 @@ target_sources(${TARGET_NAME}
     PRIVATE 
         src/Application.cpp 
         src/Main.cpp
-        src/VCUConfiguration.cpp
+        src/ConfigurationValueTree.cpp
 )
 
 target_include_directories(${TARGET_NAME} 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * @file   VCUConfiguration.h
+ * @file   ConfigurationValueTree.h
  * @author Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
  * @brief  Data model for VCU configuration
  *****************************************************************************/
@@ -12,11 +12,11 @@
 /**
  * @brief Stores the VCU configuration profile and notifies registered listeners when it changes
  */
-class VCUConfiguration : public juce::ChangeBroadcaster
+class ConfigurationValueTree : public juce::ChangeBroadcaster
 {
 public:
 
-    VCUConfiguration();
+    ConfigurationValueTree();
 
     juce::ValueTree getTorqueMap() const;
 

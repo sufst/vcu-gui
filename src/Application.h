@@ -7,7 +7,7 @@
 #pragma once
 
 #include "gui/windows/MainWindow.h"
-#include "VCUConfiguration.h"
+#include "ConfigurationValueTree.h"
 #include <JuceHeader.h>
 #include <limits.h>
 
@@ -30,11 +30,11 @@ public:
     bool moreThanOneInstanceAllowed() override;
 
     static Application& getApplication();
-    static VCUConfiguration& getConfig();
+    static ConfigurationValueTree& getConfig();
 
 private:
 
     std::unique_ptr<gui::MainWindow> mainWindow;
 
-    VCUConfiguration config;
+    ConfigurationValueTree config;
 };

@@ -4,21 +4,21 @@
  * @brief  Data model for VCU configuration
  *****************************************************************************/
 
-#include "VCUConfiguration.h"
+#include "ConfigurationValueTree.h"
 
 #include "Interpolator.h"
 
 /**
  * @brief Default constructor
  */
-VCUConfiguration::VCUConfiguration() : tree(createEmptyConfiguration())
+ConfigurationValueTree::ConfigurationValueTree() : tree(createEmptyConfiguration())
 {
 }
 
 /**
  * @brief Create an empty configuration
  */
-juce::ValueTree VCUConfiguration::createEmptyConfiguration()
+juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
 {
     juce::ValueTree root(Root);
     juce::ValueTree torqueMapTree(TorqueMap);
@@ -36,7 +36,7 @@ juce::ValueTree VCUConfiguration::createEmptyConfiguration()
 /**
  * @brief Returns a reference to the juce::ValueTree containing the torque map
  */
-juce::ValueTree VCUConfiguration::getTorqueMap() const
+juce::ValueTree ConfigurationValueTree::getTorqueMap() const
 {
     return tree.getChildWithName(TorqueMap);
 }
@@ -47,7 +47,7 @@ juce::ValueTree VCUConfiguration::getTorqueMap() const
  * @param[in]   input   Input value
  * @param[in]   output  Output value (input -> torque map -> output)
  */
-juce::ValueTree VCUConfiguration::createTorqueMapPoint(int input, int output)
+juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input, int output)
 {
     juce::ValueTree point(TorqueMapPoint);
 
@@ -60,7 +60,7 @@ juce::ValueTree VCUConfiguration::createTorqueMapPoint(int input, int output)
 /**
  * @brief   Exports the configuration to an XML document
  */
-std::unique_ptr<juce::XmlDocument> VCUConfiguration::exportXml() const
+std::unique_ptr<juce::XmlDocument> ConfigurationValueTree::exportXml() const
 {
     return std::make_unique<juce::XmlDocument>(tree.toXmlString());
 }
@@ -70,7 +70,7 @@ std::unique_ptr<juce::XmlDocument> VCUConfiguration::exportXml() const
  *
  * @param[in]   xml     XML document
  */
-void VCUConfiguration::loadFromXml(juce::XmlDocument& xml)
+void ConfigurationValueTree::loadFromXml(juce::XmlDocument& xml)
 {
     tree.copyPropertiesAndChildrenFrom(juce::ValueTree::fromXml(xml.getDocumentElement()->toString()), nullptr);
     DBG(tree.toXmlString());
@@ -80,10 +80,10 @@ void VCUConfiguration::loadFromXml(juce::XmlDocument& xml)
 /*
  * property identifiers
  */
-const juce::Identifier VCUConfiguration::Root = "VCUConfiguration";
-const juce::Identifier VCUConfiguration::TorqueMap = "TorqueMap";
-const juce::Identifier VCUConfiguration::TorqueMapPoint = "TorqueMapPoint";
-const juce::Identifier VCUConfiguration::TorqueMapInputValue = "TorqueMapInput";
-const juce::Identifier VCUConfiguration::TorqueMapOutputValue = "TorqueMapOutput";
-const juce::Identifier VCUConfiguration::ProfileName = "ProfileName";
-const juce::Identifier VCUConfiguration::InterpolationMethod = "InterpolationMethod";
+const juce::Identifier ConfigurationValueTree::Root = "VCUConfiguration";
+const juce::Identifier ConfigurationValueTree::TorqueMap = "TorqueMap";
+const juce::Identifier ConfigurationValueTree::TorqueMapPoint = "TorqueMapPoint";
+const juce::Identifier ConfigurationValueTree::TorqueMapInputValue = "TorqueMapInput";
+const juce::Identifier ConfigurationValueTree::TorqueMapOutputValue = "TorqueMapOutput";
+const juce::Identifier ConfigurationValueTree::ProfileName = "ProfileName";
+const juce::Identifier ConfigurationValueTree::InterpolationMethod = "InterpolationMethod";

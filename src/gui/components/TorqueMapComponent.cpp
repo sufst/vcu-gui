@@ -15,7 +15,7 @@ namespace gui
 /**
  * @brief Constructor
  */
-TorqueMapComponent::TorqueMapComponent(VCUConfiguration& config)
+TorqueMapComponent::TorqueMapComponent(ConfigurationValueTree& config)
 {
     config.addChangeListener(this);
 
@@ -33,7 +33,7 @@ void TorqueMapComponent::loadTorqueMapData()
     // interpolation method
     torqueMap = Application::getConfig().getTorqueMap();
 
-    setInterpolationMethod(torqueMap.getProperty(VCUConfiguration::InterpolationMethod).toString());
+    setInterpolationMethod(torqueMap.getProperty(ConfigurationValueTree::InterpolationMethod).toString());
     DBG("Load");
 
     // data points
@@ -45,11 +45,11 @@ void TorqueMapComponent::loadTorqueMapData()
     {
         const auto& child = torqueMap.getChild(i);
 
-        if (child.hasType(VCUConfiguration::TorqueMapPoint))
+        if (child.hasType(ConfigurationValueTree::TorqueMapPoint))
         {
             DBG("Add point");
-            int input = child.getProperty(VCUConfiguration::TorqueMapInputValue);
-            int output = child.getProperty(VCUConfiguration::TorqueMapOutputValue);
+            int input = child.getProperty(ConfigurationValueTree::TorqueMapInputValue);
+            int output = child.getProperty(ConfigurationValueTree::TorqueMapOutputValue);
 
             addPoint({input, output});
         }
@@ -70,7 +70,7 @@ void TorqueMapComponent::syncTorqueMapData()
 
     for (const auto& point : points)
     {
-        torqueMap.addChild(VCUConfiguration::createTorqueMapPoint(point.getX(), point.getY()), -1, nullptr);
+        torqueMap.addChild(ConfigurationValueTree::createTorqueMapPoint(point.getX(), point.getY()), -1, nullptr);
     }
 }
 

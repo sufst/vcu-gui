@@ -51,7 +51,7 @@ void MainComponent::setupInterpolationCombo()
         const auto& method = interpolationMethods.at(i);
         interpolationCombo.addItem(method.toString(), itemId);
 
-        if (method.toString() == Application::getConfig().getTorqueMap().getProperty(VCUConfiguration::InterpolationMethod).toString())
+        if (method.toString() == Application::getConfig().getTorqueMap().getProperty(ConfigurationValueTree::InterpolationMethod).toString())
         {
             interpolationCombo.setSelectedId(itemId);
         }
@@ -61,7 +61,7 @@ void MainComponent::setupInterpolationCombo()
     {
         int selectedIndex = this->interpolationCombo.getSelectedItemIndex();
         auto value = this->interpolationCombo.getItemText(selectedIndex);
-        Application::getConfig().getTorqueMap().setProperty(VCUConfiguration::InterpolationMethod, value, nullptr);
+        Application::getConfig().getTorqueMap().setProperty(ConfigurationValueTree::InterpolationMethod, value, nullptr);
     };
 }
 
