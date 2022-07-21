@@ -1,3 +1,13 @@
+###############################################################################
+#                   :
+#   File            :   CMakeLists.txt
+#                   :
+#   Author(s)       :   Tim Brewis (@t-bre)
+#                   :
+#   Description     :   Top level CMakeLists for project
+#                   :
+###############################################################################
+
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -5,7 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE INTERNAL "" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project(VCU-Driver-Profile VERSION 1.0.1)
+project(VCU-GUI VERSION 1.1.0)
 set(TARGET_NAME ${PROJECT_NAME})
 
 # JUCE application setup
@@ -15,6 +25,8 @@ juce_add_gui_app(${TARGET_NAME}
     PRODUCT_NAME "${PROJECT_NAME}"
     COMPANY_NAME "SUFST"
     BUNDLE_ID "com.sufst.${PROJECT_NAME}"
+    ICON_SMALL res/AppIcon_512.png
+    ICON_LARGE res/AppIcon_1024.png
 )
 
 juce_generate_juce_header(${TARGET_NAME})
@@ -22,13 +34,16 @@ juce_generate_juce_header(${TARGET_NAME})
 # source files
 target_sources(${TARGET_NAME}
     PRIVATE 
-        src/Application.cpp
+        src/Application.cpp 
         src/Main.cpp
-        src/MainComponent.cpp
-        src/MainWindow.cpp
-        src/ThrottleCurveComponent.cpp
-        src/ThrottleCurve.cpp
+        src/ConfigurationValueTree.cpp
 )
+
+target_include_directories(${TARGET_NAME} 
+    PRIVATE lib/spline/src
+)
+
+add_subdirectory(src/gui)
 
 # binary data
 juce_add_binary_data(${TARGET_NAME}Data

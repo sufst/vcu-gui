@@ -5,8 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/src/**",
                 "${workspaceFolder}/lib/JUCE/modules/**",
-                "${workspaceFolder}/build/VCU-Driver-Profile_artefacts/JuceLibraryCode/**",
-                "${workspaceFolder}/lib/JUCE/modules"
+                "${workspaceFolder}/build/VCU-GUI_artefacts/JuceLibraryCode/**",
+                "${workspaceFolder}/lib/JUCE/modules",
+                "${workspaceFolder}/lib/spline/src"
             ],
             "defines": [],
             "macFrameworkPath": [

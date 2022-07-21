@@ -6,7 +6,12 @@
 
 #pragma once
 
+#include "../../ConfigurationValueTree.h"
 #include <JuceHeader.h>
+#include <memory>
+
+namespace gui
+{
 
 /**
  * @brief Main GUI window
@@ -15,7 +20,7 @@ class MainWindow : public juce::DocumentWindow
 {
 public:
 
-    MainWindow(const juce::String& name);
+    MainWindow(const juce::String& name, std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
 
     void closeButtonPressed() override;
 
@@ -26,3 +31,5 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
 };
+
+} // namespace gui

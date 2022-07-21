@@ -15,6 +15,7 @@ Language: Cpp
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
+ColumnLimit: 120
 
 # alignment
 AccessModifierOffset: -4
@@ -37,6 +38,7 @@ AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBinaryOperators: All

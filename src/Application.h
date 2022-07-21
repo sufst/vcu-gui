@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include "MainWindow.h"
+#include "ConfigurationValueTree.h"
+#include "gui/windows/MainWindow.h"
 #include <JuceHeader.h>
 #include <limits.h>
 
@@ -30,5 +31,6 @@ public:
 
 private:
 
-    std::unique_ptr<MainWindow> mainWindow;
+    std::unique_ptr<gui::MainWindow> mainWindow;
+    std::shared_ptr<ConfigurationValueTree> configValueTree;
 };

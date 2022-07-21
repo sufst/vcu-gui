@@ -11,9 +11,10 @@
  *
  * @param[in]   commandLine     Command line arguments string
  */
-void Application::initialise(const juce::String& commandLine)
+void Application::initialise(const juce::String& /*commandLine*/)
 {
-    mainWindow = std::make_unique<MainWindow>(getApplicationName());
+    configValueTree = std::make_shared<ConfigurationValueTree>();
+    mainWindow = std::make_unique<gui::MainWindow>(getApplicationName(), configValueTree);
 }
 
 /**
