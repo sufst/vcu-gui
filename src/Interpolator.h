@@ -8,11 +8,12 @@
 
 #include <JuceHeader.h>
 
-#pragma GCC diagnostic push // disable warnings from external lib
+#pragma GCC diagnostic push // disable warnings from external spline library
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wextra-semi"
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
 #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
-#define NDEBUG // prevent assert() in lib
+#define NDEBUG // prevent assert()
 #include <spline.h>
 #undef NDEBUG
 #pragma GCC diagnostic pop
