@@ -14,7 +14,8 @@
 void Application::initialise(const juce::String& /*commandLine*/)
 {
     configValueTree = std::make_shared<ConfigurationValueTree>();
-    mainWindow = std::make_unique<gui::MainWindow>(getApplicationName(), configValueTree);
+    commandManager = std::make_unique<CommandManager>();
+    mainWindow = std::make_unique<gui::MainWindow>(getApplicationName(), configValueTree, commandManager);
 }
 
 /**

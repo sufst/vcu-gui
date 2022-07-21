@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../../CommandManager.h"
 #include "../../ConfigurationValueTree.h"
 #include <JuceHeader.h>
 #include <memory>
@@ -20,7 +21,9 @@ class MainWindow : public juce::DocumentWindow
 {
 public:
 
-    MainWindow(const juce::String& name, std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    MainWindow(const juce::String& name,
+               std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
+               std::shared_ptr<CommandManager> commandManager);
 
     void closeButtonPressed() override;
 

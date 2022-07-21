@@ -17,7 +17,9 @@ namespace gui
  *
  * @param[in]   name    Window name
  */
-MainWindow::MainWindow(const juce::String& name, std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+MainWindow::MainWindow(const juce::String& name,
+                       std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
+                       std::shared_ptr<CommandManager> commandManager)
     : juce::DocumentWindow(
         name,
         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),

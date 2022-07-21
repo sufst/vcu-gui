@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "CommandManager.h"
 #include "ConfigurationValueTree.h"
 #include "gui/windows/MainWindow.h"
 #include <JuceHeader.h>
@@ -33,4 +34,5 @@ private:
 
     std::unique_ptr<gui::MainWindow> mainWindow;
     std::shared_ptr<ConfigurationValueTree> configValueTree;
+    std::shared_ptr<CommandManager> commandManager;
 };
