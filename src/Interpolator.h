@@ -187,10 +187,11 @@ public:
      */
     ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint) override
     {
-        const ValueType xDiff = rightPoint.getX() - leftPoint.getX();
-        const ValueType yDiff = rightPoint.getY() - leftPoint.getY();
+        const auto xDiff = static_cast<float>(rightPoint.getX() - leftPoint.getX());
+        const auto yDiff = static_cast<float>(rightPoint.getY() - leftPoint.getY());
+        const auto inDiff = static_cast<float>(input - leftPoint.getX());
 
-        const float mu = static_cast<float>(input - leftPoint.getX()) / xDiff;
+        const double mu = inDiff / xDiff;
         return static_cast<ValueType>(leftPoint.getY() + mu * yDiff);
     }
 
@@ -227,8 +228,8 @@ public:
     {
         const ValueType xDiff = rightPoint.getX() - leftPoint.getX();
 
-        const float mu = static_cast<float>(input - leftPoint.getX()) / xDiff;
-        const float mu2 = (1 - std::cos(mu * juce::MathConstants<float>::pi)) / 2;
+        const double mu = static_cast<double>(input - leftPoint.getX()) / xDiff;
+        const double mu2 = (1 - std::cos(mu * juce::MathConstants<double>::pi)) / 2;
 
         return static_cast<ValueType>(leftPoint.getY() * (1 - mu2) + rightPoint.getY() * mu2);
     }

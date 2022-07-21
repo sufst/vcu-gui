@@ -106,7 +106,7 @@ void TorqueMapComponent::paintDeadzoneOverlay(juce::Graphics& g) const
     g.fillRect(deadzoneBounds.expanded(0, 5));
 
     g.setColour(juce::Colours::skyblue);
-    g.drawVerticalLine(deadzoneBounds.getWidth(), 0, deadzoneBounds.getHeight());
+    g.drawVerticalLine(deadzoneBounds.getWidth(), 0, deadzoneBounds.toFloat().getHeight());
 }
 
 /**
@@ -256,7 +256,7 @@ void TorqueMapComponent::hideDeadzoneTooltip()
 /**
  * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
  */
-void TorqueMapComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
+void TorqueMapComponent::valueTreeRedirected(juce::ValueTree& /*redirectedTree*/)
 {
     loadTorqueMapData();
 }

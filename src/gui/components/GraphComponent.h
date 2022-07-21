@@ -438,7 +438,7 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
     for (int i = 0; i < numTicksY; i++)
     {
         int y = i * getHeight() / numTicksY;
-        g.drawHorizontalLine(y, 0, getWidth());
+        g.drawHorizontalLine(y, 0, bounds.getWidth());
     }
 }
 
@@ -463,17 +463,17 @@ template <typename ValueType>
 void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
 {
     auto bounds = getLocalBounds().toFloat();
-    const int circleSize = 4;
-    const int circleShift = circleSize / 2;
+    const float circleSize = 4;
+    const float circleShift = circleSize / 2;
 
     g.setColour(juce::Colours::white);
 
     for (const auto& point : points)
     {
-        auto transformedPoint = transformPointForPaint(bounds, point);
+        auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
 
-        int x = transformedPoint.getX() - circleShift;
-        int y = transformedPoint.getY() - circleShift;
+        const auto x = static_cast<float>(transformedPoint.getX() - circleShift);
+        const auto y = static_cast<float>(transformedPoint.getY() - circleShift);
 
         g.drawEllipse(x, y, circleSize, circleSize, circleSize);
     }
@@ -481,7 +481,7 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
     if (points.size() > 1)
     {
         juce::Path p;
-        auto start = transformPointForPaint(bounds, points.getFirst());
+        auto start = transformPointForPaint(bounds, points.getFirst()).toFloat();
         p.startNewSubPath(start.getX(), start.getY());
 
         interpolator->process(points, 500);
@@ -506,11 +506,12 @@ template <typename ValueType>
 juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::Rectangle<float>& bounds,
                                                                    const juce::Point<ValueType>& point) const
 {
-    const float xScale = bounds.getWidth() / valueBounds.getWidth();
-    const float yScale = bounds.getHeight() / valueBounds.getHeight();
+    const float xScale = bounds.getWidth() / static_cast<float>(valueBounds.getWidth());
+    const float yScale = bounds.getHeight() / static_cast<float>(valueBounds.getHeight());
+    const auto fPoint = point.toFloat();
 
-    auto x = static_cast<int>(point.getX() * xScale);
-    auto y = static_cast<int>(bounds.getHeight() - point.getY() * yScale);
+    auto x = static_cast<int>(fPoint.getX() * xScale);
+    auto y = static_cast<int>(bounds.getHeight() - fPoint.getY() * yScale);
 
     return {x, y};
 }
@@ -525,8 +526,8 @@ juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::R
 template <typename ValueType>
 juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const juce::Point<int>& point) const
 {
-    const float xScale = static_cast<float>(getMaxX()) / getWidth();
-    const float yScale = static_cast<float>(getMaxY()) / getHeight();
+    const auto xScale = static_cast<double>(getMaxX()) / getWidth();
+    const auto yScale = static_cast<double>(getMaxY()) / getHeight();
 
     auto x = static_cast<ValueType>(point.getX() * xScale);
     auto y = getMaxY() - static_cast<ValueType>(point.getY() * yScale);
