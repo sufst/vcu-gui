@@ -261,6 +261,11 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
 template <typename ValueType>
 void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
 {
+    if (!getLocalBounds().contains(event.getPosition()))
+    {
+        return;
+    }
+
     if (pointEditState == PointEditingState::Move)
     {
         jassert(movingPointIndex != -1 && movingPointIndex < points.size());
