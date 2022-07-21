@@ -19,6 +19,7 @@ Checks:
 
     # excluded
     -cppcoreguidelines-avoid-magic-numbers,
+    -modernize-use-trailing-return-type,
 
 CheckOptions:
 
