@@ -7,6 +7,7 @@
 
 #include "../../Interpolator.h"
 #include "../utility/PointComparator.h"
+#include "../utility/clip.h"
 #include <JuceHeader.h>
 #include <memory>
 
@@ -35,6 +36,8 @@ public:
     void setEditable(bool shouldBeEditable = true);
     void setInterpolationMethod(const juce::Identifier& identifier);
 
+    ValueType getMinX() const;
+    ValueType getMinY() const;
     ValueType getMaxX() const;
     ValueType getMaxY() const;
     bool isEditable() const;
@@ -106,6 +109,11 @@ GraphComponent<ValueType>::GraphComponent()
     setInterpolationMethod(SplineInterpolator<ValueType>::identifier);
 
     addKeyListener(this);
+
+    DBG(getMinX());
+    DBG(getMinY());
+    DBG(getMaxX());
+    DBG(getMinY());
 }
 
 /**
@@ -130,8 +138,26 @@ void GraphComponent<ValueType>::setRangeX(ValueType min, ValueType max)
 template <typename ValueType>
 void GraphComponent<ValueType>::setRangeY(ValueType min, ValueType max)
 {
-    valueBounds.setY(max);
+    valueBounds.setY(min);
     valueBounds.setHeight(max - min);
+}
+
+/**
+ * @brief Returns the minimum value of the x-axis
+ */
+template <typename ValueType>
+ValueType GraphComponent<ValueType>::getMinX() const
+{
+    return valueBounds.getX();
+}
+
+/**
+ * @brief Returns the minimum value of the y-axis
+ */
+template <typename ValueType>
+ValueType GraphComponent<ValueType>::getMinY() const
+{
+    return valueBounds.getY();
 }
 
 /**
@@ -140,7 +166,7 @@ void GraphComponent<ValueType>::setRangeY(ValueType min, ValueType max)
 template <typename ValueType>
 ValueType GraphComponent<ValueType>::getMaxX() const
 {
-    return valueBounds.getWidth();
+    return valueBounds.getWidth() - valueBounds.getX();
 }
 
 /**
@@ -149,7 +175,7 @@ ValueType GraphComponent<ValueType>::getMaxX() const
 template <typename ValueType>
 ValueType GraphComponent<ValueType>::getMaxY() const
 {
-    return valueBounds.getHeight();
+    return valueBounds.getHeight() - valueBounds.getY();
 }
 
 /**
@@ -261,6 +287,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
 template <typename ValueType>
 void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
 {
+
     if (pointEditState == PointEditingState::Move)
     {
         jassert(movingPointIndex != -1 && movingPointIndex < points.size());
@@ -531,6 +558,9 @@ juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const ju
 
     auto x = static_cast<ValueType>(point.getX() * xScale);
     auto y = getMaxY() - static_cast<ValueType>(point.getY() * yScale);
+
+    x = utility::clip(x, getMinX(), getMaxX());
+    y = utility::clip(y, getMinY(), getMaxY());
 
     return {x, y};
 }
