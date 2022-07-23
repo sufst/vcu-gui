@@ -22,6 +22,7 @@ namespace sufst
         const juce::Colour lightgrey {0xFFE8E8E8};
         const juce::Colour midgrey {0xFF9B9B9B};
         const juce::Colour darkgrey {0xFF636363};
+        const juce::Colour sfsyellow {0xFFFCC431};
     }
 
 } // namespace sufst
