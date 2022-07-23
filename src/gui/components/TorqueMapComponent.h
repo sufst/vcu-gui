@@ -4,6 +4,8 @@
  * @brief  Component for drawing the torque map
  *****************************************************************************/
 
+#pragma once
+
 #include "../../ConfigurationValueTree.h"
 #include "GraphComponent.h"
 #include <JuceHeader.h>
