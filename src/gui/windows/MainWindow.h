@@ -19,7 +19,7 @@ namespace gui
 /**
  * @brief Main GUI window
  */
-class MainWindow : public juce::DocumentWindow, juce::ApplicationCommandTarget
+class MainWindow : public juce::DocumentWindow, public juce::ApplicationCommandTarget
 {
 public:
 

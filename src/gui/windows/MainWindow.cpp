@@ -36,7 +36,7 @@ MainWindow::MainWindow(const juce::String& name,
 
     jassert(commandManager);
     commandManager->registerAllCommandsForTarget(this);
-    commandManager->setFirstCommandTarget(this);
+    addKeyListener(commandManager->getKeyMappings());
 }
 
 /**
