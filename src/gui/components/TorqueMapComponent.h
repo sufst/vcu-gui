@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../../ConfigurationValueTree.h"
+#include "../appearance/Colours.h"
 #include "GraphComponent.h"
 #include <JuceHeader.h>
 #include <memory>
@@ -58,6 +59,8 @@ private:
     static const int outputResolution = 15;
     static const int inputMax = (1 << inputResolution) - 1;
     static const int outputMax = (1 << outputResolution) - 1;
+
+    const juce::Colour deadzoneColour = sufst::Colours::skyblue;
 };
 
 } // namespace gui

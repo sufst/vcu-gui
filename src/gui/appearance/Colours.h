@@ -3,7 +3,7 @@
  * @author  Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
  * @brief   Custom colours
  * @details These colours are taken from the theme.jsx file for the SUFST
- *          website
+ *          website, with the exception of sfsyellow and skyblye
  *****************************************************************************/
 
 #pragma once
@@ -22,6 +22,8 @@ namespace sufst
         const juce::Colour lightgrey {0xFFE8E8E8};
         const juce::Colour midgrey {0xFF9B9B9B};
         const juce::Colour darkgrey {0xFF636363};
+
+        const juce::Colour skyblue {0xFF87CEEB};
         const juce::Colour sfsyellow {0xFFFCC431};
     }
 
