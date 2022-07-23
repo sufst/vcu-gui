@@ -10,6 +10,7 @@
 
 target_sources(${TARGET_NAME}
     PRIVATE 
+        appearance/LookAndFeel.cpp
         components/MainComponent.cpp 
         components/TorqueMapComponent.cpp
         menubar/MenuBar.cpp
