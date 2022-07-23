@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "../../Application.h"
 #include "TorqueMapComponent.h"
 #include <JuceHeader.h>
 

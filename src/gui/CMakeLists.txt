@@ -12,5 +12,6 @@ target_sources(${TARGET_NAME}
     PRIVATE 
         components/MainComponent.cpp 
         components/TorqueMapComponent.cpp
+        menubar/MenuBar.cpp
         windows/MainWindow.cpp
 )

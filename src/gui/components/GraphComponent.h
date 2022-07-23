@@ -5,6 +5,8 @@
  * @brief  Component for drawing a graph
  *****************************************************************************/
 
+#pragma once
+
 #include "../../Interpolator.h"
 #include "../utility/PointComparator.h"
 #include "../utility/clip.h"
