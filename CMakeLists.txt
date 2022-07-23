@@ -33,8 +33,8 @@ juce_add_gui_app(${TARGET_NAME}
     PRODUCT_NAME "VCU GUI"
     COMPANY_NAME "SUFST"
     BUNDLE_ID "com.sufst.vcu-gui"
-    ICON_SMALL res/AppIcon_512.png
-    ICON_LARGE res/AppIcon_1024.png
+    ICON_SMALL res/images/AppIcon_512.png
+    ICON_LARGE res/images/AppIcon_1024.png
 )
 
 juce_generate_juce_header(${TARGET_NAME})
@@ -56,9 +56,9 @@ add_subdirectory(src/gui)
 # binary data
 juce_add_binary_data(${TARGET_NAME}Data
     SOURCES 
-        res/AppIcon_512.png
-        res/AppIcon_1024.png
-        res/Delete.png
+        res/images/AppIcon_512.png
+        res/images/AppIcon_1024.png
+        res/images/Delete.png
 )
 
 # get the commit hash
