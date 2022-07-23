@@ -19,6 +19,8 @@ void Application::initialise(const juce::String& /*commandLine*/)
     commandManager->registerAllCommandsForTarget(this);
 
     mainWindow = std::make_unique<gui::MainWindow>(getApplicationName(), configValueTree, commandManager);
+
+    LookAndFeel::setDefaultLookAndFeel(&lookAndFeel);
 }
 
 /**
