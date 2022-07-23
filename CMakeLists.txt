@@ -59,6 +59,7 @@ juce_add_binary_data(${TARGET_NAME}Data
         res/images/AppIcon_512.png
         res/images/AppIcon_1024.png
         res/images/Delete.png
+        res/fonts/karla/fonts/ttf/static/Karla-Regular.ttf
 )
 
 # get the commit hash
