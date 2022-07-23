@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../../CommandManager.h"
+#include "../windows/AboutWindow.h"
 #include <JuceHeader.h>
 #include <map>
 #include <memory>
@@ -46,6 +47,7 @@ private:
 
     juce::PopupMenu mainMenu;
     std::shared_ptr<CommandManager> commandManager;
+    std::unique_ptr<AboutWindow> aboutWindow;
 
     typedef enum
     {

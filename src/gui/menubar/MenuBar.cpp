@@ -192,8 +192,14 @@ bool MenuBar::perform(const InvocationInfo& info)
     {
     case CommandManager::ShowAboutWindow:
     {
-        // TODO: implement
-        jassertfalse;
+        if (!aboutWindow)
+        {
+            aboutWindow = std::make_unique<AboutWindow>(commandManager);
+            
+            aboutWindow->onCloseButtonPressed = [this](){
+                aboutWindow.reset();
+            };
+        }
         break;
     }
 
