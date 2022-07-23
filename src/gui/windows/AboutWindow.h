@@ -57,6 +57,7 @@ private:
 
         juce::Label appNameLabel;
         juce::Label versionLabel;
+        juce::Label commitHashLabel;
         juce::ImageComponent appIconImage;
 
         const int appIconBorder = 12;

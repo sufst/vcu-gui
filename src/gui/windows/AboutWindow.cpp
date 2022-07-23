@@ -19,10 +19,11 @@ AboutWindow::AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager)
     setResizable(false, false);
     setAlwaysOnTop(true);
     setVisible(true);
-    setSize(430, 150);
+    setSize(400, 150);
 
     setContentNonOwned(&aboutComponent, false);
 
+    jassert(commandManager);
     commandManager->registerAllCommandsForTarget(this);
 }
 
@@ -133,22 +134,23 @@ void AboutWindow::AboutComponent::setupLabels()
                                    juce::Justification,
                                    juce::Colour>;
 
-    juce::String version("Version ");
-    version += ProjectInfo::versionString;
-
-    juce::String name(ProjectInfo::projectName);
 
     const std::initializer_list<Initialiser> initList = {
         {&appNameLabel,
-         name,
+         juce::String(ProjectInfo::projectName),
          50,
          juce::Justification::bottomLeft,
          juce::Colour(225, 225, 225)},
         {&versionLabel,
-         version,
+         juce::String("Version ") + ProjectInfo::versionString,
          18,
          juce::Justification::topLeft,
-         juce::Colour(180, 180, 180)}
+         juce::Colour(180, 180, 180)},
+        {&commitHashLabel,
+         juce::String(GIT_COMMIT_HASH),
+         10,
+         juce::Justification::centredLeft,
+         juce::Colour(120, 120, 120)}
     };
 
     for (const auto& [component, text, fontHeight, justification, textColour] :
@@ -168,22 +170,29 @@ void AboutWindow::AboutComponent::setupLabels()
 void AboutWindow::AboutComponent::resized()
 {
     auto bounds = getLocalBounds();
-    int height = bounds.getHeight();
 
     // app icon
-    auto iconBounds = bounds.removeFromLeft(height);
+    auto iconBounds = bounds.removeFromLeft(bounds.getHeight());
     appIconImage.setBounds(iconBounds.reduced(appIconBorder));
 
     // app name
-    auto nameBounds = bounds.removeFromTop(height / 2);
+    auto h = bounds.getHeight();
+    bounds.removeFromTop(h / 4);
+    bounds.removeFromBottom(h / 6);
+
+    auto nameBounds = bounds.removeFromTop(bounds.getHeight() / 2);
     appNameLabel.setBounds(nameBounds);
 
     // app version
     int offset = 4;
-    auto versionBounds = bounds.removeFromTop(height / 5);
-    versionBounds.setY(versionBounds.getY() - offset);
-    versionBounds.setX(versionBounds.getX() + offset);
+    auto versionBounds = bounds.removeFromTop(bounds.getHeight() / 2);
+    versionBounds.removeFromLeft(offset);
     versionLabel.setBounds(versionBounds);
+
+    // commit hash
+    auto hashBounds = bounds.removeFromTop(bounds.getHeight() / 2);
+    hashBounds.removeFromLeft(offset);
+    commitHashLabel.setBounds(hashBounds);
 }
 
 } // namespace gui
