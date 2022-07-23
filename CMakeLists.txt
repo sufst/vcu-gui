@@ -22,9 +22,9 @@ set(TARGET_NAME ${PROJECT_NAME})
 add_subdirectory(lib/JUCE)
 
 juce_add_gui_app(${TARGET_NAME}
-    PRODUCT_NAME "${PROJECT_NAME}"
+    PRODUCT_NAME "VCU GUI"
     COMPANY_NAME "SUFST"
-    BUNDLE_ID "com.sufst.${PROJECT_NAME}"
+    BUNDLE_ID "com.sufst.vcu-gui"
     ICON_SMALL res/AppIcon_512.png
     ICON_LARGE res/AppIcon_1024.png
 )
