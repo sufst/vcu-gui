@@ -18,7 +18,7 @@ namespace gui
 /**
  * @brief Main GUI window
  */
-class MainWindow : public juce::DocumentWindow
+class MainWindow : public juce::DocumentWindow, juce::ApplicationCommandTarget
 {
 public:
 
@@ -27,6 +27,13 @@ public:
                std::shared_ptr<CommandManager> commandManager);
 
     void closeButtonPressed() override;
+
+    // command handling
+    void getAllCommands(juce::Array<juce::CommandID>& commands) override;
+    void getCommandInfo(juce::CommandID commandID,
+                        juce::ApplicationCommandInfo& result) override;
+    bool perform(const InvocationInfo& info) override;
+    juce::ApplicationCommandTarget* getNextCommandTarget() override;
 
 private:
 
