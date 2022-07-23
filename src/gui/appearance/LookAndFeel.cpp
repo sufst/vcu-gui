@@ -14,7 +14,22 @@ namespace sufst
  */
 LookAndFeel::LookAndFeel()
 {
+    auto karla = getKarlaTypeface();
+
+    setDefaultSansSerifTypeface(karla);
+
+
     
+}
+
+/**
+ * @brief Loads the Karla font from the binary data library
+ */
+const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
+{
+    static auto typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::KarlaLight_ttf, 
+                                                                   BinaryData::KarlaLight_ttfSize);
+    return typeface;
 }
 
 
