@@ -23,7 +23,8 @@ MainWindow::MainWindow(const juce::String& name,
     : juce::DocumentWindow(
         name,
         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),
-        DocumentWindow::allButtons)
+        DocumentWindow::allButtons),
+      menuBar(commandManager)
 {
     setUsingNativeTitleBar(true);
     setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);

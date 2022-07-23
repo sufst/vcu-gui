@@ -8,6 +8,7 @@
 
 #include "../../CommandManager.h"
 #include "../../ConfigurationValueTree.h"
+#include "../menubar/MenuBar.h"
 #include <JuceHeader.h>
 #include <memory>
 
@@ -28,6 +29,8 @@ public:
     void closeButtonPressed() override;
 
 private:
+
+    MenuBar menuBar;
 
     static const int minWidth = 500;
     static const int minHeight = 350;
