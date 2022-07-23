@@ -25,7 +25,6 @@ private:
     static const juce::Typeface::Ptr getKarlaTypeface();
 
     JUCE_DECLARE_NON_COPYABLE(LookAndFeel)
-
 };
 
 } // namespace sufst

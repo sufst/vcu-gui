@@ -17,9 +17,6 @@ LookAndFeel::LookAndFeel()
     auto karla = getKarlaTypeface();
 
     setDefaultSansSerifTypeface(karla);
-
-
-    
 }
 
 /**
@@ -27,10 +24,9 @@ LookAndFeel::LookAndFeel()
  */
 const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
 {
-    static auto typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::KarlaLight_ttf, 
-                                                                   BinaryData::KarlaLight_ttfSize);
+    static auto typeface
+        = juce::Typeface::createSystemTypefaceFor(BinaryData::KarlaLight_ttf, BinaryData::KarlaLight_ttfSize);
     return typeface;
 }
-
 
 } // namespace sufst
