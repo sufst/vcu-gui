@@ -4,3 +4,6 @@
 [submodule "lib/juce"]
 	path = lib/juce
 	url = https://github.com/juce-framework/juce
+[submodule "res/fonts/karla"]
+	path = res/fonts/karla
+	url = https://github.com/googlefonts/karla
