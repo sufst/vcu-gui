@@ -101,7 +101,6 @@ private:
     const juce::Colour lineColour = sufst::Colours::white;
     const juce::Colour borderColour = sufst::Colours::midgrey;
     const juce::Colour tickColour = sufst::Colours::darkgrey;
-
 };
 
 /**
@@ -534,7 +533,6 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
 
         g.drawEllipse(x, y, circleSize, circleSize, circleSize);
     }
-
 }
 
 /**
