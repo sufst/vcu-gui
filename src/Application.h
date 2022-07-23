@@ -30,6 +30,8 @@ public:
     const juce::String getApplicationVersion() override;
     bool moreThanOneInstanceAllowed() override;
 
+    juce::ApplicationCommandTarget* getNextCommandTarget() override;
+
 private:
 
     std::unique_ptr<gui::MainWindow> mainWindow;
