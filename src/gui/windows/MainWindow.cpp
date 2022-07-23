@@ -32,7 +32,11 @@ MainWindow::MainWindow(const juce::String& name,
     setVisible(true);
     centreWithSize(getWidth(), getHeight());
 
+    jassert(sharedConfigValueTree);
     setContentOwned(new MainComponent(sharedConfigValueTree), true);
+
+    jassert(commandManager);
+    commandManager->registerAllCommandsForTarget(this);
 }
 
 /**
