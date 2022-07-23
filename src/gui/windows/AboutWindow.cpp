@@ -20,7 +20,6 @@ AboutWindow::AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager)
     setAlwaysOnTop(true);
     setVisible(true);
     setSize(430, 150);
-    toFront(false);
 
     setContentNonOwned(&aboutComponent, false);
 
