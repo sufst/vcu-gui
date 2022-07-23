@@ -8,6 +8,7 @@
 #pragma once
 
 #include "../../Interpolator.h"
+#include "../appearance/Colours.h"
 #include "../utility/PointComparator.h"
 #include "../utility/clip.h"
 #include <JuceHeader.h>
@@ -95,6 +96,11 @@ private:
     int movingPointIndex = -1;
 
     std::unique_ptr<Interpolator<int>> interpolator;
+
+    const juce::Colour pointColour = sufst::Colours::sfsyellow;
+    const juce::Colour lineColour = sufst::Colours::white;
+    const juce::Colour borderColour = sufst::Colours::midgrey;
+    const juce::Colour tickColour = sufst::Colours::darkgrey;
 };
 
 /**
@@ -456,7 +462,7 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
 
     auto bounds = getLocalBounds().toFloat();
 
-    g.setColour(juce::Colours::darkgrey);
+    g.setColour(tickColour);
 
     for (int i = 0; i < numTicksX; i++)
     {
@@ -479,7 +485,7 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
 template <typename ValueType>
 void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
 {
-    g.setColour(getLookAndFeel().findColour(juce::ComboBox::outlineColourId));
+    g.setColour(borderColour);
     g.drawRect(0, 0, getWidth(), getHeight(), 1);
 }
 
@@ -495,17 +501,8 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
     const float circleSize = 4;
     const float circleShift = circleSize / 2;
 
-    g.setColour(juce::Colours::white);
-
-    for (const auto& point : points)
-    {
-        auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
-
-        const auto x = static_cast<float>(transformedPoint.getX() - circleShift);
-        const auto y = static_cast<float>(transformedPoint.getY() - circleShift);
-
-        g.drawEllipse(x, y, circleSize, circleSize, circleSize);
-    }
+    // interpolated curve
+    g.setColour(lineColour);
 
     if (points.size() > 1)
     {
@@ -522,6 +519,19 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
         }
 
         g.strokePath(p, juce::PathStrokeType(1));
+    }
+
+    // points
+    g.setColour(pointColour);
+
+    for (const auto& point : points)
+    {
+        auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
+
+        const auto x = static_cast<float>(transformedPoint.getX() - circleShift);
+        const auto y = static_cast<float>(transformedPoint.getY() - circleShift);
+
+        g.drawEllipse(x, y, circleSize, circleSize, circleSize);
     }
 }
 

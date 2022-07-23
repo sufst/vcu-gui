@@ -102,10 +102,10 @@ void TorqueMapComponent::paintDeadzoneOverlay(juce::Graphics& g) const
 {
     auto deadzoneBounds = getDeadzoneBounds();
 
-    g.setColour(juce::Colours::skyblue.withLightness(0.9f).withAlpha(0.2f));
+    g.setColour(deadzoneColour.withLightness(0.5f).withAlpha(0.2f));
     g.fillRect(deadzoneBounds.expanded(0, 5));
 
-    g.setColour(juce::Colours::skyblue);
+    g.setColour(deadzoneColour);
     g.drawVerticalLine(deadzoneBounds.getWidth(), 0, deadzoneBounds.toFloat().getHeight());
 }
 
