@@ -12,8 +12,7 @@ namespace gui
 /**
  * @brief Constructor
  */
-MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager)
-    : commandManager(sharedCommandManager)
+MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager) : commandManager(sharedCommandManager)
 {
     jassert(commandManager);
     commandManager->registerAllCommandsForTarget(this);
