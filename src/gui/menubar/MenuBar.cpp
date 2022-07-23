@@ -195,10 +195,8 @@ bool MenuBar::perform(const InvocationInfo& info)
         if (!aboutWindow)
         {
             aboutWindow = std::make_unique<AboutWindow>(commandManager);
-            
-            aboutWindow->onCloseButtonPressed = [this](){
-                aboutWindow.reset();
-            };
+
+            aboutWindow->onCloseButtonPressed = [this]() { aboutWindow.reset(); };
         }
         break;
     }

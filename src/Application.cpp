@@ -74,12 +74,12 @@ bool Application::moreThanOneInstanceAllowed()
 
 /**
  * @brief   Implements juce::ApplicationCommandTarget::getNextCommandTarget()
- * 
+ *
  * @details This ensures that the main window is found as a target by the CommandManager when the app launches. Without
  *          this, if the user does not interact with a component inside the main window, menu bar items will be greyed
  *          out (though keyboard shortcuts will still work).
  */
 juce::ApplicationCommandTarget* Application::getNextCommandTarget()
-{   
+{
     return mainWindow.get();
 }
