@@ -53,6 +53,23 @@ juce_add_binary_data(${TARGET_NAME}Data
         res/Delete.png
 )
 
+# get the commit hash
+execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+
+
 # compilation
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
@@ -60,6 +77,7 @@ target_compile_definitions(${TARGET_NAME}
         JUCE_USE_CURL=0
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_VERSION>"
+        -DGIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"
 )
 
 # linking
