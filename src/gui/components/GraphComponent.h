@@ -267,9 +267,9 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 
 /**
  * @brief   Implements juce::Component::resized()
- * 
+ *
  * @details This applies an affine transform to the interpolated path to resize it to the available bounds
- * 
+ *
  * @note    The component must start with a non-zero size, else the calls to resized() on app initialisation
  *          will result in an invalid (infinite) transform matrix which throws an exception when it is applied
  */
