@@ -51,6 +51,7 @@ public:
     void clear();
 
     void paint(juce::Graphics& g) override;
+    void resized() override;
 
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
@@ -118,6 +119,7 @@ GraphComponent<ValueType>::GraphComponent()
     setRangeX(0, 1);
     setRangeY(0, 1);
     setEditable(true);
+    setSize(100, 100); // need to start with non-zero size for point transformations
     setWantsKeyboardFocus(true);
     setDrawsInterpolatedCurve(true);
 
@@ -261,6 +263,22 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
     }
 
     paintPoints(g);
+}
+
+/**
+ * @brief   Implements juce::Component::resized()
+ * 
+ * @details This applies an affine transform to the interpolated path to resize it to the available bounds
+ * 
+ * @note    The component must start with a non-zero size, else the calls to resized() on app initialisation
+ *          will result in an invalid (infinite) transform matrix which throws an exception when it is applied
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::resized()
+{
+    auto bounds = getLocalBounds().toFloat();
+    auto transform = interpolatedPath.getTransformToScaleToFit(bounds, false);
+    interpolatedPath.applyTransform(transform);
 }
 
 /**
