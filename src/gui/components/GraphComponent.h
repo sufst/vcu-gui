@@ -38,6 +38,7 @@ public:
     void setRangeY(ValueType min, ValueType max);
     void setEditable(bool shouldBeEditable = true);
     void setInterpolationMethod(const juce::Identifier& identifier);
+    void setDrawsInterpolatedCurve(bool shouldDrawInterpolatedCurve = true);
 
     ValueType getMinX() const;
     ValueType getMinY() const;
@@ -62,6 +63,7 @@ protected:
 
     juce::Rectangle<ValueType> valueBounds;
     juce::Array<juce::Point<ValueType>> points;
+    juce::Path interpolatedPath;
 
     juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
                                             const juce::Point<ValueType>& point) const;
@@ -75,7 +77,10 @@ private:
 
     void paintTicks(juce::Graphics& g) const;
     void paintBorder(juce::Graphics& g) const;
+    void paintPoints(juce::Graphics& g) const;
     void paintCurve(juce::Graphics& g) const;
+
+    void recalculateInterpolatedPath();
 
     void updateCursor();
 
@@ -92,6 +97,7 @@ private:
     };
 
     bool editable;
+    bool shouldInterpolate;
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
 
@@ -113,15 +119,11 @@ GraphComponent<ValueType>::GraphComponent()
     setRangeY(0, 1);
     setEditable(true);
     setWantsKeyboardFocus(true);
+    setDrawsInterpolatedCurve(true);
 
     setInterpolationMethod(SplineInterpolator<ValueType>::identifier);
 
     addKeyListener(this);
-
-    DBG(getMinX());
-    DBG(getMinY());
-    DBG(getMaxX());
-    DBG(getMinY());
 }
 
 /**
@@ -234,6 +236,17 @@ void GraphComponent<ValueType>::setInterpolationMethod(const juce::Identifier& i
 }
 
 /**
+ * @brief       Sets whether or not the interpolated curve should be calculated and drawn
+ *
+ * @param[in]   shouldDrawInterpolatedCurve     Set true to draw interpolated curve
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::setDrawsInterpolatedCurve(bool shouldDrawInterpolatedCurve)
+{
+    shouldInterpolate = shouldDrawInterpolatedCurve;
+}
+
+/**
  * @brief Implements juce::Component::paint()
  */
 template <typename ValueType>
@@ -241,7 +254,13 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
     paintTicks(g);
     paintBorder(g);
-    paintCurve(g);
+
+    if (shouldInterpolate)
+    {
+        paintCurve(g);
+    }
+
+    paintPoints(g);
 }
 
 /**
@@ -446,7 +465,32 @@ template <typename ValueType>
 void GraphComponent<ValueType>::pointsChanged()
 {
     interpolator->invalidateCache();
+    recalculateInterpolatedPath();
     repaint();
+}
+
+/**
+ * @brief   Re-calculates the interpolated path
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::recalculateInterpolatedPath()
+{
+    auto bounds = getLocalBounds().toFloat();
+    interpolatedPath.clear();
+
+    if (points.size() > 1)
+    {
+        auto start = transformPointForPaint(bounds, points.getFirst()).toFloat();
+        interpolatedPath.startNewSubPath(start.getX(), start.getY());
+
+        interpolator->process(points, 500);
+
+        for (const auto& point : interpolator->getInterpolatedPoints())
+        {
+            auto transformedPoint = transformPointForPaint(bounds, point);
+            interpolatedPath.lineTo(transformedPoint.toFloat());
+        }
+    }
 }
 
 /**
@@ -490,38 +534,18 @@ void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
 }
 
 /**
- * @brief       Paint graph curve
+ * @brief       Paint graph points
  *
  * @param[in]   g   JUCE graphics context
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
+void GraphComponent<ValueType>::paintPoints(juce::Graphics& g) const
 {
     auto bounds = getLocalBounds().toFloat();
+
     const float circleSize = 4;
     const float circleShift = circleSize / 2;
 
-    // interpolated curve
-    g.setColour(lineColour);
-
-    if (points.size() > 1)
-    {
-        juce::Path p;
-        auto start = transformPointForPaint(bounds, points.getFirst()).toFloat();
-        p.startNewSubPath(start.getX(), start.getY());
-
-        interpolator->process(points, 500);
-
-        for (const auto& point : interpolator->getInterpolatedPoints())
-        {
-            auto transformedPoint = transformPointForPaint(bounds, point);
-            p.lineTo(transformedPoint.toFloat());
-        }
-
-        g.strokePath(p, juce::PathStrokeType(1));
-    }
-
-    // points
     g.setColour(pointColour);
 
     for (const auto& point : points)
@@ -533,6 +557,23 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
 
         g.drawEllipse(x, y, circleSize, circleSize, circleSize);
     }
+}
+
+/**
+ * @brief       Paint graph curve
+ *
+ * @param[in]   g   JUCE graphics context
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
+{
+    if (points.size() < 2)
+    {
+        return;
+    }
+
+    g.setColour(lineColour);
+    g.strokePath(interpolatedPath, juce::PathStrokeType(1));
 }
 
 /**
