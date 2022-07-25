@@ -42,6 +42,7 @@ public:
         inline static const juce::Identifier InterpolationMethod = "InterpolationMethod";
         inline static const juce::Identifier InputValue = "InputValue";
         inline static const juce::Identifier OutputValue = "OutputValue";
+        inline static const juce::Identifier ScaleFactor = "ScaleFactor";
 
     private:
 

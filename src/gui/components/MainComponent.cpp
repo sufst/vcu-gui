@@ -174,6 +174,12 @@ void MainComponent::setupSliders()
     pointsScaleSlider.setNumDecimalPlacesToDisplay(2);
     pointsScaleSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
     pointsScaleSlider.setValue(1.0, juce::dontSendNotification);
+
+    pointsScaleSlider.onValueChange = [this]() {
+        double scaleFactor = pointsScaleSlider.getValue();
+        auto torqueMap = this->configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+        torqueMap.setProperty(ConfigurationValueTree::Properties::ScaleFactor, scaleFactor, nullptr);
+    };
 }
 
 /**
