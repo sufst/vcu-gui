@@ -79,9 +79,37 @@ void TorqueMapComponent::syncTorqueMapData()
  */
 void TorqueMapComponent::paint(juce::Graphics& g)
 {
-    GraphComponent<int>::paint(g);
-
+    GraphComponent<int>::paintTicks(g);
+    GraphComponent<int>::paintBorder(g);
+    paintScaledCurve(g);
+    GraphComponent<int>::paintCurve(g);
+    GraphComponent<int>::paintPoints(g);
     paintDeadzoneOverlay(g);
+}
+
+/**
+ * @brief Paints a scaled version of the graph curve
+ */
+void TorqueMapComponent::paintScaledCurve(juce::Graphics& g)
+{
+    if (points.size() < 2)
+    {
+        return;
+    }
+
+    // scale path by affine transform
+    auto pathBounds = interpolatedPath.getBounds();
+    const float xShift = pathBounds.getWidth();
+    const float yShift = pathBounds.getHeight();
+
+    juce::Path path = interpolatedPath; // TODO: another level of caching here?
+    path.applyTransform(juce::AffineTransform().translated(-xShift, -yShift));
+    path.applyTransform(juce::AffineTransform().scaled(1, scaleFactor));
+    path.applyTransform(juce::AffineTransform().translated(xShift, yShift));
+
+    // draw scaled path
+    g.setColour(scaledLineColour);
+    g.strokePath(path, juce::PathStrokeType(1));
 }
 
 /**
@@ -274,6 +302,12 @@ void TorqueMapComponent::valueTreePropertyChanged(juce::ValueTree& changedTree, 
         {
             setInterpolationMethod(
                 torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod).toString());
+            repaint();
+        }
+        else if (property == ConfigurationValueTree::Properties::ScaleFactor)
+        {
+            auto scaleFactorProperty = torqueMap.getProperty(ConfigurationValueTree::Properties::ScaleFactor);
+            scaleFactor = static_cast<float>(scaleFactorProperty);
             repaint();
         }
     }

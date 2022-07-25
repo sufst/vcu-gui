@@ -60,11 +60,21 @@ public:
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
     bool keyPressed(const juce::KeyPress& key) override;
 
+    const juce::Colour pointColour = sufst::Colours::sfsyellow;
+    const juce::Colour lineColour = sufst::Colours::white;
+    const juce::Colour borderColour = sufst::Colours::midgrey;
+    const juce::Colour tickColour = sufst::Colours::darkgrey;
+
 protected:
 
     juce::Rectangle<ValueType> valueBounds;
     juce::Array<juce::Point<ValueType>> points;
     juce::Path interpolatedPath;
+
+    void paintTicks(juce::Graphics& g) const;
+    void paintBorder(juce::Graphics& g) const;
+    void paintPoints(juce::Graphics& g) const;
+    void paintCurve(juce::Graphics& g) const;
 
     juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
                                             const juce::Point<ValueType>& point) const;
@@ -76,10 +86,6 @@ protected:
 
 private:
 
-    void paintTicks(juce::Graphics& g) const;
-    void paintBorder(juce::Graphics& g) const;
-    void paintPoints(juce::Graphics& g) const;
-    void paintCurve(juce::Graphics& g) const;
 
     void recalculateInterpolatedPath();
 
@@ -103,11 +109,6 @@ private:
     int movingPointIndex = -1;
 
     std::unique_ptr<Interpolator<int>> interpolator;
-
-    const juce::Colour pointColour = sufst::Colours::sfsyellow;
-    const juce::Colour lineColour = sufst::Colours::white;
-    const juce::Colour borderColour = sufst::Colours::midgrey;
-    const juce::Colour tickColour = sufst::Colours::darkgrey;
 };
 
 /**
@@ -493,21 +494,27 @@ void GraphComponent<ValueType>::pointsChanged()
 template <typename ValueType>
 void GraphComponent<ValueType>::recalculateInterpolatedPath()
 {
+    if (points.size() < 2)
+    {
+        return;
+    }
+
     auto bounds = getLocalBounds().toFloat();
     interpolatedPath.clear();
 
-    if (points.size() > 1)
+    auto start = transformPointForPaint(bounds, points.getFirst()).toFloat();
+    interpolatedPath.startNewSubPath(start.getX(), start.getY());
+
+    interpolator->process(points, 500);
+
+    for (const auto& point : interpolator->getInterpolatedPoints())
     {
-        auto start = transformPointForPaint(bounds, points.getFirst()).toFloat();
-        interpolatedPath.startNewSubPath(start.getX(), start.getY());
+        auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
 
-        interpolator->process(points, 500);
+        auto x = utility::clip(transformedPoint.getX(), 0.f, bounds.getWidth());
+        auto y = utility::clip(transformedPoint.getY(), 0.f, bounds.getHeight());
 
-        for (const auto& point : interpolator->getInterpolatedPoints())
-        {
-            auto transformedPoint = transformPointForPaint(bounds, point);
-            interpolatedPath.lineTo(transformedPoint.toFloat());
-        }
+        interpolatedPath.lineTo({x, y});
     }
 }
 
@@ -570,8 +577,8 @@ void GraphComponent<ValueType>::paintPoints(juce::Graphics& g) const
     {
         auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
 
-        const auto x = static_cast<float>(transformedPoint.getX() - circleShift);
-        const auto y = static_cast<float>(transformedPoint.getY() - circleShift);
+        auto x = static_cast<float>(transformedPoint.getX() - circleShift);
+        auto y = static_cast<float>(transformedPoint.getY() - circleShift);
 
         g.drawEllipse(x, y, circleSize, circleSize, circleSize);
     }
@@ -597,7 +604,7 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
 /**
  * @brief       Transforms a graph point to the coordinates system used for painting
  *
- * @param[in]
+ * @param[in]   bounds  Bounds of graph
  * @param[in]   point   Point on the graph
  */
 template <typename ValueType>

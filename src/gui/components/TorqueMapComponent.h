@@ -35,6 +35,8 @@ public:
 
 private:
 
+    void paintScaledCurve(juce::Graphics& g);
+
     // deadzone drawing
     juce::Rectangle<int> getDeadzoneBounds() const;
     void paintDeadzoneOverlay(juce::Graphics& g) const;
@@ -53,7 +55,8 @@ private:
 
     std::shared_ptr<ConfigurationValueTree> configValueTree;
 
-    // constant data
+    // torque map data
+    float scaleFactor = 1;
     // TODO: this needs to be part of the torque map
     static const int inputResolution = 10;
     static const int outputResolution = 15;
@@ -61,6 +64,7 @@ private:
     static const int outputMax = (1 << outputResolution) - 1;
 
     const juce::Colour deadzoneColour = sufst::Colours::skyblue;
+    const juce::Colour scaledLineColour = sufst::Colours::skyblue.withAlpha(0.2f);
 };
 
 } // namespace gui

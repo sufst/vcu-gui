@@ -41,6 +41,7 @@ private:
 
     void setupInterpolationCombo();
     void setupButtons();
+    void setupSliders();
 
     // shared config state
     std::shared_ptr<ConfigurationValueTree> configValueTree;
@@ -58,6 +59,7 @@ private:
     juce::TextButton exportProfileButton;
     juce::TextButton importProfileButton;
     juce::TextButton exportCodeButton;
+    juce::Slider pointsScaleSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
