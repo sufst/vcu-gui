@@ -24,12 +24,14 @@ MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfi
 
     setupInterpolationCombo();
     setupButtons();
+    setupSliders();
 
     addAndMakeVisible(torqueMapGraph);
     addAndMakeVisible(interpolationCombo);
     addAndMakeVisible(exportProfileButton);
     addAndMakeVisible(importProfileButton);
     addAndMakeVisible(exportCodeButton);
+    addAndMakeVisible(pointsScaleSlider);
 }
 
 /**
@@ -162,9 +164,20 @@ void MainComponent::setupButtons()
 }
 
 /**
- * @brief Painter
- *
- * @param[in]   g   Graphics context
+ * @brief Sets up slider components
+ */
+void MainComponent::setupSliders()
+{
+    // points scale factor
+    pointsScaleSlider.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
+    pointsScaleSlider.setRange(0.0, 1.0);
+    pointsScaleSlider.setNumDecimalPlacesToDisplay(2);
+    pointsScaleSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
+    pointsScaleSlider.setValue(1.0, juce::dontSendNotification);
+}
+
+/**
+ * @brief Implements juce::Component::paint()
  */
 void MainComponent::paint(juce::Graphics& g)
 {
@@ -189,7 +202,8 @@ void MainComponent::resized()
     footer.removeFromTop(10);
     footer.removeFromBottom(2);
 
-    // graph
+    // graph and slider
+    pointsScaleSlider.setBounds(bounds.removeFromRight(20));
     torqueMapGraph.setBounds(bounds);
 
     // footer
