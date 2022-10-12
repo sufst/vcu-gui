@@ -1,26 +1,26 @@
 {
-    "configurations": [
-        {
-            "name": "Mac (ARM)",
-            "includePath": [
-                "${workspaceFolder}/src/**",
-                "${workspaceFolder}/lib/JUCE/modules/**",
-                "${workspaceFolder}/build/VCU-GUI_artefacts/JuceLibraryCode/**",
-                "${workspaceFolder}/lib/JUCE/modules",
-                "${workspaceFolder}/lib/spline/src"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "macos-clang-arm64",
-            "browse": {
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": ""
-            },
-            "compileCommands": "${workspaceFolder}/compile_commands.json",
-            "configurationProvider": "ms-vscode.cmake-tools"
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "name": "Mac (ARM)",
+      "includePath": [
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/lib/JUCE/modules/**",
+        "${workspaceFolder}/build/VCU-GUI_artefacts/JuceLibraryCode/**",
+        "${workspaceFolder}/lib/JUCE/modules",
+        "${workspaceFolder}/lib/spline/src"
+      ],
+      "defines": [],
+      "compilerPath": "/usr/bin/clang",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "macos-clang-arm64",
+      "browse": {
+        "limitSymbolsToIncludedHeaders": true,
+        "databaseFilename": ""
+      },
+      "compileCommands": "${workspaceFolder}/compile_commands.json",
+      "configurationProvider": "ms-vscode.cmake-tools"
+    }
+  ],
+  "version": 4
 }
