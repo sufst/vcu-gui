@@ -1,12 +1,12 @@
-# VCU Driver Profile Tool
-A cross-platform graphical tool for customising and exporting driver profiles for the VCU pedal torque response.
+# VCU GUI
+A cross-platform graphical tool for configuring the parameters of the VCU.
 
 <p align="center">
   <img src="./docs/C2 Spline.png" width="90%" class="center">
 </p>
 
 ## Installing
-This tool has been pre-compiled for macOS and Windows as a standalone application. The latest release is available [here](https://github.com/sufst/vcu-driver-profile/releases), or use one of the links below for a direct download:
+Releases of this tool are pre-compiled for macOS and Windows as a standalone application. The latest release is available [here](https://github.com/sufst/vcu-driver-profile/releases), or use one of the links below for a direct download:
 
 - [macOS](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.app.zip)
 - [Windows](https://github.com/sufst/vcu-driver-profile/releases/download/v1.0.0/VCU.Driver.Profile.exe)
@@ -63,19 +63,6 @@ Created profiles can be exported to an XML document by pressing the 'export prof
 <p align="center">
   <img src="./docs/Profile.gif" width="60%" class="center">
 </p>
-
-## Exporting Source Code
-The 'export code' button will generate a `uint16_t` C array mapping 2¹⁰ integer input values onto the interpolated curve and copy it to the clipboard. This is used as a look-up table in the VCU to map the scaled 10-bit analogue reading from the pedal to the desired output torque.
-
-```C
-static const uint16_t driver_profile [1024] = {
-  0x0000, 0x002e, 0x005d, 0x008b, 0x00ba, 0x00e9, 0x0117, 0x0146, 
-  0x0174, 0x01a3, 0x01d2, 0x0200, 0x022f, 0x025d, 0x028c, 0x02bb, 
-  0x02e9, 0x0318, 0x0346, 0x0375, 0x03a3, 0x03d2, 0x0400, 0x042f, 
-  0x045d, 0x048c, 0x04ba, 0x04e8, 0x0517, 0x0545, 0x0574, 0x05a2, 
-  // ...
-};
-```
 
 ## Initial Setup and Build Process
 Clone the repo:
