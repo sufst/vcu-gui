@@ -29,7 +29,6 @@ MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfi
     addAndMakeVisible(interpolationCombo);
     addAndMakeVisible(exportProfileButton);
     addAndMakeVisible(importProfileButton);
-    addAndMakeVisible(exportCodeButton);
 }
 
 /**
@@ -130,35 +129,6 @@ void MainComponent::setupButtons()
                                      configValueTree->loadFromFile(chooser.getResult());
                                  });
     };
-
-    // export code
-    exportCodeButton.setButtonText("Export Code");
-
-    exportCodeButton.onClick = [this]()
-    {
-        fileChooser = std::make_unique<juce::FileChooser>("Export Code",
-                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                          "*.c",
-                                                          true);
-
-        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
-                                | juce::FileBrowserComponent::warnAboutOverwriting
-                                | juce::FileBrowserComponent::saveMode;
-
-        fileChooser->launchAsync(fileChooserFlags,
-                                 [this](const juce::FileChooser& chooser)
-                                 {
-                                     if (chooser.getResults().isEmpty())
-                                     {
-                                         return;
-                                     }
-
-                                     juce::String code = configValueTree->exportCode();
-                                     auto file = chooser.getResult();
-
-                                     file.replaceWithText(code);
-                                 });
-    };
 }
 
 /**
@@ -194,7 +164,7 @@ void MainComponent::resized()
 
     // footer
     std::initializer_list<juce::Component*> footerComponents
-        = {&interpolationCombo, &exportProfileButton, &importProfileButton, &exportCodeButton};
+        = {&interpolationCombo, &exportProfileButton, &importProfileButton};
 
     const int numFooterComponents = static_cast<int>(footerComponents.size());
     const int footerItemSpacing = borderSize / numFooterComponents;
