@@ -69,7 +69,7 @@ Configurations can be exported to an XML document by pressing the 'export profil
 ## Initial Setup and Build Process
 Clone the repo:
 ```sh
-git clone https://github.com/sufst/vcu-driver-profile
+git clone https://github.com/sufst/vcu-gui
 ```
 Clone / update submodules:
 ```sh
