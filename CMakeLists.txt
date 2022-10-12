@@ -19,9 +19,11 @@ set(TARGET_NAME ${PROJECT_NAME})
 
 # OS / architecture specific
 if(APPLE)
-    if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        # build natively for debug
         set(CMAKE_OSX_ARCHITECTURES "${CMAKE_HOST_SYSTEM_PROCESSOR}" CACHE INTERNAL "" FORCE)
     ELSE()
+        # universal binary for release
         set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE INTERNAL "" FORCE)
     ENDIF()
 ENDIF()
