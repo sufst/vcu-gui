@@ -23,16 +23,16 @@ Commits (and issue/pull request titles) should follow the [conventional commits 
 | `misc` | Anything which absolutely does not match any of the other types |
 
 `<scope>` should be a single word describing a part of the system such as (but not limited to):
-| Scope      | Description |
+| Scope | Description |
 |------------|----------------------------------------------------------------|
-| gui        | GUI components, windows, menu bar, appearance                  |
-| config     | VCU configuration model                                        |
-| comms      | Communication with the VCU                                     |
-| settings   | User settings                                                  |
-| vscode     | VS Code configuration                                          |
-| trunk      | Trunk and linter/formatter configuration                       |
+| gui | GUI components, windows, menu bar, appearance |
+| config | VCU configuration model |
+| comms | Communication with the VCU |
+| settings | User settings |
+| vscode | VS Code configuration |
+| trunk | Trunk and linter/formatter configuration |
 
-`<subject>` should written as "lowercase, imperative, present tense" (e.g. _'create linear torque map interpolator').
+`<subject>` should written as "lowercase, imperative, present tense" (e.g. \_'create linear torque map interpolator').
 
 ## Branch Names
 
@@ -44,9 +44,10 @@ Branches should be named beginning with the `<type>` for the corresponding issue
 
 ## Code Formatting and Linting
 
-Code should be formatted and linted before committing using [Trunk](https://docs.trunk.io). 
-When you set up Trunk, allow it to automatically manage your git hooks for the repo to automate this process. 
+Code should be formatted and linted before committing using [Trunk](https://docs.trunk.io).
+When you set up Trunk, allow it to automatically manage your git hooks for the repo to automate this process.
 To check and format the code run:
+
 ```sh
 trunk check
 ```
