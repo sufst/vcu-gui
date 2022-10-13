@@ -42,15 +42,15 @@ Install `trunk` with:
 curl https://get.trunk.io -fsSL | bash
 ```
 
-
-<!-- Install JUCE build dependencies with:
+Install JUCE build dependencies with:
 ```sh
 sudo apt install libasound2-dev
 sudo apt install libfreetype6-dev
-``` -->
+sudo apt install libcurl4-openssl-dev
+sudo apt install libwebkit2gtk-4.0-dev
+```ls
 
 Ubuntu ships with `gcc`, but make sure to run `sudo apt upgrade`.
-
 
 ## Windows
 TBD - we know it is possible to build the app on Windows, it was done successfully for release v1.0.0.
