@@ -53,8 +53,16 @@ sudo apt install libwebkit2gtk-4.0-dev
 Ubuntu ships with `gcc`, but make sure to run `sudo apt upgrade`.
 
 ## Windows
-TBD - we know it is possible to build the app on Windows, it was done successfully for release v1.0.0.
-For now, a Linux VM or WSL is probably necessary.
+
+CMake:
+- Download the `cmake` installer from the [CMake downloads page](https://cmake.org/download/) and run the installer. 
+- Make sure that CMake is added to the system PATH for the current user in the install options.
+<!-- 
+MinGW-W64 and `gcc` toolchain:
+- Install MinGW-W64 from its [release page on GitHub](https://github.com/niXman/mingw-builds-binaries/releases). 
+- You will need to use 7ZIP to extract the archive, or convert it to a regular ZIP file with [CloudConvert](https://cloudconvert.com/7z-to-zip) or a similar tool and unzip the file.
+- Move the `mingw64` folder in the extracted archive to your `Program Files` folder.
+- Add the `mingw64/bin` to your system PATH by editing your environment variables from the control panel. -->
 
 ## VSCode
 - Install the recommended extensions.
