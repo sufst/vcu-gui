@@ -58,17 +58,16 @@ CMake:
 - Download the `cmake` installer from the [CMake downloads page](https://cmake.org/download/) and run the installer. 
 - Make sure that CMake is added to the system PATH for the current user in the install options.
 
-<!-- 
-MinGW-W64 and `gcc` toolchain:
-- Install MinGW-W64 from its [release page on GitHub](https://github.com/niXman/mingw-builds-binaries/releases). 
-- You will need to use 7ZIP to extract the archive, or convert it to a regular ZIP file with [CloudConvert](https://cloudconvert.com/7z-to-zip) or a similar tool and unzip the file.
-- Move the `mingw64` folder in the extracted archive to your `Program Files` folder.
-- Add the `mingw64/bin` to your system PATH by editing your environment variables from the control panel. -->
-
 Visual Studio build tools:
 - Download the installer from [this page](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022).
 - Start the installer and select "Desktop development with C++" and "Universal Windows Platform build tools".
 - Uncheck all the "optional" SDKs **except MSVC** for a minimal install.
+- Locate the `msbuild` executable and add it to your path - it will be in a place something like `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\`.
+
+To actually build on Windows, the process is a bit different.
+1. Open Powershell and navigate to `vcu-gui/build`.
+2. Run `cmake ..` from this folder, it should build `juceaide` and generate the file `VCU-GUI.sln`.
+3. Run `msbuild ./VCU-GUI.sln` to build the project.
 
 ## VSCode
 - Install the recommended extensions.
