@@ -9,11 +9,7 @@
 #include <JuceHeader.h>
 
 #if (JUCE_MAC || JUCE_LINUX)
-    #pragma GCC diagnostic push // disable warnings from external spline library
-    #pragma GCC diagnostic ignored "-Wconversion"
-    #pragma GCC diagnostic ignored "-Wextra-semi"
-    #pragma GCC diagnostic ignored "-Wmissing-prototypes"
-    #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
+JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE("-Wconversion", "-Wextra-semi", "-Wmissing-prototypes", "-Wc++98-compat-extra-semi")
 #elif (JUCE_WINDOWS)
     // TODO: add MSVC equivalent pragmas
     #define M_PI juce::MathConstants<float>::pi
@@ -28,7 +24,7 @@
 #endif
 
 #if (JUCE_MAC || JUCE_LINUX)
-    #pragma GCC diagnostic pop
+JUCE_END_IGNORE_WARNINGS_GCC_LIKE
 #endif
 
 #include "utility/linspace.h"
