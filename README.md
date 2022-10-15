@@ -88,29 +88,29 @@ git submodule init
 git submodule update
 ```
 
-The build process is managed by `cmake` which you will need to have installed, along with `make` and a C++ compiler. Before building, create the build directory:
+The build process is managed by `cmake` which you will need to have installed, along with `make` (for macOS / Linux) or `msbuild` (for Windows). You will also need a C++ compiler (`clang`, `gcc`, or `msvc`). For instructions on setting up the compiler and development environment, see [this document](./docs/Dev%20Setup.md). Before building, create the build directory:
 
 ```sh
 mkdir build
 ```
 
-To build for debug:
+To create the build system for debug:
 
 ```sh
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug
-make
 ```
 
-Similarly to build for release:
+Similarly for release:
 
 ```sh
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-make
 ```
 
-Tip: for a faster build, run `make -j$(nproc)` to parallelise the build with one job per core on the host machine.
+To actually build the program:
+- On macOS and Linux just run `make` in the build folder. 
+- On Windows, run `msbuild ./VCU-GUI.sln` from the build folder.
 
 ## Dependencies
 
