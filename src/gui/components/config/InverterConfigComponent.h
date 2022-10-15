@@ -1,11 +1,12 @@
 /******************************************************************************
  * @file    InverterConfigComponent.h
- * @author  Tim Brewis (@t-bre)
+ * @author  Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
  *****************************************************************************/
 
 #pragma once
 
-#include "../../ConfigurationValueTree.h"
+#include "../../../ConfigurationValueTree.h"
+#include "ConfigEditorComponent.h"
 #include "TorqueMapComponent.h"
 #include <JuceHeader.h>
 #include <memory>
@@ -16,7 +17,7 @@ namespace gui
 /**
  * @brief   Configuration provider for inverter related properties
  */
-class InverterConfigComponent : public juce::Component
+class InverterConfigComponent : public ConfigEditorComponent
 {
 public:
 

@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "../../Interpolator.h"
-#include "../appearance/Colours.h"
-#include "../utility/PointComparator.h"
-#include "../utility/clip.h"
+#include "../../../Interpolator.h"
+#include "../../appearance/Colours.h"
+#include "../../utility/PointComparator.h"
+#include "../../utility/clip.h"
 #include <JuceHeader.h>
 #include <memory>
 
