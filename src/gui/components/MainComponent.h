@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include "TorqueMapComponent.h"
+#include "TabbedComponent.h"
+#include "InverterConfigComponent.h"
 #include <JuceHeader.h>
 
 namespace gui
@@ -53,10 +54,12 @@ private:
     static const int borderSize = 20;
 
     // children
-    TorqueMapComponent torqueMapGraph;
+    TabbedComponent tabComponent;
+    InverterConfigComponent inverterComponent;
     juce::ComboBox interpolationCombo;
     juce::TextButton exportProfileButton;
     juce::TextButton importProfileButton;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

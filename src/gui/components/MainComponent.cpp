@@ -16,19 +16,21 @@ namespace gui
  * @brief Default constructor
  */
 MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree), torqueMapGraph(sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree), inverterComponent(sharedConfigValueTree)
 {
     setSize(600, 400);
 
     configValueTree->addListener(this);
 
-    setupInterpolationCombo();
     setupButtons();
 
-    addAndMakeVisible(torqueMapGraph);
-    addAndMakeVisible(interpolationCombo);
-    addAndMakeVisible(exportProfileButton);
-    addAndMakeVisible(importProfileButton);
+    addAndMakeVisible(tabComponent);
+    
+    auto& lf = getLookAndFeel();
+    tabComponent.addTab("Inverter", lf.findColour(juce::DocumentWindow::backgroundColourId), &inverterComponent, false);
+
+    // addAndMakeVisible(exportProfileButton);
+    // addAndMakeVisible(importProfileButton);
 }
 
 /**
@@ -39,38 +41,7 @@ MainComponent::~MainComponent()
     // nothing to do
 }
 
-/**
- * @brief Setup interpolation method combo box
- */
-void MainComponent::setupInterpolationCombo()
-{
-    const auto& interpolationMethods = utility::InterpolatorFactory<int>::getAllIdentifiers();
 
-    juce::ValueTree torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-    const juce::String selectedMethod = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
-
-    for (unsigned i = 0; i < interpolationMethods.size(); i++)
-    {
-        const auto itemId = static_cast<int>(i + 1);
-        const auto& method = interpolationMethods.at(i).toString();
-
-        interpolationCombo.addItem(method, itemId);
-
-        if (method == selectedMethod)
-        {
-            interpolationCombo.setSelectedId(itemId);
-        }
-    }
-
-    interpolationCombo.onChange = [this]() mutable
-    {
-        int selectedIndex = interpolationCombo.getSelectedItemIndex();
-        juce::String value = interpolationCombo.getItemText(selectedIndex);
-        auto map = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-
-        map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod, value, nullptr);
-    };
-}
 
 /**
  * @brief Sets up the buttons
@@ -154,27 +125,30 @@ void MainComponent::paint(juce::Graphics& g)
  */
 void MainComponent::resized()
 {
-    auto bounds = getLocalBounds().reduced(20);
-    auto footer = bounds.removeFromBottom(42);
-    footer.removeFromTop(10);
-    footer.removeFromBottom(2);
+    // auto bounds = getLocalBounds().reduced(20);
+    // auto footer = bounds.removeFromBottom(42);
+    // footer.removeFromTop(10);
+    // footer.removeFromBottom(2);
 
-    // graph
-    torqueMapGraph.setBounds(bounds);
+    auto bounds = getLocalBounds();
+    tabComponent.setBounds(bounds);
 
-    // footer
-    std::initializer_list<juce::Component*> footerComponents
-        = {&interpolationCombo, &exportProfileButton, &importProfileButton};
+    // // graph
+    // torqueMapGraph.setBounds(bounds);
 
-    const int numFooterComponents = static_cast<int>(footerComponents.size());
-    const int footerItemSpacing = borderSize / numFooterComponents;
-    const int footerItemWidth = (footer.getWidth() - footerItemSpacing) / numFooterComponents;
+    // // footer
+    // std::initializer_list<juce::Component*> footerComponents
+    //     = {&interpolationCombo, &exportProfileButton, &importProfileButton};
 
-    for (juce::Component* component : footerComponents)
-    {
-        component->setBounds(footer.removeFromLeft(footerItemWidth));
-        footer.removeFromLeft(footerItemSpacing);
-    }
+    // const int numFooterComponents = static_cast<int>(footerComponents.size());
+    // const int footerItemSpacing = borderSize / numFooterComponents;
+    // const int footerItemWidth = (footer.getWidth() - footerItemSpacing) / numFooterComponents;
+
+    // for (juce::Component* component : footerComponents)
+    // {
+    //     component->setBounds(footer.removeFromLeft(footerItemWidth));
+    //     footer.removeFromLeft(footerItemSpacing);
+    // }
 }
 
 /**

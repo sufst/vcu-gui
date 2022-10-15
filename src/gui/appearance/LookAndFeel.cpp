@@ -38,7 +38,7 @@ const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
  *
  * @return  Equal width spacing for all tabs
  */
-int LookAndFeel::getTabButtonBestWidth(juce::TabBarButton& button, int tabDepth)
+int LookAndFeel::getTabButtonBestWidth(juce::TabBarButton& button, int /*tabDepth*/)
 {
     float totalWidth = button.getTabbedButtonBar().getWidth();
     float numTabs = button.getTabbedButtonBar().getNumTabs();
