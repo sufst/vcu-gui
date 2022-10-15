@@ -15,15 +15,20 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree), inverterComponent(sharedConfigValueTree)
+MainComponent::MainComponent(
+    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree),
+      inverterComponent(sharedConfigValueTree)
 {
     setSize(600, 400);
 
     configValueTree->addListener(this);
 
     auto& lf = getLookAndFeel();
-    tabComponent.addTab("Inverter", lf.findColour(juce::DocumentWindow::backgroundColourId), &inverterComponent, false);
+    tabComponent.addTab("Inverter",
+                        lf.findColour(juce::DocumentWindow::backgroundColourId),
+                        &inverterComponent,
+                        false);
     addAndMakeVisible(tabComponent);
 }
 
@@ -43,7 +48,8 @@ MainComponent::~MainComponent()
 void MainComponent::paint(juce::Graphics& g)
 {
     auto& lf = getLookAndFeel();
-    auto backgroundColour = lf.findColour(juce::ResizableWindow::backgroundColourId);
+    auto backgroundColour
+        = lf.findColour(juce::ResizableWindow::backgroundColourId);
 
     if (fileIsBeingDragged)
     {
@@ -82,7 +88,9 @@ bool MainComponent::isInterestedInFileDrag(const juce::StringArray& files)
 /**
  * @brief   Implements juce::FileDragAndDropTarget::filesDropped()
  */
-void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int /*y*/)
+void MainComponent::filesDropped(const juce::StringArray& files,
+                                 int /*x*/,
+                                 int /*y*/)
 {
     const auto& fileName = files[0];
     jassert(fileName.endsWithIgnoreCase(".xml"));
@@ -96,7 +104,9 @@ void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::fileDragEnter()
  */
-void MainComponent::fileDragEnter(const juce::StringArray& /*files*/, int /*x*/, int /*y*/)
+void MainComponent::fileDragEnter(const juce::StringArray& /*files*/,
+                                  int /*x*/,
+                                  int /*y*/)
 {
     fileIsBeingDragged = true;
     repaint();

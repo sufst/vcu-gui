@@ -59,7 +59,8 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
     void mouseUp(const juce::MouseEvent& event) override;
-    bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
+    bool keyPressed(const juce::KeyPress& key,
+                    juce::Component* originatingComponent) override;
     bool keyPressed(const juce::KeyPress& key) override;
 
 protected:
@@ -68,10 +69,13 @@ protected:
     juce::Array<juce::Point<ValueType>> points;
     juce::Path interpolatedPath;
 
-    juce::Point<int> transformPointForPaint(const juce::Rectangle<float>& bounds,
-                                            const juce::Point<ValueType>& point) const;
-    juce::Point<ValueType> transformPointToGraph(const juce::Point<int>& point) const;
-    bool pointHitTest(const juce::Point<int>& guiPoint, const juce::Point<ValueType>& graphPoint) const;
+    juce::Point<int>
+    transformPointForPaint(const juce::Rectangle<float>& bounds,
+                           const juce::Point<ValueType>& point) const;
+    juce::Point<ValueType>
+    transformPointToGraph(const juce::Point<int>& point) const;
+    bool pointHitTest(const juce::Point<int>& guiPoint,
+                      const juce::Point<ValueType>& graphPoint) const;
     int getPointNearMouseEvent(const juce::MouseEvent& event) const;
 
     void pointsChanged();
@@ -234,7 +238,8 @@ void GraphComponent<ValueType>::clear()
  * @param[in]   identifier     The new interpolator to use
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::setInterpolationMethod(const juce::Identifier& identifier)
+void GraphComponent<ValueType>::setInterpolationMethod(
+    const juce::Identifier& identifier)
 {
     interpolator = InterpolatorFactory<ValueType>::makeInterpolator(identifier);
     jassert(interpolator);
@@ -248,7 +253,8 @@ void GraphComponent<ValueType>::setInterpolationMethod(const juce::Identifier& i
  * curve
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::setDrawsInterpolatedCurve(bool shouldDrawInterpolatedCurve)
+void GraphComponent<ValueType>::setDrawsInterpolatedCurve(
+    bool shouldDrawInterpolatedCurve)
 {
     shouldInterpolate = shouldDrawInterpolatedCurve;
 }
@@ -300,7 +306,8 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
     int pointIndex = getPointNearMouseEvent(event);
 
     // check if should create new or move
-    if (pointEditState == PointEditingState::None || pointEditState == PointEditingState::OverPoint)
+    if (pointEditState == PointEditingState::None
+        || pointEditState == PointEditingState::OverPoint)
     {
         // create new
         if (pointIndex == -1)
@@ -351,13 +358,15 @@ void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
 
         // check if point has moved past the x-coordinate of another point
         // swap them if this is the case
-        if (movingPointIndex != 0 && points[movingPointIndex - 1].getX() > point.getX())
+        if (movingPointIndex != 0
+            && points[movingPointIndex - 1].getX() > point.getX())
         {
             points.swap(movingPointIndex, movingPointIndex - 1);
             movingPointIndex = movingPointIndex - 1;
         }
         else if (movingPointIndex != points.size() - 1
-                 && points[movingPointIndex].getX() > points[movingPointIndex + 1].getX())
+                 && points[movingPointIndex].getX()
+                        > points[movingPointIndex + 1].getX())
         {
             points.swap(movingPointIndex, movingPointIndex + 1);
             movingPointIndex = movingPointIndex + 1;
@@ -412,12 +421,15 @@ void GraphComponent<ValueType>::mouseUp(const juce::MouseEvent& /*event*/)
  * point mode if the graph is editable
  */
 template <typename ValueType>
-bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key, juce::Component* /*originatingComponent*/)
+bool GraphComponent<ValueType>::keyPressed(
+    const juce::KeyPress& key,
+    juce::Component* /*originatingComponent*/)
 {
     if (editable && key.isKeyCode(juce::KeyPress::backspaceKey))
     {
-        pointEditState
-            = (pointEditState == PointEditingState::Delete) ? PointEditingState::None : PointEditingState::Delete;
+        pointEditState = (pointEditState == PointEditingState::Delete)
+                             ? PointEditingState::None
+                             : PointEditingState::Delete;
 
         updateCursor();
         return true;
@@ -446,11 +458,12 @@ void GraphComponent<ValueType>::updateCursor()
     switch (pointEditState)
     {
     case PointEditingState::Delete:
-        setMouseCursor(
-            juce::MouseCursor(juce::ImageCache::getFromMemory(BinaryData::Delete_png, BinaryData::Delete_pngSize),
-                              1,
-                              7,
-                              5));
+        setMouseCursor(juce::MouseCursor(
+            juce::ImageCache::getFromMemory(BinaryData::Delete_png,
+                                            BinaryData::Delete_pngSize),
+            1,
+            7,
+            5));
         break;
 
     case PointEditingState::Move:
@@ -507,7 +520,8 @@ void GraphComponent<ValueType>::recalculateInterpolatedPath()
 
     if (points.size() > 1)
     {
-        auto start = transformPointForPaint(bounds, points.getFirst()).toFloat();
+        auto start
+            = transformPointForPaint(bounds, points.getFirst()).toFloat();
         interpolatedPath.startNewSubPath(start.getX(), start.getY());
 
         interpolator->process(points, 500);
@@ -579,8 +593,10 @@ void GraphComponent<ValueType>::paintPoints(juce::Graphics& g) const
     {
         auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
 
-        const auto x = static_cast<float>(transformedPoint.getX() - circleShift);
-        const auto y = static_cast<float>(transformedPoint.getY() - circleShift);
+        const auto x
+            = static_cast<float>(transformedPoint.getX() - circleShift);
+        const auto y
+            = static_cast<float>(transformedPoint.getY() - circleShift);
 
         g.drawEllipse(x, y, circleSize, circleSize, circleSize);
     }
@@ -611,11 +627,14 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
  * @param[in]   point   Point on the graph
  */
 template <typename ValueType>
-juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::Rectangle<float>& bounds,
-                                                                   const juce::Point<ValueType>& point) const
+juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(
+    const juce::Rectangle<float>& bounds,
+    const juce::Point<ValueType>& point) const
 {
-    const float xScale = bounds.getWidth() / static_cast<float>(valueBounds.getWidth());
-    const float yScale = bounds.getHeight() / static_cast<float>(valueBounds.getHeight());
+    const float xScale
+        = bounds.getWidth() / static_cast<float>(valueBounds.getWidth());
+    const float yScale
+        = bounds.getHeight() / static_cast<float>(valueBounds.getHeight());
     const auto fPoint = point.toFloat();
 
     auto x = static_cast<int>(fPoint.getX() * xScale);
@@ -633,7 +652,8 @@ juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::R
  * @param[in]   point   The point to transform
  */
 template <typename ValueType>
-juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const juce::Point<int>& point) const
+juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(
+    const juce::Point<int>& point) const
 {
     const auto xScale = static_cast<double>(getMaxX()) / getWidth();
     const auto yScale = static_cast<double>(getMaxY()) / getHeight();
@@ -657,7 +677,8 @@ juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const ju
  * @return      >0      Mouse event is near the point with the returned index
  */
 template <typename ValueType>
-int GraphComponent<ValueType>::getPointNearMouseEvent(const juce::MouseEvent& event) const
+int GraphComponent<ValueType>::getPointNearMouseEvent(
+    const juce::MouseEvent& event) const
 {
     const auto eventPosition = event.getPosition().toInt();
 
@@ -687,12 +708,14 @@ int GraphComponent<ValueType>::getPointNearMouseEvent(const juce::MouseEvent& ev
  * graph point
  */
 template <typename ValueType>
-bool GraphComponent<ValueType>::pointHitTest(const juce::Point<int>& guiPoint,
-                                             const juce::Point<ValueType>& graphPoint) const
+bool GraphComponent<ValueType>::pointHitTest(
+    const juce::Point<int>& guiPoint,
+    const juce::Point<ValueType>& graphPoint) const
 {
     const int clickRadius = 10;
 
-    auto transformedPoint = transformPointForPaint(getLocalBounds().toFloat(), graphPoint);
+    auto transformedPoint
+        = transformPointForPaint(getLocalBounds().toFloat(), graphPoint);
     int distance = transformedPoint.getDistanceFrom(guiPoint);
 
     return distance < clickRadius;

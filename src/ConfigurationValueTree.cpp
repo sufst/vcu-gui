@@ -14,7 +14,8 @@ using utility::LinearInterpolator;
 /**
  * @brief Default constructor
  */
-ConfigurationValueTree::ConfigurationValueTree() : tree(createEmptyConfiguration())
+ConfigurationValueTree::ConfigurationValueTree()
+    : tree(createEmptyConfiguration())
 {
     DBG(tree.toXmlString());
 }
@@ -30,9 +31,10 @@ juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
     rootTree.addChild(torqueMapTree, 0, nullptr);
     rootTree.setProperty(Properties::ProfileName, "New Profile", nullptr);
 
-    torqueMapTree.setProperty(Properties::InterpolationMethod,
-                              utility::SplineInterpolator<int>::identifier.toString(),
-                              nullptr);
+    torqueMapTree.setProperty(
+        Properties::InterpolationMethod,
+        utility::SplineInterpolator<int>::identifier.toString(),
+        nullptr);
     torqueMapTree.addChild(createTorqueMapPoint(0, 0), 0, nullptr);
     torqueMapTree.addChild(createTorqueMapPoint(1023, 32767), 1, nullptr);
 
@@ -66,7 +68,8 @@ juce::ValueTree ConfigurationValueTree::getRoot() const
  *
  * @param[in]   identifier  Identifier name of the child
  */
-juce::ValueTree ConfigurationValueTree::getChildWithName(const juce::Identifier& identifier) const
+juce::ValueTree ConfigurationValueTree::getChildWithName(
+    const juce::Identifier& identifier) const
 {
     return tree.getChildWithName(identifier);
 }
@@ -77,7 +80,8 @@ juce::ValueTree ConfigurationValueTree::getChildWithName(const juce::Identifier&
  * @param[in]   input   Input value
  * @param[in]   output  Output value (input -> torque map -> output)
  */
-juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input, int output)
+juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input,
+                                                             int output)
 {
     juce::ValueTree point(Children::TorqueMapPoint);
 

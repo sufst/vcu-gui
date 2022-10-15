@@ -26,13 +26,15 @@ public:
     ~MenuBar() override;
 
     juce::StringArray getMenuBarNames() override;
-    juce::PopupMenu getMenuForIndex(int topLevelMenuIndex, const juce::String& menuName) override;
+    juce::PopupMenu getMenuForIndex(int topLevelMenuIndex,
+                                    const juce::String& menuName) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
     void menuBarActivated(bool isActive) override;
 
     void getAllCommands(juce::Array<juce::CommandID>& commands) override;
     juce::ApplicationCommandTarget* getNextCommandTarget() override;
-    void getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result) override;
+    void getCommandInfo(juce::CommandID commandID,
+                        juce::ApplicationCommandInfo& result) override;
     bool perform(const InvocationInfo& info) override;
 
 private:

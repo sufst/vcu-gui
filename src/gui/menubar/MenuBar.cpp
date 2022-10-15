@@ -12,7 +12,8 @@ namespace gui
 /**
  * @brief Constructor
  */
-MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager) : commandManager(sharedCommandManager)
+MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager)
+    : commandManager(sharedCommandManager)
 {
     jassert(commandManager);
     commandManager->registerAllCommandsForTarget(this);
@@ -40,7 +41,8 @@ MenuBar::~MenuBar()
  */
 void MenuBar::createMainMenu()
 {
-    mainMenu.addCommandItem(commandManager.get(), CommandManager::CommandIDs::ShowAboutWindow);
+    mainMenu.addCommandItem(commandManager.get(),
+                            CommandManager::CommandIDs::ShowAboutWindow);
 }
 
 #if JUCE_MAC
@@ -117,7 +119,8 @@ juce::StringArray MenuBar::getMenuBarNames()
 /**
  * Implements juce::MenuBarModel::getMenuForIndex()
  */
-juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex, const juce::String& menuName)
+juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
+                                         const juce::String& menuName)
 {
     (void) menuName;
 
@@ -165,7 +168,8 @@ void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 /**
  * Implements juce::ApplicationCommandTarget::getCommandInfo()
  */
-void MenuBar::getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result)
+void MenuBar::getCommandInfo(juce::CommandID commandID,
+                             juce::ApplicationCommandInfo& result)
 {
     switch (commandID)
     {
@@ -196,7 +200,8 @@ bool MenuBar::perform(const InvocationInfo& info)
         {
             aboutWindow = std::make_unique<AboutWindow>(commandManager);
 
-            aboutWindow->onCloseButtonPressed = [this]() { aboutWindow.reset(); };
+            aboutWindow->onCloseButtonPressed
+                = [this]() { aboutWindow.reset(); };
         }
         break;
     }

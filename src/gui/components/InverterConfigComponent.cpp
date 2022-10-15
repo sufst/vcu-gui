@@ -11,8 +11,10 @@ namespace gui
 /**
  * @brief   Constructor
  */
-InverterConfigComponent::InverterConfigComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree), torqueMapComponent(sharedConfigValueTree)
+InverterConfigComponent::InverterConfigComponent(
+    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree),
+      torqueMapComponent(sharedConfigValueTree)
 {
     setupInterpolationCombo();
 
@@ -25,10 +27,13 @@ InverterConfigComponent::InverterConfigComponent(std::shared_ptr<ConfigurationVa
  */
 void InverterConfigComponent::setupInterpolationCombo()
 {
-    const auto& interpolationMethods = utility::InterpolatorFactory<int>::getAllIdentifiers();
+    const auto& interpolationMethods
+        = utility::InterpolatorFactory<int>::getAllIdentifiers();
 
-    juce::ValueTree torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-    const juce::String selectedMethod = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+    juce::ValueTree torqueMap = configValueTree->getChildWithName(
+        ConfigurationValueTree::Children::TorqueMap);
+    const juce::String selectedMethod = torqueMap.getProperty(
+        ConfigurationValueTree::Properties::InterpolationMethod);
 
     for (unsigned i = 0; i < interpolationMethods.size(); i++)
     {
@@ -47,9 +52,12 @@ void InverterConfigComponent::setupInterpolationCombo()
     {
         int selectedIndex = interpolationCombo.getSelectedItemIndex();
         juce::String value = interpolationCombo.getItemText(selectedIndex);
-        auto map = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+        auto map = configValueTree->getChildWithName(
+            ConfigurationValueTree::Children::TorqueMap);
 
-        map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod, value, nullptr);
+        map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod,
+                        value,
+                        nullptr);
     };
 }
 

@@ -36,10 +36,12 @@ public:
 
         // metadata
         inline static const juce::Identifier ProfileName = "ProfileName";
-        inline static const juce::Identifier ApplicationVersion = "ApplicationVersion";
+        inline static const juce::Identifier ApplicationVersion
+            = "ApplicationVersion";
 
         // torque map
-        inline static const juce::Identifier InterpolationMethod = "InterpolationMethod";
+        inline static const juce::Identifier InterpolationMethod
+            = "InterpolationMethod";
         inline static const juce::Identifier InputValue = "InputValue";
         inline static const juce::Identifier OutputValue = "OutputValue";
 

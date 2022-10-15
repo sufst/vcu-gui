@@ -19,7 +19,8 @@ class TorqueMapComponent : public GraphComponent<int>, juce::ValueTree::Listener
 {
 public:
 
-    TorqueMapComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    TorqueMapComponent(
+        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
 
     void paint(juce::Graphics& g) override;
 
@@ -30,7 +31,8 @@ public:
     void mouseMove(const juce::MouseEvent& event) override;
 
     // configuration change handlers
-    void valueTreePropertyChanged(juce::ValueTree& changedTree, const juce::Identifier& property) override;
+    void valueTreePropertyChanged(juce::ValueTree& changedTree,
+                                  const juce::Identifier& property) override;
     void valueTreeRedirected(juce::ValueTree& redirectedTree) override;
 
 private:

@@ -62,7 +62,9 @@ public:
      * @param[in]   inputSamples        Input samples
      * @param[in]   numOutputSamples    The number of output samples to generate
      */
-    virtual void process(const juce::Array<juce::Point<ValueType>>& inputSamples, int numOutputSamples)
+    virtual void
+    process(const juce::Array<juce::Point<ValueType>>& inputSamples,
+            int numOutputSamples)
     {
         jassert(inputSamples.size() >= 2);
 
@@ -71,15 +73,17 @@ public:
             prepare(inputSamples);
             this->resetSamples(numOutputSamples);
 
-            auto outputX
-                = linspace<ValueType>(inputSamples.getFirst().getX(), inputSamples.getLast().getX(), numOutputSamples);
+            auto outputX = linspace<ValueType>(inputSamples.getFirst().getX(),
+                                               inputSamples.getLast().getX(),
+                                               numOutputSamples);
 
             int leftIndex = 0;
             int rightIndex = 1;
 
             for (const auto& x : outputX)
             {
-                while (x >= inputSamples[rightIndex].getX() && rightIndex != inputSamples.size())
+                while (x >= inputSamples[rightIndex].getX()
+                       && rightIndex != inputSamples.size())
                 {
                     leftIndex++;
                     rightIndex++;
@@ -128,7 +132,9 @@ protected:
      * @param[in]   rightPoint  Nearest point with x-coordinate to right of
      * input
      */
-    virtual ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint)
+    virtual ValueType interpolate(ValueType input,
+                                  juce::Point<ValueType> leftPoint,
+                                  juce::Point<ValueType> rightPoint)
         = 0;
 
     /**
@@ -137,7 +143,9 @@ protected:
      *
      * @param[in]   inputSamples    The input samples for interpolation
      */
-    virtual void prepare(const juce::Array<juce::Point<ValueType>>& inputSamples) = 0;
+    virtual void
+    prepare(const juce::Array<juce::Point<ValueType>>& inputSamples)
+        = 0;
 
     /**
      * @brief       Validates or invalidates the cache
@@ -197,7 +205,8 @@ public:
     /**
      * @brief Implements Interpolator::prepare()
      */
-    void prepare(const juce::Array<juce::Point<ValueType>>& /*inputSamples*/) override
+    void prepare(
+        const juce::Array<juce::Point<ValueType>>& /*inputSamples*/) override
     {
         // nothing to do
     }
@@ -205,10 +214,14 @@ public:
     /**
      * @brief Implements Interpolator::interpolate()
      */
-    ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint) override
+    ValueType interpolate(ValueType input,
+                          juce::Point<ValueType> leftPoint,
+                          juce::Point<ValueType> rightPoint) override
     {
-        const auto xDiff = static_cast<float>(rightPoint.getX() - leftPoint.getX());
-        const auto yDiff = static_cast<float>(rightPoint.getY() - leftPoint.getY());
+        const auto xDiff
+            = static_cast<float>(rightPoint.getX() - leftPoint.getX());
+        const auto yDiff
+            = static_cast<float>(rightPoint.getY() - leftPoint.getY());
         const auto inDiff = static_cast<float>(input - leftPoint.getX());
 
         const double mu = inDiff / xDiff;
@@ -238,7 +251,8 @@ public:
     /**
      * @brief Implements Interpolator::prepare()
      */
-    void prepare(const juce::Array<juce::Point<ValueType>>& /*inputSamples*/) override
+    void prepare(
+        const juce::Array<juce::Point<ValueType>>& /*inputSamples*/) override
     {
         // nothing to do
     }
@@ -246,14 +260,18 @@ public:
     /**
      * @brief Implements Interpolator::interpolate()
      */
-    ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint) override
+    ValueType interpolate(ValueType input,
+                          juce::Point<ValueType> leftPoint,
+                          juce::Point<ValueType> rightPoint) override
     {
         const ValueType xDiff = rightPoint.getX() - leftPoint.getX();
 
         const double mu = static_cast<double>(input - leftPoint.getX()) / xDiff;
-        const double mu2 = (1 - std::cos(mu * juce::MathConstants<double>::pi)) / 2;
+        const double mu2
+            = (1 - std::cos(mu * juce::MathConstants<double>::pi)) / 2;
 
-        return static_cast<ValueType>(leftPoint.getY() * (1 - mu2) + rightPoint.getY() * mu2);
+        return static_cast<ValueType>(leftPoint.getY() * (1 - mu2)
+                                      + rightPoint.getY() * mu2);
     }
 
     /**
@@ -278,7 +296,8 @@ public:
     /**
      * @brief Implements Interpolator::prepare()
      */
-    void prepare(const juce::Array<juce::Point<ValueType>>& inputSamples) override
+    void
+    prepare(const juce::Array<juce::Point<ValueType>>& inputSamples) override
     {
         const size_t numInputSamples = static_cast<size_t>(inputSamples.size());
 
@@ -299,14 +318,17 @@ public:
             }
         }
 
-        spline = tk::spline(xInputs, yInputs, getRequiredSplineType(numInputSamples));
+        spline = tk::spline(xInputs,
+                            yInputs,
+                            getRequiredSplineType(numInputSamples));
     }
 
     /**
      * @brief Implements Interpolator::interpolate()
      */
-    ValueType
-    interpolate(ValueType input, juce::Point<ValueType> /*leftPoint*/, juce::Point<ValueType> /*rightPoint*/) override
+    ValueType interpolate(ValueType input,
+                          juce::Point<ValueType> /*leftPoint*/,
+                          juce::Point<ValueType> /*rightPoint*/) override
     {
         return static_cast<ValueType>(spline(input));
     }
@@ -330,7 +352,8 @@ private:
     tk::spline::spline_type getRequiredSplineType(size_t numInputSamples) const
     {
         using spline_type = tk::spline::spline_type;
-        return (numInputSamples > 2) ? spline_type::cspline : spline_type::linear;
+        return (numInputSamples > 2) ? spline_type::cspline
+                                     : spline_type::linear;
     }
 
     // prepared state
@@ -355,7 +378,8 @@ public:
      *
      * @param[in]   identifier  Identifier for the interpolator
      */
-    static std::unique_ptr<Interpolator<ValueType>> makeInterpolator(const juce::Identifier& identifier)
+    static std::unique_ptr<Interpolator<ValueType>>
+    makeInterpolator(const juce::Identifier& identifier)
     {
         // TODO: this is probably fine for just 3 interpolator types, but could
         // be made more efficient / compact

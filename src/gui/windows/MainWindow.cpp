@@ -16,14 +16,17 @@ namespace gui
  *
  * @param[in]   name    Window name
  */
-MainWindow::MainWindow(const juce::String& name,
-                       std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
-                       std::shared_ptr<CommandManager> sharedCommandManager)
+MainWindow::MainWindow(
+    const juce::String& name,
+    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
+    std::shared_ptr<CommandManager> sharedCommandManager)
     : juce::DocumentWindow(
         name,
-        juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),
+        juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
+            juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons),
-      menuBar(sharedCommandManager), mainComponent(sharedConfigValueTree), commandManager(sharedCommandManager)
+      menuBar(sharedCommandManager), mainComponent(sharedConfigValueTree),
+      commandManager(sharedCommandManager)
 {
     setUsingNativeTitleBar(true);
     setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);
@@ -72,32 +75,49 @@ void MainWindow::getAllCommands(juce::Array<juce::CommandID>& commands)
 /**
  * @brief Implements juce::ApplicationCommandTarget::getCommandInfo()
  */
-void MainWindow::getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result)
+void MainWindow::getCommandInfo(juce::CommandID commandID,
+                                juce::ApplicationCommandInfo& result)
 {
     switch (commandID)
     {
     case CommandManager::CloseWindow:
     {
-        result.setInfo("Close", "Closes the window", CommandManager::CommandCategories::GUI, 0);
-        result.defaultKeypresses.add(juce::KeyPress('w', juce::ModifierKeys::commandModifier, 0));
+        result.setInfo("Close",
+                       "Closes the window",
+                       CommandManager::CommandCategories::GUI,
+                       0);
+        result.defaultKeypresses.add(
+            juce::KeyPress('w', juce::ModifierKeys::commandModifier, 0));
         break;
     }
 
     case CommandManager::MinimiseWindow:
     {
-        result.setInfo("Minimise", "Minimises the window", CommandManager::CommandCategories::GUI, 0);
-        result.defaultKeypresses.add(juce::KeyPress('m', juce::ModifierKeys::commandModifier, 0));
+        result.setInfo("Minimise",
+                       "Minimises the window",
+                       CommandManager::CommandCategories::GUI,
+                       0);
+        result.defaultKeypresses.add(
+            juce::KeyPress('m', juce::ModifierKeys::commandModifier, 0));
         break;
     }
 
     case CommandManager::ToggleFullScreen:
     {
-        const juce::String shortName = !isFullScreen() ? "Enter Full Screen" : "Exit Full Screen";
-        const juce::String longName = !isFullScreen() ? "Enters full screen" : "Exits full screen";
+        const juce::String shortName
+            = !isFullScreen() ? "Enter Full Screen" : "Exit Full Screen";
+        const juce::String longName
+            = !isFullScreen() ? "Enters full screen" : "Exits full screen";
 
-        result.setInfo(shortName, longName, CommandManager::CommandCategories::GUI, 0);
+        result.setInfo(shortName,
+                       longName,
+                       CommandManager::CommandCategories::GUI,
+                       0);
         result.defaultKeypresses.add(
-            juce::KeyPress('f', juce::ModifierKeys::commandModifier | juce::ModifierKeys::ctrlModifier, 0));
+            juce::KeyPress('f',
+                           juce::ModifierKeys::commandModifier
+                               | juce::ModifierKeys::ctrlModifier,
+                           0));
         break;
     }
 
