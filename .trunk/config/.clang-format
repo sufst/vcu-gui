@@ -58,6 +58,7 @@ SpaceBeforeSquareBrackets: false
 SpacesInCStyleCastParentheses: false
 SpacesInConditionalStatement: false
 SpacesInParentheses: false
+IndentPPDirectives: BeforeHash
 
 # braces
 BraceWrapping:
