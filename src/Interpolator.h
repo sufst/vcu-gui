@@ -8,15 +8,28 @@
 
 #include <JuceHeader.h>
 
-#pragma GCC diagnostic push // disable warnings from external spline library
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic ignored "-Wextra-semi"
-#pragma GCC diagnostic ignored "-Wmissing-prototypes"
-#pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
-#define NDEBUG // prevent assert()
-#include <spline.h>
-#undef NDEBUG
-#pragma GCC diagnostic pop
+#if (JUCE_MAC || JUCE_LINUX)
+    #pragma GCC diagnostic push // disable warnings from external spline library
+    #pragma GCC diagnostic ignored "-Wconversion"
+    #pragma GCC diagnostic ignored "-Wextra-semi"
+    #pragma GCC diagnostic ignored "-Wmissing-prototypes"
+    #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
+#elif (JUCE_WINDOWS)
+    // TODO: add MSVC equivalent pragmas
+    #define M_PI juce::MathConstants<float>::pi
+#endif
+
+#ifndef NDEBUG
+    #define NDEBUG // prevent assert()
+    #include <spline.h>
+    #undef NDEBUG
+#else
+    #include <spline.h>
+#endif
+
+#if (JUCE_MAC || JUCE_LINUX)
+    #pragma GCC diagnostic pop
+#endif
 
 #include "utility/linspace.h"
 #include <algorithm>
