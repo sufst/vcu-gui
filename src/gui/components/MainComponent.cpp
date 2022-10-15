@@ -118,11 +118,13 @@ void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 {
     // if (redirectedTree == configValueTree->getRoot())
     // {
-    //     auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+    //     auto torqueMap =
+    //     configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
 
-    //     // TODO: this should be replaced by something (1) faster (2) that is its own function!
-    //     juce::String interpolationMethod
-    //         = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+    //     // TODO: this should be replaced by something (1) faster (2) that is
+    //     its own function! juce::String interpolationMethod
+    //         =
+    //         torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
 
     //     for (int i = 0; i < interpolationCombo.getNumItems(); i++)
     //     {

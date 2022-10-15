@@ -40,7 +40,8 @@
 namespace utility
 {
 
-//----------------------------------------------------------------------------------------------------------------- base
+//-----------------------------------------------------------------------------------------------------------------
+// base
 
 /**
  * @brief   Base class for interpolation algorithms
@@ -108,7 +109,8 @@ public:
     }
 
     /**
-     * @brief Invalidates the cache to cause values to be recomputed on next call to process
+     * @brief Invalidates the cache to cause values to be recomputed on next
+     * call to process
      */
     void invalidateCache()
     {
@@ -118,17 +120,20 @@ public:
 protected:
 
     /**
-     * @brief       Internal function implemented by derived classes to compute an interpolated value between two points
+     * @brief       Internal function implemented by derived classes to compute
+     * an interpolated value between two points
      *
      * @param[in]   input       Input to interpolate
      * @param[in]   leftPoint   Nearest point with x-coordinate to left of input
-     * @param[in]   rightPoint  Nearest point with x-coordinate to right of input
+     * @param[in]   rightPoint  Nearest point with x-coordinate to right of
+     * input
      */
     virtual ValueType interpolate(ValueType input, juce::Point<ValueType> leftPoint, juce::Point<ValueType> rightPoint)
         = 0;
 
     /**
-     * @brief       Internal function implemented by derived classes to prepare for calls to interpolate()
+     * @brief       Internal function implemented by derived classes to prepare
+     * for calls to interpolate()
      *
      * @param[in]   inputSamples    The input samples for interpolation
      */
@@ -153,8 +158,8 @@ protected:
     }
 
     /**
-     * @brief       Resets the sample cache and ensures enough output samples are allocated for the next round of
-     *              interpolation
+     * @brief       Resets the sample cache and ensures enough output samples
+     * are allocated for the next round of interpolation
      *
      * @param[in]   numSamples  Number of output samples required
      */
@@ -176,7 +181,8 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Interpolator)
 };
 
-//--------------------------------------------------------------------------------------------------------------- linear
+//---------------------------------------------------------------------------------------------------------------
+// linear
 
 /**
  * @brief   Simple linear interpolator
@@ -215,12 +221,14 @@ public:
     inline static const juce::Identifier identifier = "Linear";
 };
 
-//--------------------------------------------------------------------------------------------------------------- cosine
+//---------------------------------------------------------------------------------------------------------------
+// cosine
 
 /**
  * @brief   Cosine interpolator
  *
- * @details Interpolates by drawing a half-cosine wave between each pair of points
+ * @details Interpolates by drawing a half-cosine wave between each pair of
+ * points
  */
 template <typename ValueType>
 class CosineInterpolator : public Interpolator<ValueType>
@@ -254,7 +262,8 @@ public:
     inline static const juce::Identifier identifier = "Cosine";
 };
 
-//--------------------------------------------------------------------------------------------------------------- spline
+//---------------------------------------------------------------------------------------------------------------
+// spline
 
 /**
  * @brief   Spline interpolator
@@ -310,10 +319,11 @@ public:
 private:
 
     /**
-     * @brief       Determine the required type of spline given the number of input samples
+     * @brief       Determine the required type of spline given the number of
+     * input samples
      *
-     * @details     Two points is not enough for a C2 spline, so in this case defaulting to linear is a sensible
-     *              alternative
+     * @details     Two points is not enough for a C2 spline, so in this case
+     * defaulting to linear is a sensible alternative
      *
      * @param[in]   numInputSamples     Number of input samples
      */
@@ -329,7 +339,8 @@ private:
     tk::spline spline;
 };
 
-//-------------------------------------------------------------------------------------------------------------- factory
+//--------------------------------------------------------------------------------------------------------------
+// factory
 
 /**
  * @brief Factory for creating interpolators from their identifiers
@@ -346,7 +357,8 @@ public:
      */
     static std::unique_ptr<Interpolator<ValueType>> makeInterpolator(const juce::Identifier& identifier)
     {
-        // TODO: this is probably fine for just 3 interpolator types, but could be made more efficient / compact
+        // TODO: this is probably fine for just 3 interpolator types, but could
+        // be made more efficient / compact
 
         if (identifier == LinearInterpolator<ValueType>::identifier)
         {

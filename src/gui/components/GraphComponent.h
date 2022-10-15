@@ -17,15 +17,17 @@
 namespace gui
 {
 
-using utility::Interpolator; // TODO: does this pollute the namespace when #include'ing this file?
+using utility::Interpolator; // TODO: does this pollute the namespace when
+                             // #include'ing this file?
 using utility::InterpolatorFactory;
 using utility::SplineInterpolator;
 
 /**
- * @brief   A graph drawing component which is optionally editable by mouse events
+ * @brief   A graph drawing component which is optionally editable by mouse
+ * events
  *
- * @details Currently supports only a graph in the positive x/y quadrant, but should easily be extendible to all four
- *          quadrants
+ * @details Currently supports only a graph in the positive x/y quadrant, but
+ * should easily be extendible to all four quadrants
  */
 template <typename ValueType>
 class GraphComponent : public juce::Component, public juce::KeyListener
@@ -119,7 +121,8 @@ GraphComponent<ValueType>::GraphComponent()
     setRangeX(0, 1);
     setRangeY(0, 1);
     setEditable(true);
-    setSize(100, 100); // need to start with non-zero size for point transformations
+    setSize(100,
+            100); // need to start with non-zero size for point transformations
     setWantsKeyboardFocus(true);
     setDrawsInterpolatedCurve(true);
 
@@ -238,9 +241,11 @@ void GraphComponent<ValueType>::setInterpolationMethod(const juce::Identifier& i
 }
 
 /**
- * @brief       Sets whether or not the interpolated curve should be calculated and drawn
+ * @brief       Sets whether or not the interpolated curve should be calculated
+ * and drawn
  *
- * @param[in]   shouldDrawInterpolatedCurve     Set true to draw interpolated curve
+ * @param[in]   shouldDrawInterpolatedCurve     Set true to draw interpolated
+ * curve
  */
 template <typename ValueType>
 void GraphComponent<ValueType>::setDrawsInterpolatedCurve(bool shouldDrawInterpolatedCurve)
@@ -268,10 +273,12 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 /**
  * @brief   Implements juce::Component::resized()
  *
- * @details This applies an affine transform to the interpolated path to resize it to the available bounds
+ * @details This applies an affine transform to the interpolated path to resize
+ * it to the available bounds
  *
- * @note    The component must start with a non-zero size, else the calls to resized() on app initialisation
- *          will result in an invalid (infinite) transform matrix which throws an exception when it is applied
+ * @note    The component must start with a non-zero size, else the calls to
+ * resized() on app initialisation will result in an invalid (infinite)
+ * transform matrix which throws an exception when it is applied
  */
 template <typename ValueType>
 void GraphComponent<ValueType>::resized()
@@ -301,7 +308,8 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
             const auto newPoint = transformPointToGraph(event.getPosition());
             addPoint(newPoint);
 
-            // TODO: this effectively searches for the point that was just added, could be made more efficient
+            // TODO: this effectively searches for the point that was just
+            // added, could be made more efficient
             movingPointIndex = getPointNearMouseEvent(event);
         }
         // move
@@ -400,7 +408,8 @@ void GraphComponent<ValueType>::mouseUp(const juce::MouseEvent& /*event*/)
 /**
  * @brief   Implements juce::KeyListener::keyPressed()
  *
- * @details This is used to check for a 'delete' key press, toggling the delete point mode if the graph is editable
+ * @details This is used to check for a 'delete' key press, toggling the delete
+ * point mode if the graph is editable
  */
 template <typename ValueType>
 bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key, juce::Component* /*originatingComponent*/)
@@ -595,7 +604,8 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
 }
 
 /**
- * @brief       Transforms a graph point to the coordinates system used for painting
+ * @brief       Transforms a graph point to the coordinates system used for
+ * painting
  *
  * @param[in]
  * @param[in]   point   Point on the graph
@@ -617,7 +627,8 @@ juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(const juce::R
 /**
  * @brief       Transforms a GUI point to the coordinates system of the graph
  *
- * @details     Use this in combination with mouse events to let the user add points to the graph
+ * @details     Use this in combination with mouse events to let the user add
+ * points to the graph
  *
  * @param[in]   point   The point to transform
  */
@@ -637,8 +648,8 @@ juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(const ju
 }
 
 /**
- * @brief       Checks if a mouse event is near a point on the graph, returning the index of the point if it does
- *              and -1 otherwise
+ * @brief       Checks if a mouse event is near a point on the graph, returning
+ * the index of the point if it does and -1 otherwise
  *
  * @param[in]   event   Mouse event
  *
@@ -664,13 +675,16 @@ int GraphComponent<ValueType>::getPointNearMouseEvent(const juce::MouseEvent& ev
 }
 
 /**
- * @brief       Checks if a point in the GUI is equivalent to a point on the graph
+ * @brief       Checks if a point in the GUI is equivalent to a point on the
+ * graph
  *
  * @param[in]   guiPoint        Point in the component's coordinate system
  * @param[in]   graphPoint      Point in the graph's coordinate system
  *
- * @return      true            The component point is equivalent to the graph point
- * @return      false           The component point is not equivalent to the graph point
+ * @return      true            The component point is equivalent to the graph
+ * point
+ * @return      false           The component point is not equivalent to the
+ * graph point
  */
 template <typename ValueType>
 bool GraphComponent<ValueType>::pointHitTest(const juce::Point<int>& guiPoint,

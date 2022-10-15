@@ -42,8 +42,9 @@ juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
 /**
  * @brief   Adds a listener to the root juce::ValueTree
  *
- * @note    This should be used to register juce::ValueTree::Listener objects as it adds a listener to the root value
- *          tree owned by this object. If getRoot().addListener() or similar is used, when a new profile is loaded the
+ * @note    This should be used to register juce::ValueTree::Listener objects as
+ * it adds a listener to the root value tree owned by this object. If
+ * getRoot().addListener() or similar is used, when a new profile is loaded the
  *          valueTreeRedirected() callback will not be called!
  */
 void ConfigurationValueTree::addListener(juce::ValueTree::Listener* newListener)
@@ -60,7 +61,8 @@ juce::ValueTree ConfigurationValueTree::getRoot() const
 }
 
 /**
- * @brief       Returns the first child tree with the specified name, if it exists
+ * @brief       Returns the first child tree with the specified name, if it
+ * exists
  *
  * @param[in]   identifier  Identifier name of the child
  */
@@ -96,8 +98,9 @@ std::unique_ptr<juce::XmlDocument> ConfigurationValueTree::exportXml() const
 /**
  * @brief       Load a configuration from a file
  *
- * @note        This will cause juce::ValueTree::Listener objects registered with addListener() to receive the
- *              valueTreeRedirected() callback which should handle loading of a new profile
+ * @note        This will cause juce::ValueTree::Listener objects registered
+ * with addListener() to receive the valueTreeRedirected() callback which should
+ * handle loading of a new profile
  *
  * @param[in]   xml     XML document
  */

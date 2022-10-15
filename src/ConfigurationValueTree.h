@@ -10,7 +10,8 @@
 #include <memory>
 
 /**
- * @brief Stores the VCU configuration profile and notifies registered listeners when it changes
+ * @brief Stores the VCU configuration profile and notifies registered listeners
+ * when it changes
  */
 class ConfigurationValueTree final
 {
