@@ -5,11 +5,10 @@
 
 #pragma once
 
-#include <JuceHeader.h>
-#include <memory>
-
 #include "../../ConfigurationValueTree.h"
 #include "TorqueMapComponent.h"
+#include <JuceHeader.h>
+#include <memory>
 
 namespace gui
 {
@@ -33,7 +32,6 @@ private:
 
     TorqueMapComponent torqueMapComponent;
     juce::ComboBox interpolationCombo;
-
 };
 
 } // namespace gui

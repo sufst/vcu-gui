@@ -11,8 +11,7 @@ namespace gui
 /**
  * @brief   Constructor
  */
-TabbedComponent::TabbedComponent()
-    : juce::TabbedComponent(juce::TabbedButtonBar::Orientation::TabsAtTop)
+TabbedComponent::TabbedComponent() : juce::TabbedComponent(juce::TabbedButtonBar::Orientation::TabsAtTop)
 {
 }
 

@@ -12,8 +12,7 @@ namespace gui
  * @brief   Constructor
  */
 InverterConfigComponent::InverterConfigComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree),
-    torqueMapComponent(sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree), torqueMapComponent(sharedConfigValueTree)
 {
     setupInterpolationCombo();
 
@@ -63,13 +62,10 @@ void InverterConfigComponent::resized()
     auto footerBounds = bounds.removeFromBottom(50);
 
     torqueMapComponent.setBounds(bounds);
-    
+
     footerBounds.removeFromTop(5);
     footerBounds.removeFromBottom(5);
     interpolationCombo.setBounds(footerBounds);
-
 }
-
-
 
 } // namespace gui

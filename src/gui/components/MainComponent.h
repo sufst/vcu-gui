@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "TabbedComponent.h"
 #include "InverterConfigComponent.h"
+#include "TabbedComponent.h"
 #include <JuceHeader.h>
 
 namespace gui

@@ -18,7 +18,6 @@ class TabbedComponent : public juce::TabbedComponent
 public:
 
     TabbedComponent();
-
 };
 
 } // namespace gui
