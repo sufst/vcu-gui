@@ -27,10 +27,15 @@ MainComponent::MainComponent(
     configValueTree->addListener(this);
 
     auto& lf = getLookAndFeel();
-    tabComponent.addTab("Inverter",
-                        lf.findColour(juce::DocumentWindow::backgroundColourId),
-                        &inverterComponent,
-                        false);
+    auto tabColour = lf.findColour(juce::DocumentWindow::backgroundColourId);
+    // TODO: these can be put in a proper initializer list loop once all the
+    //       classes for the different tabs have been created
+    tabComponent.addTab("Metadata", tabColour, nullptr, false);
+    tabComponent.addTab("Inverter", tabColour, &inverterComponent, false);
+    tabComponent.addTab("Sensors", tabColour, nullptr, false);
+    tabComponent.addTab("Testbenches", tabColour, nullptr, false);
+    tabComponent.addTab("Summary", tabColour, nullptr, false);
+
     addAndMakeVisible(tabComponent);
 }
 
