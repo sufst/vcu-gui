@@ -20,6 +20,8 @@ public:
 
     LookAndFeel();
 
+    int getTabButtonBestWidth(juce::TabBarButton& button, int tabDepth) override;
+
 private:
 
     static const juce::Typeface::Ptr getKarlaTypeface();

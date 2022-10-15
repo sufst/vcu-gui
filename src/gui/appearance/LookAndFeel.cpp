@@ -29,4 +29,20 @@ const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
     return typeface;
 }
 
+/**
+ * @brief   Resizes tab bar buttons to equally use up available space
+ *
+ * @note    If tab bar buttons are used somewhere other than preferences (which
+ *          is the only place they are used right now) then another solution is
+ *          possibly needed.
+ *
+ * @return  Equal width spacing for all tabs
+ */
+int LookAndFeel::getTabButtonBestWidth(juce::TabBarButton& button, int tabDepth)
+{
+    float totalWidth = button.getTabbedButtonBar().getWidth();
+    float numTabs = button.getTabbedButtonBar().getNumTabs();
+    return static_cast<int>(totalWidth / numTabs);
+}
+
 } // namespace sufst
