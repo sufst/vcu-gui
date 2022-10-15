@@ -8,10 +8,10 @@
 
 #include <JuceHeader.h>
 
-#if (JUCE_MAC || JUCE_LINUX)
 JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE("-Wconversion", "-Wextra-semi", "-Wmissing-prototypes", "-Wc++98-compat-extra-semi")
-#elif (JUCE_WINDOWS)
-    // TODO: add MSVC equivalent pragmas
+JUCE_BEGIN_IGNORE_WARNINGS_MSVC(4267)
+
+#if (JUCE_WINDOWS)
     #define M_PI juce::MathConstants<float>::pi
 #endif
 
@@ -23,9 +23,8 @@ JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE("-Wconversion", "-Wextra-semi", "-Wmissing-p
     #include <spline.h>
 #endif
 
-#if (JUCE_MAC || JUCE_LINUX)
 JUCE_END_IGNORE_WARNINGS_GCC_LIKE
-#endif
+JUCE_END_IGNORE_WARNINGS_MSVC
 
 #include "utility/linspace.h"
 #include <algorithm>
