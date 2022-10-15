@@ -11,6 +11,8 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
  * @brief       Constructor
  *
@@ -26,7 +28,7 @@ MainWindow::MainWindow(
             juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons),
       menuBar(sharedCommandManager), mainComponent(sharedConfigValueTree),
-      commandManager(sharedCommandManager)
+      commandManager(sharedCommandManager) // ^^^^yikes
 {
     setUsingNativeTitleBar(true);
     setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);
@@ -50,6 +52,8 @@ MainWindow::~MainWindow()
     commandManager->setFirstCommandTarget(nullptr);
 }
 
+//==============================================================================
+
 /**
  * @brief Close button pressed handler
  */
@@ -57,6 +61,8 @@ void MainWindow::closeButtonPressed()
 {
     JUCEApplication::getInstance()->systemRequestedQuit();
 }
+
+//==============================================================================
 
 /**
  * @brief Implements juce::ApplicationCommandTarget::getAllCommands()

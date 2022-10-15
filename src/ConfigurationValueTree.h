@@ -17,15 +17,22 @@ class ConfigurationValueTree final
 {
 public:
 
+    //==========================================================================
     ConfigurationValueTree();
 
+    //==========================================================================
     void addListener(juce::ValueTree::Listener* newListener);
+
+    //==========================================================================
     juce::ValueTree getRoot() const;
     juce::ValueTree getChildWithName(const juce::Identifier& identifier) const;
 
+    //==========================================================================
     std::unique_ptr<juce::XmlDocument> exportXml() const;
     void loadFromFile(const juce::File& file);
     static juce::ValueTree createTorqueMapPoint(int input, int output);
+
+    //==========================================================================
 
     /**
      * @brief Property type identifiers
@@ -72,6 +79,9 @@ public:
 
 private:
 
+    //==========================================================================
     static juce::ValueTree createEmptyConfiguration();
+
+    //==========================================================================
     juce::ValueTree tree;
 };

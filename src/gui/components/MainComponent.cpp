@@ -12,6 +12,8 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
  * @brief Default constructor
  */
@@ -40,10 +42,10 @@ MainComponent::~MainComponent()
     // nothing to do
 }
 
+//==============================================================================
+
 /**
- * @brief Painter
- *
- * @param[in]   g   Graphics context
+ * @brief Implements juce::Component::paint()
  */
 void MainComponent::paint(juce::Graphics& g)
 {
@@ -60,13 +62,15 @@ void MainComponent::paint(juce::Graphics& g)
 }
 
 /**
- * @brief Resize handler
+ * @brief Implements juce::Component::resized()
  */
 void MainComponent::resized()
 {
     auto bounds = getLocalBounds();
     tabComponent.setBounds(bounds);
 }
+
+//==============================================================================
 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::isInterestedInFileDrag()
@@ -121,11 +125,14 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
     repaint();
 }
 
+//==============================================================================
+
 /**
  * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
  */
 void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 {
+    // TODO: this should belong to InverterConfigComponent???
     // if (redirectedTree == configValueTree->getRoot())
     // {
     //     auto torqueMap =

@@ -6,6 +6,8 @@
 
 #include "Application.h"
 
+//==============================================================================
+
 /**
  * @brief       Initialises the application
  *
@@ -24,6 +26,8 @@ void Application::initialise(const juce::String& /*commandLine*/)
 
     LookAndFeel::setDefaultLookAndFeel(&lookAndFeel);
 }
+
+//==============================================================================
 
 /**
  * @brief Shuts down the application
@@ -51,6 +55,8 @@ void Application::anotherInstanceStarted(const juce::String& /*commandLine*/)
 {
 }
 
+//==============================================================================
+
 /**
  * @brief Returns the name of the application
  */
@@ -76,13 +82,15 @@ bool Application::moreThanOneInstanceAllowed()
     return false;
 }
 
+//==============================================================================
+
 /**
  * @brief   Implements juce::ApplicationCommandTarget::getNextCommandTarget()
  *
  * @details This ensures that the main window is found as a target by the
- * CommandManager when the app launches. Without this, if the user does not
- * interact with a component inside the main window, menu bar items will be
- * greyed out (though keyboard shortcuts will still work).
+ *          CommandManager when the app launches. Without this, if the user does
+ *          not interact with a component inside the main window, menu bar items
+ *          will be greyed out (though keyboard shortcuts will still work).
  */
 juce::ApplicationCommandTarget* Application::getNextCommandTarget()
 {

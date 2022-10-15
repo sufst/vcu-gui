@@ -20,15 +20,18 @@ class InverterConfigComponent : public juce::Component
 {
 public:
 
+    //==========================================================================
     InverterConfigComponent(
         std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
 
     void setupInterpolationCombo();
 
+    //==========================================================================
     void resized() override;
 
 private:
 
+    //==========================================================================
     std::shared_ptr<ConfigurationValueTree> configValueTree;
 
     TorqueMapComponent torqueMapComponent;

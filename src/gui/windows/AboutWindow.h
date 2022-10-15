@@ -23,23 +23,27 @@ class AboutWindow : public juce::DialogWindow,
 {
 public:
 
+    //==========================================================================
     AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager);
 
-    // graphics
+    //==========================================================================
     void paint(juce::Graphics& g) override;
 
-    // command handling
+    //==========================================================================
     void getAllCommands(juce::Array<juce::CommandID>& commands) override;
     void getCommandInfo(juce::CommandID commandID,
                         juce::ApplicationCommandInfo& result) override;
     bool perform(const InvocationInfo& info) override;
     juce::ApplicationCommandTarget* getNextCommandTarget() override;
 
-    // window controls
+    //==========================================================================
     void closeButtonPressed() override;
+
     std::function<void()> onCloseButtonPressed;
 
 private:
+
+    //==========================================================================
 
     /**
      * @brief Internal content component class
@@ -49,7 +53,6 @@ private:
     public:
 
         AboutComponent();
-
         void resized() override;
 
     private:
@@ -64,6 +67,7 @@ private:
         const int appIconBorder = 12;
     };
 
+    //==========================================================================
     AboutComponent aboutComponent;
     std::shared_ptr<CommandManager> commandManager;
 };
