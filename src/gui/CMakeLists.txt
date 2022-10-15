@@ -13,6 +13,7 @@ target_sources(${TARGET_NAME}
         appearance/LookAndFeel.cpp
         components/MainComponent.cpp 
         components/TorqueMapComponent.cpp
+        components/TabbedComponent.cpp
         menubar/MenuBar.cpp
         windows/AboutWindow.cpp
         windows/MainWindow.cpp
