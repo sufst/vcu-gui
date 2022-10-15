@@ -18,7 +18,8 @@ namespace gui
  * @brief 'About' window
  */
 
-class AboutWindow : public juce::DialogWindow, public juce::ApplicationCommandTarget
+class AboutWindow : public juce::DialogWindow,
+                    public juce::ApplicationCommandTarget
 {
 public:
 
@@ -29,7 +30,8 @@ public:
 
     // command handling
     void getAllCommands(juce::Array<juce::CommandID>& commands) override;
-    void getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result) override;
+    void getCommandInfo(juce::CommandID commandID,
+                        juce::ApplicationCommandInfo& result) override;
     bool perform(const InvocationInfo& info) override;
     juce::ApplicationCommandTarget* getNextCommandTarget() override;
 
