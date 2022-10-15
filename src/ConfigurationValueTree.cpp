@@ -14,7 +14,8 @@ using utility::LinearInterpolator;
 /**
  * @brief Default constructor
  */
-ConfigurationValueTree::ConfigurationValueTree() : tree(createEmptyConfiguration())
+ConfigurationValueTree::ConfigurationValueTree()
+    : tree(createEmptyConfiguration())
 {
     DBG(tree.toXmlString());
 }
@@ -30,9 +31,10 @@ juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
     rootTree.addChild(torqueMapTree, 0, nullptr);
     rootTree.setProperty(Properties::ProfileName, "New Profile", nullptr);
 
-    torqueMapTree.setProperty(Properties::InterpolationMethod,
-                              utility::SplineInterpolator<int>::identifier.toString(),
-                              nullptr);
+    torqueMapTree.setProperty(
+        Properties::InterpolationMethod,
+        utility::SplineInterpolator<int>::identifier.toString(),
+        nullptr);
     torqueMapTree.addChild(createTorqueMapPoint(0, 0), 0, nullptr);
     torqueMapTree.addChild(createTorqueMapPoint(1023, 32767), 1, nullptr);
 
@@ -42,8 +44,9 @@ juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
 /**
  * @brief   Adds a listener to the root juce::ValueTree
  *
- * @note    This should be used to register juce::ValueTree::Listener objects as it adds a listener to the root value
- *          tree owned by this object. If getRoot().addListener() or similar is used, when a new profile is loaded the
+ * @note    This should be used to register juce::ValueTree::Listener objects as
+ * it adds a listener to the root value tree owned by this object. If
+ * getRoot().addListener() or similar is used, when a new profile is loaded the
  *          valueTreeRedirected() callback will not be called!
  */
 void ConfigurationValueTree::addListener(juce::ValueTree::Listener* newListener)
@@ -60,11 +63,13 @@ juce::ValueTree ConfigurationValueTree::getRoot() const
 }
 
 /**
- * @brief       Returns the first child tree with the specified name, if it exists
+ * @brief       Returns the first child tree with the specified name, if it
+ * exists
  *
  * @param[in]   identifier  Identifier name of the child
  */
-juce::ValueTree ConfigurationValueTree::getChildWithName(const juce::Identifier& identifier) const
+juce::ValueTree ConfigurationValueTree::getChildWithName(
+    const juce::Identifier& identifier) const
 {
     return tree.getChildWithName(identifier);
 }
@@ -75,7 +80,8 @@ juce::ValueTree ConfigurationValueTree::getChildWithName(const juce::Identifier&
  * @param[in]   input   Input value
  * @param[in]   output  Output value (input -> torque map -> output)
  */
-juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input, int output)
+juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input,
+                                                             int output)
 {
     juce::ValueTree point(Children::TorqueMapPoint);
 
@@ -96,8 +102,9 @@ std::unique_ptr<juce::XmlDocument> ConfigurationValueTree::exportXml() const
 /**
  * @brief       Load a configuration from a file
  *
- * @note        This will cause juce::ValueTree::Listener objects registered with addListener() to receive the
- *              valueTreeRedirected() callback which should handle loading of a new profile
+ * @note        This will cause juce::ValueTree::Listener objects registered
+ * with addListener() to receive the valueTreeRedirected() callback which should
+ * handle loading of a new profile
  *
  * @param[in]   xml     XML document
  */

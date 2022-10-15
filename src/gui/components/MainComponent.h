@@ -17,12 +17,15 @@ namespace gui
 /**
  * @brief Main GUI component
  */
-class MainComponent : public juce::Component, public juce::FileDragAndDropTarget, public juce::ValueTree::Listener
+class MainComponent : public juce::Component,
+                      public juce::FileDragAndDropTarget,
+                      public juce::ValueTree::Listener
 {
 public:
 
     // constructor / destructor
-    MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    MainComponent(
+        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
     ~MainComponent() override;
 
     // graphics

@@ -10,7 +10,8 @@
 #include <memory>
 
 /**
- * @brief Stores the VCU configuration profile and notifies registered listeners when it changes
+ * @brief Stores the VCU configuration profile and notifies registered listeners
+ * when it changes
  */
 class ConfigurationValueTree final
 {
@@ -35,10 +36,12 @@ public:
 
         // metadata
         inline static const juce::Identifier ProfileName = "ProfileName";
-        inline static const juce::Identifier ApplicationVersion = "ApplicationVersion";
+        inline static const juce::Identifier ApplicationVersion
+            = "ApplicationVersion";
 
         // torque map
-        inline static const juce::Identifier InterpolationMethod = "InterpolationMethod";
+        inline static const juce::Identifier InterpolationMethod
+            = "InterpolationMethod";
         inline static const juce::Identifier InputValue = "InputValue";
         inline static const juce::Identifier OutputValue = "OutputValue";
 

@@ -20,7 +20,8 @@ public:
 
     LookAndFeel();
 
-    int getTabButtonBestWidth(juce::TabBarButton& button, int tabDepth) override;
+    int getTabButtonBestWidth(juce::TabBarButton& button,
+                              int tabDepth) override;
 
 private:
 
