@@ -9,8 +9,10 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
- * @brief Constructor
+ * @brief Default constructor
  */
 AboutWindow::AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager)
     : juce::DialogWindow("About", juce::Colours::white, true),
@@ -28,6 +30,8 @@ AboutWindow::AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager)
     commandManager->registerAllCommandsForTarget(this);
 }
 
+//==============================================================================
+
 /**
  * @brief Implements juce::DialogWindow::paint()
  */
@@ -35,6 +39,8 @@ void AboutWindow::paint(juce::Graphics& g)
 {
     g.fillAll(getLookAndFeel().findColour(backgroundColourId));
 }
+
+//==============================================================================
 
 /**
  * @brief Implements juce::DialogWindow::closeButtonPressed()
@@ -46,6 +52,8 @@ void AboutWindow::closeButtonPressed()
         onCloseButtonPressed();
     }
 }
+
+//==============================================================================
 
 /**
  * @brief Implements juce::ApplicationCommandTarget::getAllCommands()
@@ -110,6 +118,8 @@ juce::ApplicationCommandTarget* AboutWindow::getNextCommandTarget()
 {
     return nullptr;
 }
+
+//==============================================================================
 
 /**
  * @brief Constructor for internal content component

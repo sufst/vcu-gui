@@ -9,8 +9,10 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
- * @brief Constructor
+ * @brief Default constructor
  */
 MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager)
     : commandManager(sharedCommandManager)
@@ -35,6 +37,8 @@ MenuBar::~MenuBar()
     setMacMainMenu(nullptr);
 #endif
 }
+
+//==============================================================================
 
 /**
  * @brief Creates the main menu
@@ -117,7 +121,7 @@ juce::StringArray MenuBar::getMenuBarNames()
 }
 
 /**
- * Implements juce::MenuBarModel::getMenuForIndex()
+ * @brief Implements juce::MenuBarModel::getMenuForIndex()
  */
 juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
                                          const juce::String& menuName)
@@ -138,7 +142,7 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
 }
 
 /**
- * Implements juce::MenuBarModel::menuItemSelected()
+ * @brief Implements juce::MenuBarModel::menuItemSelected()
  */
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void MenuBar::menuItemSelected(int /*menuItemID*/, int /*topLevelMenuIndex*/)
@@ -147,14 +151,16 @@ void MenuBar::menuItemSelected(int /*menuItemID*/, int /*topLevelMenuIndex*/)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 
 /**
- * Implements juce::MenuBarModel::menuBarActivated()
+ * @brief Implements juce::MenuBarModel::menuBarActivated()
  */
 void MenuBar::menuBarActivated(bool /*isActive*/)
 {
 }
 
+//==============================================================================
+
 /**
- * Implements juce::ApplicationCommandTarget::getAllCommands()
+ * @brief Implements juce::ApplicationCommandTarget::getAllCommands()
  */
 void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 {
@@ -166,7 +172,7 @@ void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 }
 
 /**
- * Implements juce::ApplicationCommandTarget::getCommandInfo()
+ * @brief Implements juce::ApplicationCommandTarget::getCommandInfo()
  */
 void MenuBar::getCommandInfo(juce::CommandID commandID,
                              juce::ApplicationCommandInfo& result)
@@ -188,7 +194,7 @@ void MenuBar::getCommandInfo(juce::CommandID commandID,
 }
 
 /**
- * Implements juce::ApplicationCommandTarget::perform()
+ * @brief Implements juce::ApplicationCommandTarget::perform()
  */
 bool MenuBar::perform(const InvocationInfo& info)
 {
@@ -214,12 +220,14 @@ bool MenuBar::perform(const InvocationInfo& info)
 }
 
 /**
- * juce::ApplicationCommandTarget::getNextCommandTarget()
+ * @brief Implements juce::ApplicationCommandTarget::getNextCommandTarget()
  */
 juce::ApplicationCommandTarget* MenuBar::getNextCommandTarget()
 {
     return nullptr;
 }
+
+//==============================================================================
 
 /**
  * @brief Map between menu indexes and identifying strings

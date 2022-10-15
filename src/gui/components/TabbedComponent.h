@@ -17,6 +17,7 @@ class TabbedComponent : public juce::TabbedComponent
 {
 public:
 
+    //==========================================================================
     TabbedComponent();
 };
 

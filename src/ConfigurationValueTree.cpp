@@ -11,13 +11,14 @@
 using utility::InterpolatorFactory;
 using utility::LinearInterpolator;
 
+//==============================================================================
+
 /**
  * @brief Default constructor
  */
 ConfigurationValueTree::ConfigurationValueTree()
     : tree(createEmptyConfiguration())
 {
-    DBG(tree.toXmlString());
 }
 
 /**
@@ -41,18 +42,22 @@ juce::ValueTree ConfigurationValueTree::createEmptyConfiguration()
     return rootTree;
 }
 
+//==============================================================================
+
 /**
  * @brief   Adds a listener to the root juce::ValueTree
  *
  * @note    This should be used to register juce::ValueTree::Listener objects as
- * it adds a listener to the root value tree owned by this object. If
- * getRoot().addListener() or similar is used, when a new profile is loaded the
- *          valueTreeRedirected() callback will not be called!
+ *          it adds a listener to the root value tree owned by this object. If
+ *          getRoot().addListener() or similar is used, when a new profile is
+ *          loaded the valueTreeRedirected() callback will not be called!
  */
 void ConfigurationValueTree::addListener(juce::ValueTree::Listener* newListener)
 {
     tree.addListener(newListener);
 }
+
+//==============================================================================
 
 /**
  * @brief Returns the root tree
@@ -74,6 +79,8 @@ juce::ValueTree ConfigurationValueTree::getChildWithName(
     return tree.getChildWithName(identifier);
 }
 
+//==============================================================================
+
 /**
  * @brief       Creates a new value tree representing a torque map point
  *
@@ -91,6 +98,8 @@ juce::ValueTree ConfigurationValueTree::createTorqueMapPoint(int input,
     return point;
 }
 
+//==============================================================================
+
 /**
  * @brief   Exports the configuration to an XML document
  */
@@ -103,8 +112,8 @@ std::unique_ptr<juce::XmlDocument> ConfigurationValueTree::exportXml() const
  * @brief       Load a configuration from a file
  *
  * @note        This will cause juce::ValueTree::Listener objects registered
- * with addListener() to receive the valueTreeRedirected() callback which should
- * handle loading of a new profile
+ *              with addListener() to receive the valueTreeRedirected()
+ *              callback which should handle loading of a new profile
  *
  * @param[in]   xml     XML document
  */

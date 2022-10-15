@@ -22,15 +22,18 @@ class MenuBar : public juce::MenuBarModel, public juce::ApplicationCommandTarget
 {
 public:
 
+    //==========================================================================
     MenuBar(std::shared_ptr<CommandManager> sharedCommandManager);
     ~MenuBar() override;
 
+    //==========================================================================
     juce::StringArray getMenuBarNames() override;
     juce::PopupMenu getMenuForIndex(int topLevelMenuIndex,
                                     const juce::String& menuName) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
     void menuBarActivated(bool isActive) override;
 
+    //==========================================================================
     void getAllCommands(juce::Array<juce::CommandID>& commands) override;
     juce::ApplicationCommandTarget* getNextCommandTarget() override;
     void getCommandInfo(juce::CommandID commandID,
@@ -39,6 +42,7 @@ public:
 
 private:
 
+    //==========================================================================
     void createMainMenu();
     juce::PopupMenu createWindowMenu();
     juce::PopupMenu createViewMenu();
@@ -47,6 +51,7 @@ private:
     void setupAppleMenu();
 #endif
 
+    //==========================================================================
     juce::PopupMenu mainMenu;
     std::shared_ptr<CommandManager> commandManager;
     std::unique_ptr<AboutWindow> aboutWindow;

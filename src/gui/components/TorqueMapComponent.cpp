@@ -12,8 +12,9 @@
 namespace gui
 {
 
+//==============================================================================
 /**
- * @brief Constructor
+ * @brief Default constructor
  */
 TorqueMapComponent::TorqueMapComponent(
     std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
@@ -26,6 +27,8 @@ TorqueMapComponent::TorqueMapComponent(
 
     loadTorqueMapData();
 }
+
+//==============================================================================
 
 /**
  * @brief Loads torque map data from the value tree
@@ -88,6 +91,8 @@ void TorqueMapComponent::syncTorqueMapData()
     }
 }
 
+//==============================================================================
+
 /**
  * @brief Overrides GraphComponent<int>::paint()
  */
@@ -97,6 +102,8 @@ void TorqueMapComponent::paint(juce::Graphics& g)
 
     paintDeadzoneOverlay(g);
 }
+
+//==============================================================================
 
 /**
  * @brief Returns the bounds of the deadzone
@@ -127,11 +134,13 @@ void TorqueMapComponent::paintDeadzoneOverlay(juce::Graphics& g) const
                        deadzoneBounds.toFloat().getHeight());
 }
 
+//==============================================================================
+
 /**
  * @brief   Overrides GraphComponent::mouseDown()
  *
  * @details Mouse events are intercepted if in the deadzone and forwarded
- * otherwise
+ *          otherwise
  */
 void TorqueMapComponent::mouseDown(const juce::MouseEvent& event)
 {
@@ -152,7 +161,7 @@ void TorqueMapComponent::mouseDown(const juce::MouseEvent& event)
  * @brief   Overrides GraphComponent::mouseUp()
  *
  * @details Mouse events are intercepted if in the deadzone and forwarded
- * otherwise
+ *          otherwise
  */
 void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
 {
@@ -171,7 +180,7 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
  * @brief   Overrides GraphComponent::mouseDrag()
  *
  * @details Mouse events are intercepted if in the deadzone and forwarded
- * otherwise
+ *          otherwise
  */
 void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
 {
@@ -207,7 +216,7 @@ void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
  * @brief   Overrides GraphComponent::mouseMove()
  *
  * @details Mouse events are intercepted if in the deadzone and forwarded
- * otherwise
+ *          otherwise
  */
 void TorqueMapComponent::mouseMove(const juce::MouseEvent& event)
 {
@@ -238,7 +247,7 @@ bool TorqueMapComponent::mouseEventInDeadzone(
 
 /**
  * @brief       Checks if the mouse event is near a point which should not be
- * edited
+ *              edited
  *
  * @details     The first and last points should not be edited
  *
@@ -285,6 +294,8 @@ void TorqueMapComponent::hideDeadzoneTooltip()
 {
     deadzoneTooltip.reset();
 }
+
+//==============================================================================
 
 /**
  * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()

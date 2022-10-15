@@ -22,39 +22,47 @@ using utility::Interpolator; // TODO: does this pollute the namespace when
 using utility::InterpolatorFactory;
 using utility::SplineInterpolator;
 
+//==============================================================================
+
 /**
  * @brief   A graph drawing component which is optionally editable by mouse
- * events
+ *          events
  *
  * @details Currently supports only a graph in the positive x/y quadrant, but
- * should easily be extendible to all four quadrants
+ *          should easily be extendible to all four quadrants
  */
 template <typename ValueType>
 class GraphComponent : public juce::Component, public juce::KeyListener
 {
 public:
 
+    //==========================================================================
     GraphComponent();
 
+    //==========================================================================
     void setRangeX(ValueType min, ValueType max);
     void setRangeY(ValueType min, ValueType max);
     void setEditable(bool shouldBeEditable = true);
     void setInterpolationMethod(const juce::Identifier& identifier);
     void setDrawsInterpolatedCurve(bool shouldDrawInterpolatedCurve = true);
 
+    //==========================================================================
     ValueType getMinX() const;
     ValueType getMinY() const;
     ValueType getMaxX() const;
     ValueType getMaxY() const;
     bool isEditable() const;
 
+    //==========================================================================
     void addPoint(ValueType x, ValueType y);
     void addPoint(const juce::Point<ValueType>& point);
     void clear();
 
+    //==========================================================================
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    //==========================================================================
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
@@ -65,10 +73,7 @@ public:
 
 protected:
 
-    juce::Rectangle<ValueType> valueBounds;
-    juce::Array<juce::Point<ValueType>> points;
-    juce::Path interpolatedPath;
-
+    //==========================================================================
     juce::Point<int>
     transformPointForPaint(const juce::Rectangle<float>& bounds,
                            const juce::Point<ValueType>& point) const;
@@ -80,20 +85,23 @@ protected:
 
     void pointsChanged();
 
+    //==========================================================================
+    // TODO: the encapsulation is not great here
+    juce::Rectangle<ValueType> valueBounds;
+    juce::Array<juce::Point<ValueType>> points;
+    juce::Path interpolatedPath;
+
 private:
 
+    //==========================================================================
     void paintTicks(juce::Graphics& g) const;
     void paintBorder(juce::Graphics& g) const;
     void paintPoints(juce::Graphics& g) const;
     void paintCurve(juce::Graphics& g) const;
-
     void recalculateInterpolatedPath();
-
     void updateCursor();
 
-    /**
-     * @brief State representing current graph editing action
-     */
+    //==========================================================================
     enum class PointEditingState
     {
         None,
@@ -110,11 +118,14 @@ private:
 
     std::unique_ptr<Interpolator<int>> interpolator;
 
+    //==========================================================================
     const juce::Colour pointColour = sufst::Colours::sfsyellow;
     const juce::Colour lineColour = sufst::Colours::white;
     const juce::Colour borderColour = sufst::Colours::midgrey;
     const juce::Colour tickColour = sufst::Colours::darkgrey;
 };
+
+//==============================================================================
 
 /**
  * @brief Default constructor
@@ -134,6 +145,8 @@ GraphComponent<ValueType>::GraphComponent()
 
     addKeyListener(this);
 }
+
+//==============================================================================
 
 /**
  * @brief       Set the range of the x-axis
@@ -160,6 +173,45 @@ void GraphComponent<ValueType>::setRangeY(ValueType min, ValueType max)
     valueBounds.setY(min);
     valueBounds.setHeight(max - min);
 }
+
+/**
+ * @brief       Changes the interpolation method
+ *
+ * @param[in]   identifier     The new interpolator to use
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::setInterpolationMethod(
+    const juce::Identifier& identifier)
+{
+    interpolator = InterpolatorFactory<ValueType>::makeInterpolator(identifier);
+    jassert(interpolator);
+}
+
+/**
+ * @brief       Sets whether or not the interpolated curve should be calculated
+ * and drawn
+ *
+ * @param[in]   shouldDrawInterpolatedCurve     Set true to draw interpolated
+ * curve
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::setDrawsInterpolatedCurve(
+    bool shouldDrawInterpolatedCurve)
+{
+    shouldInterpolate = shouldDrawInterpolatedCurve;
+}
+
+/**
+ * @brief Allows the points on the graph to be edited by mouse events
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::setEditable(bool shouldBeEditable)
+{
+    editable = shouldBeEditable;
+    setInterceptsMouseClicks(shouldBeEditable, shouldBeEditable);
+}
+
+//==============================================================================
 
 /**
  * @brief Returns the minimum value of the x-axis
@@ -198,6 +250,17 @@ ValueType GraphComponent<ValueType>::getMaxY() const
 }
 
 /**
+ * @brief Returns whether or not the graph is editable
+ */
+template <typename ValueType>
+bool GraphComponent<ValueType>::isEditable() const
+{
+    return editable;
+}
+
+//==============================================================================
+
+/**
  * @brief       Adds a point to the graph
  *
  * @param[in]   x   x-coordinate of the point
@@ -232,32 +295,7 @@ void GraphComponent<ValueType>::clear()
     points.clear();
 }
 
-/**
- * @brief       Changes the interpolation method
- *
- * @param[in]   identifier     The new interpolator to use
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::setInterpolationMethod(
-    const juce::Identifier& identifier)
-{
-    interpolator = InterpolatorFactory<ValueType>::makeInterpolator(identifier);
-    jassert(interpolator);
-}
-
-/**
- * @brief       Sets whether or not the interpolated curve should be calculated
- * and drawn
- *
- * @param[in]   shouldDrawInterpolatedCurve     Set true to draw interpolated
- * curve
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::setDrawsInterpolatedCurve(
-    bool shouldDrawInterpolatedCurve)
-{
-    shouldInterpolate = shouldDrawInterpolatedCurve;
-}
+//==============================================================================
 
 /**
  * @brief Implements juce::Component::paint()
@@ -280,11 +318,11 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
  * @brief   Implements juce::Component::resized()
  *
  * @details This applies an affine transform to the interpolated path to resize
- * it to the available bounds
+ *          it to the available bounds
  *
  * @note    The component must start with a non-zero size, else the calls to
- * resized() on app initialisation will result in an invalid (infinite)
- * transform matrix which throws an exception when it is applied
+ *          resized() on app initialisation will result in an invalid (infinite)
+ *          transform matrix which throws an exception when it is applied
  */
 template <typename ValueType>
 void GraphComponent<ValueType>::resized()
@@ -293,6 +331,8 @@ void GraphComponent<ValueType>::resized()
     auto transform = interpolatedPath.getTransformToScaleToFit(bounds, false);
     interpolatedPath.applyTransform(transform);
 }
+
+//==============================================================================
 
 /**
  * @brief   Implements juce::Component::mouseDown()
@@ -418,7 +458,7 @@ void GraphComponent<ValueType>::mouseUp(const juce::MouseEvent& /*event*/)
  * @brief   Implements juce::KeyListener::keyPressed()
  *
  * @details This is used to check for a 'delete' key press, toggling the delete
- * point mode if the graph is editable
+ *          point mode if the graph is editable
  */
 template <typename ValueType>
 bool GraphComponent<ValueType>::keyPressed(
@@ -479,24 +519,7 @@ void GraphComponent<ValueType>::updateCursor()
     }
 }
 
-/**
- * @brief Allows the points on the graph to be edited by mouse events
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::setEditable(bool shouldBeEditable)
-{
-    editable = shouldBeEditable;
-    setInterceptsMouseClicks(shouldBeEditable, shouldBeEditable);
-}
-
-/**
- * @brief Returns whether or not the graph is editable
- */
-template <typename ValueType>
-bool GraphComponent<ValueType>::isEditable() const
-{
-    return editable;
-}
+//==============================================================================
 
 /**
  * @brief   Call this when the points have changed (in derived class)
@@ -619,11 +642,13 @@ void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
     g.strokePath(interpolatedPath, juce::PathStrokeType(1));
 }
 
+//==============================================================================
+
 /**
  * @brief       Transforms a graph point to the coordinates system used for
- * painting
+ *              painting
  *
- * @param[in]
+ * @param[in]   bounds  Bounds of component (?)
  * @param[in]   point   Point on the graph
  */
 template <typename ValueType>
@@ -647,7 +672,7 @@ juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(
  * @brief       Transforms a GUI point to the coordinates system of the graph
  *
  * @details     Use this in combination with mouse events to let the user add
- * points to the graph
+ *              points to the graph
  *
  * @param[in]   point   The point to transform
  */
@@ -669,7 +694,7 @@ juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(
 
 /**
  * @brief       Checks if a mouse event is near a point on the graph, returning
- * the index of the point if it does and -1 otherwise
+ *              the index of the point if it does and -1 otherwise
  *
  * @param[in]   event   Mouse event
  *
@@ -697,15 +722,16 @@ int GraphComponent<ValueType>::getPointNearMouseEvent(
 
 /**
  * @brief       Checks if a point in the GUI is equivalent to a point on the
- * graph
+ *              graph
  *
  * @param[in]   guiPoint        Point in the component's coordinate system
  * @param[in]   graphPoint      Point in the graph's coordinate system
  *
  * @return      true            The component point is equivalent to the graph
- * point
+ *                              point
+ *
  * @return      false           The component point is not equivalent to the
- * graph point
+ *                              graph point
  */
 template <typename ValueType>
 bool GraphComponent<ValueType>::pointHitTest(

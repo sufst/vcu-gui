@@ -9,6 +9,8 @@
 namespace sufst
 {
 
+//==============================================================================
+
 /**
  * @brief Constructor
  */
@@ -18,6 +20,8 @@ LookAndFeel::LookAndFeel()
 
     setDefaultSansSerifTypeface(karla);
 }
+
+//==============================================================================
 
 /**
  * @brief Loads the Karla font from the binary data library
@@ -29,6 +33,8 @@ const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
         BinaryData::KarlaLight_ttfSize);
     return typeface;
 }
+
+//==============================================================================
 
 /**
  * @brief   Resizes tab bar buttons to equally use up available space

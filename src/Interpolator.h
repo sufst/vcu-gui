@@ -40,8 +40,7 @@
 namespace utility
 {
 
-//-----------------------------------------------------------------------------------------------------------------
-// base
+//==============================================================================
 
 /**
  * @brief   Base class for interpolation algorithms
@@ -53,9 +52,11 @@ class Interpolator
 {
 public:
 
+    //==========================================================================
     Interpolator() = default;
     virtual ~Interpolator() = default;
 
+    //==========================================================================
     /**
      * @brief       Processes the interpolation for a set of samples
      *
@@ -102,6 +103,7 @@ public:
         }
     }
 
+    //==========================================================================
     /**
      * @brief   Returns the interpolated points
      *
@@ -123,6 +125,7 @@ public:
 
 protected:
 
+    //==========================================================================
     /**
      * @brief       Internal function implemented by derived classes to compute
      * an interpolated value between two points
@@ -148,6 +151,20 @@ protected:
         = 0;
 
     /**
+     * @brief       Resets the sample cache and ensures enough output samples
+     * are allocated for the next round of interpolation
+     *
+     * @param[in]   numSamples  Number of output samples required
+     */
+    void resetSamples(int numSamples)
+    {
+        outputSamples.clearQuick();
+        outputSamples.ensureStorageAllocated(numSamples);
+    }
+
+    //==========================================================================
+
+    /**
      * @brief       Validates or invalidates the cache
      *
      * @param[in]   isValid     Whether or not the cache is valid
@@ -165,18 +182,7 @@ protected:
         return cacheValid;
     }
 
-    /**
-     * @brief       Resets the sample cache and ensures enough output samples
-     * are allocated for the next round of interpolation
-     *
-     * @param[in]   numSamples  Number of output samples required
-     */
-    void resetSamples(int numSamples)
-    {
-        outputSamples.clearQuick();
-        outputSamples.ensureStorageAllocated(numSamples);
-    }
-
+    //==========================================================================
     /**
      * @brief Cache of output samples
      */
@@ -184,13 +190,14 @@ protected:
 
 private:
 
+    //==========================================================================
     bool cacheValid = false;
 
+    //==========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Interpolator)
 };
 
-//---------------------------------------------------------------------------------------------------------------
-// linear
+//==============================================================================
 
 /**
  * @brief   Simple linear interpolator
@@ -202,6 +209,7 @@ class LinearInterpolator : public Interpolator<ValueType>
 {
 public:
 
+    //==========================================================================
     /**
      * @brief Implements Interpolator::prepare()
      */
@@ -228,14 +236,14 @@ public:
         return static_cast<ValueType>(leftPoint.getY() + mu * yDiff);
     }
 
+    //==========================================================================
     /**
      * @brief Identifier / name for algorithm
      */
     inline static const juce::Identifier identifier = "Linear";
 };
 
-//---------------------------------------------------------------------------------------------------------------
-// cosine
+//==============================================================================
 
 /**
  * @brief   Cosine interpolator
@@ -248,6 +256,7 @@ class CosineInterpolator : public Interpolator<ValueType>
 {
 public:
 
+    //==========================================================================
     /**
      * @brief Implements Interpolator::prepare()
      */
@@ -274,14 +283,14 @@ public:
                                       + rightPoint.getY() * mu2);
     }
 
+    //==========================================================================
     /**
      * @brief Identifier / name for algorithm
      */
     inline static const juce::Identifier identifier = "Cosine";
 };
 
-//---------------------------------------------------------------------------------------------------------------
-// spline
+//==============================================================================
 
 /**
  * @brief   Spline interpolator
@@ -293,6 +302,7 @@ class SplineInterpolator : public Interpolator<ValueType>
 {
 public:
 
+    //==========================================================================
     /**
      * @brief Implements Interpolator::prepare()
      */
@@ -333,6 +343,7 @@ public:
         return static_cast<ValueType>(spline(input));
     }
 
+    //==========================================================================
     /**
      * @brief Identifier / name for algorithm
      */
@@ -340,6 +351,7 @@ public:
 
 private:
 
+    //==========================================================================
     /**
      * @brief       Determine the required type of spline given the number of
      * input samples
@@ -356,14 +368,13 @@ private:
                                      : spline_type::linear;
     }
 
-    // prepared state
+    //==========================================================================
     std::vector<double> xInputs;
     std::vector<double> yInputs;
     tk::spline spline;
 };
 
-//--------------------------------------------------------------------------------------------------------------
-// factory
+//==============================================================================
 
 /**
  * @brief Factory for creating interpolators from their identifiers
@@ -373,6 +384,7 @@ class InterpolatorFactory
 {
 public:
 
+    //==========================================================================
     /**
      * @brief       Creates an interpolator
      *
@@ -402,6 +414,7 @@ public:
         return nullptr;
     }
 
+    //==========================================================================
     /**
      * @brief Returns all valid identifiers for interpolator classes
      */
@@ -414,6 +427,7 @@ public:
 
 private:
 
+    //==========================================================================
     InterpolatorFactory() = delete;
 };
 

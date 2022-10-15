@@ -24,14 +24,16 @@ class MainWindow : public juce::DocumentWindow,
 {
 public:
 
+    //==========================================================================
     MainWindow(const juce::String& name,
                std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
                std::shared_ptr<CommandManager> sharedCommandManager);
     ~MainWindow() override;
 
+    //==========================================================================
     void closeButtonPressed() override;
 
-    // command handling
+    //==========================================================================
     void getAllCommands(juce::Array<juce::CommandID>& commands) override;
     void getCommandInfo(juce::CommandID commandID,
                         juce::ApplicationCommandInfo& result) override;
@@ -40,13 +42,16 @@ public:
 
 private:
 
+    //==========================================================================
     MenuBar menuBar;
     MainComponent mainComponent;
     std::shared_ptr<CommandManager> commandManager;
 
+    //==========================================================================
     static const int minWidth = 500;
     static const int minHeight = 350;
 
+    //==========================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
 };
 

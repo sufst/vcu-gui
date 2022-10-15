@@ -8,8 +8,10 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
- * @brief   Constructor
+ * @brief   Default constructor
  */
 TabbedComponent::TabbedComponent()
     : juce::TabbedComponent(juce::TabbedButtonBar::Orientation::TabsAtTop)

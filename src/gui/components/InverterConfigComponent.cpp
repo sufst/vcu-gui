@@ -8,6 +8,8 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
  * @brief   Constructor
  */
@@ -60,6 +62,8 @@ void InverterConfigComponent::setupInterpolationCombo()
                         nullptr);
     };
 }
+
+//==============================================================================
 
 /**
  * @brief   Implements juce::Component::resized()

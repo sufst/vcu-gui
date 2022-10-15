@@ -15,9 +15,11 @@ class CommandManager : public juce::ApplicationCommandManager
 {
 public:
 
+    //===========================================================================
     CommandManager() = default;
     ~CommandManager() = default;
 
+    //===========================================================================
     enum CommandIDs
     {
         // menu bar
