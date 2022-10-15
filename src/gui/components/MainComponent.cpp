@@ -22,15 +22,9 @@ MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfi
 
     configValueTree->addListener(this);
 
-    setupButtons();
-
-    addAndMakeVisible(tabComponent);
-    
     auto& lf = getLookAndFeel();
     tabComponent.addTab("Inverter", lf.findColour(juce::DocumentWindow::backgroundColourId), &inverterComponent, false);
-
-    // addAndMakeVisible(exportProfileButton);
-    // addAndMakeVisible(importProfileButton);
+    addAndMakeVisible(tabComponent);
 }
 
 /**
@@ -39,67 +33,6 @@ MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfi
 MainComponent::~MainComponent()
 {
     // nothing to do
-}
-
-
-
-/**
- * @brief Sets up the buttons
- */
-void MainComponent::setupButtons()
-{
-    // export profile
-    exportProfileButton.setButtonText("Export Profile");
-
-    exportProfileButton.onClick = [this]()
-    {
-        fileChooser = std::make_unique<juce::FileChooser>("Save VCU configuration",
-                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                          "*.xml",
-                                                          true);
-
-        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
-                                | juce::FileBrowserComponent::warnAboutOverwriting
-                                | juce::FileBrowserComponent::saveMode;
-
-        fileChooser->launchAsync(fileChooserFlags,
-                                 [this](const juce::FileChooser& chooser)
-                                 {
-                                     if (chooser.getResults().isEmpty())
-                                     {
-                                         return;
-                                     }
-
-                                     auto xml = configValueTree->exportXml();
-                                     auto file = chooser.getResult();
-
-                                     xml->getDocumentElement()->writeTo(file);
-                                 });
-    };
-
-    // import profile
-    importProfileButton.setButtonText("Import Profile");
-
-    importProfileButton.onClick = [this]()
-    {
-        fileChooser = std::make_unique<juce::FileChooser>("Load VCU configuration",
-                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                          "*.xml",
-                                                          true);
-
-        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::openMode;
-
-        fileChooser->launchAsync(fileChooserFlags,
-                                 [this](const juce::FileChooser& chooser)
-                                 {
-                                     if (chooser.getResults().isEmpty())
-                                     {
-                                         return;
-                                     }
-
-                                     configValueTree->loadFromFile(chooser.getResult());
-                                 });
-    };
 }
 
 /**
@@ -125,30 +58,8 @@ void MainComponent::paint(juce::Graphics& g)
  */
 void MainComponent::resized()
 {
-    // auto bounds = getLocalBounds().reduced(20);
-    // auto footer = bounds.removeFromBottom(42);
-    // footer.removeFromTop(10);
-    // footer.removeFromBottom(2);
-
     auto bounds = getLocalBounds();
     tabComponent.setBounds(bounds);
-
-    // // graph
-    // torqueMapGraph.setBounds(bounds);
-
-    // // footer
-    // std::initializer_list<juce::Component*> footerComponents
-    //     = {&interpolationCombo, &exportProfileButton, &importProfileButton};
-
-    // const int numFooterComponents = static_cast<int>(footerComponents.size());
-    // const int footerItemSpacing = borderSize / numFooterComponents;
-    // const int footerItemWidth = (footer.getWidth() - footerItemSpacing) / numFooterComponents;
-
-    // for (juce::Component* component : footerComponents)
-    // {
-    //     component->setBounds(footer.removeFromLeft(footerItemWidth));
-    //     footer.removeFromLeft(footerItemSpacing);
-    // }
 }
 
 /**
@@ -205,23 +116,23 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
  */
 void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 {
-    if (redirectedTree == configValueTree->getRoot())
-    {
-        auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+    // if (redirectedTree == configValueTree->getRoot())
+    // {
+    //     auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
 
-        // TODO: this should be replaced by something (1) faster (2) that is its own function!
-        juce::String interpolationMethod
-            = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+    //     // TODO: this should be replaced by something (1) faster (2) that is its own function!
+    //     juce::String interpolationMethod
+    //         = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
 
-        for (int i = 0; i < interpolationCombo.getNumItems(); i++)
-        {
-            if (interpolationCombo.getItemText(i) == interpolationMethod)
-            {
-                interpolationCombo.setSelectedItemIndex(i);
-                break;
-            }
-        }
-    }
+    //     for (int i = 0; i < interpolationCombo.getNumItems(); i++)
+    //     {
+    //         if (interpolationCombo.getItemText(i) == interpolationMethod)
+    //         {
+    //             interpolationCombo.setSelectedItemIndex(i);
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 } // namespace gui
