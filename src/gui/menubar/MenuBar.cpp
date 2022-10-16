@@ -73,6 +73,16 @@ juce::PopupMenu MenuBar::createFileMenu()
 {
     juce::PopupMenu menu;
 
+    std::initializer_list<CommandManager::CommandIDs> commands = {
+        CommandManager::ImportConfig,
+        CommandManager::ExportConfig,
+    };
+
+    for (const auto& cmd : commands)
+    {
+        menu.addCommandItem(commandManager.get(), cmd);
+    }
+
     return menu;
 }
 
