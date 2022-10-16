@@ -32,8 +32,8 @@ public:
         ToggleFullScreen = 0x100032,
 
         // config actions
-        ImportConfig = 0x100040,
-        ExportConfig = 0x100041
+        OpenFile = 0x100040,
+        SaveFile = 0x100041
     };
 
     struct CommandCategories

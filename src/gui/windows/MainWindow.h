@@ -43,9 +43,15 @@ public:
 private:
 
     //==========================================================================
+    void loadConfig();
+    void saveConfig();
+
+    //==========================================================================
     MenuBar menuBar;
     MainComponent mainComponent;
     std::shared_ptr<CommandManager> commandManager;
+    std::shared_ptr<ConfigurationValueTree> configValueTree;
+    std::unique_ptr<juce::FileChooser> fileChooser;
 
     //==========================================================================
     static const int minWidth = 500;
