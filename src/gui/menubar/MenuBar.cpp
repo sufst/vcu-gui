@@ -67,6 +67,26 @@ void MenuBar::setupAppleMenu()
 #endif
 
 /**
+ * @brief   Creates the 'File' menu
+ */
+juce::PopupMenu MenuBar::createFileMenu()
+{
+    juce::PopupMenu menu;
+
+    std::initializer_list<CommandManager::CommandIDs> commands = {
+        CommandManager::OpenFile,
+        CommandManager::SaveFile,
+    };
+
+    for (const auto& cmd : commands)
+    {
+        menu.addCommandItem(commandManager.get(), cmd);
+    }
+
+    return menu;
+}
+
+/**
  * @brief Creates the 'Window' menu
  */
 juce::PopupMenu MenuBar::createWindowMenu()
@@ -130,6 +150,9 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
 
     switch (topLevelMenuIndex)
     {
+    case MenuIndex::File:
+        return createFileMenu();
+
     case MenuIndex::Window:
         return createWindowMenu();
 
@@ -230,9 +253,13 @@ juce::ApplicationCommandTarget* MenuBar::getNextCommandTarget()
 //==============================================================================
 
 /**
- * @brief Map between menu indexes and identifying strings
+ * @brief   Map between menu indexes and identifying strings
+ *
+ * @note    This is done as a map and not an array to allow the menus to be
+ *          re-ordered without having to re-order the array.
  */
 const std::map<MenuBar::MenuIndex, juce::String> MenuBar::menuNameMap = {
+    {MenuBar::MenuIndex::File, "File"},
     {MenuBar::MenuIndex::View, "View"},
     {MenuBar::MenuIndex::Window, "Window"},
 };

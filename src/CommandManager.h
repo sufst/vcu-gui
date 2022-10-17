@@ -30,11 +30,16 @@ public:
         CloseWindow = 0x100030,
         MinimiseWindow = 0x100031,
         ToggleFullScreen = 0x100032,
+
+        // config actions
+        OpenFile = 0x100040,
+        SaveFile = 0x100041
     };
 
     struct CommandCategories
     {
-        inline static const char* General = "General";
-        inline static const char* GUI = "GUI";
+        static constexpr const char* General = "General";
+        static constexpr const char* GUI = "GUI";
+        static constexpr const char* Config = "Configuration";
     };
 };

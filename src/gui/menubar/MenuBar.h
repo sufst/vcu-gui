@@ -44,10 +44,11 @@ private:
 
     //==========================================================================
     void createMainMenu();
+    juce::PopupMenu createFileMenu();
     juce::PopupMenu createWindowMenu();
     juce::PopupMenu createViewMenu();
 
-#if JUCE_MAC
+#if (JUCE_MAC)
     void setupAppleMenu();
 #endif
 
@@ -58,8 +59,9 @@ private:
 
     typedef enum
     {
-        View = 0,
-        Window = 1,
+        File = 0,
+        View = 1,
+        Window = 2
     } MenuIndex;
 
     static const std::map<MenuIndex, juce::String> menuNameMap;

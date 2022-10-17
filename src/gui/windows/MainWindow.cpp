@@ -28,7 +28,8 @@ MainWindow::MainWindow(
             juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons),
       menuBar(sharedCommandManager), mainComponent(sharedConfigValueTree),
-      commandManager(sharedCommandManager) // ^^^^yikes
+      commandManager(sharedCommandManager),
+      configValueTree(sharedConfigValueTree) // ^^^^yikes
 {
     setUsingNativeTitleBar(true);
     setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);
@@ -69,11 +70,12 @@ void MainWindow::closeButtonPressed()
  */
 void MainWindow::getAllCommands(juce::Array<juce::CommandID>& commands)
 {
-    std::initializer_list<juce::CommandID> targetCommands = {
-        CommandManager::CloseWindow,
-        CommandManager::MinimiseWindow,
-        CommandManager::ToggleFullScreen,
-    };
+    std::initializer_list<juce::CommandID> targetCommands
+        = {CommandManager::CloseWindow,
+           CommandManager::MinimiseWindow,
+           CommandManager::ToggleFullScreen,
+           CommandManager::SaveFile,
+           CommandManager::OpenFile};
 
     commands.addArray(targetCommands);
 }
@@ -127,6 +129,28 @@ void MainWindow::getCommandInfo(juce::CommandID commandID,
         break;
     }
 
+    case CommandManager::OpenFile:
+    {
+        result.setInfo("Open...",
+                       "Opens an existing configuration file",
+                       CommandManager::CommandCategories::Config,
+                       0);
+        result.defaultKeypresses.add(
+            juce::KeyPress('o', juce::ModifierKeys::commandModifier, 0));
+        break;
+    }
+
+    case CommandManager::SaveFile:
+    {
+        result.setInfo("Save...",
+                       "Saves the current configuration to file",
+                       CommandManager::CommandCategories::Config,
+                       0);
+        result.defaultKeypresses.add(
+            juce::KeyPress('s', juce::ModifierKeys::commandModifier, 0));
+        break;
+    }
+
     default:
         break;
     }
@@ -151,6 +175,14 @@ bool MainWindow::perform(const InvocationInfo& info)
         setFullScreen(!isFullScreen());
         break;
 
+    case CommandManager::OpenFile:
+        loadConfig();
+        break;
+
+    case CommandManager::SaveFile:
+        saveConfig();
+        break;
+
     default:
         return false;
     }
@@ -164,6 +196,70 @@ bool MainWindow::perform(const InvocationInfo& info)
 juce::ApplicationCommandTarget* MainWindow::getNextCommandTarget()
 {
     return static_cast<juce::ApplicationCommandTarget*>(&menuBar);
+}
+
+//==============================================================================
+
+/**
+ * @brief   Loads a configuration from file
+ */
+void MainWindow::loadConfig()
+{
+    fileChooser = std::make_unique<juce::FileChooser>(
+        "Load Configuration File",
+        juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+        "*.xml",
+        true);
+
+    auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+                            | juce::FileBrowserComponent::openMode;
+
+    fileChooser->launchAsync(fileChooserFlags,
+                             [this](const juce::FileChooser& chooser)
+                             {
+                                 if (chooser.getResults().isEmpty())
+                                 {
+                                     return;
+                                 }
+
+                                 configValueTree->loadFromFile(
+                                     chooser.getResult());
+                                 fileChooser.reset();
+                             });
+}
+
+/**
+ * @brief   Saves the configuration to a file
+ */
+void MainWindow::saveConfig()
+{
+    // TODO: it would be nice if when the config was loaded from a file, it
+    //       would automatically save to that same file without opening
+    //       the file browser and overwriting it
+    fileChooser = std::make_unique<juce::FileChooser>(
+        "Save Configuration",
+        juce::File::getSpecialLocation(juce::File::userHomeDirectory),
+        "*.xml",
+        true);
+
+    auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
+                            | juce::FileBrowserComponent::warnAboutOverwriting
+                            | juce::FileBrowserComponent::saveMode;
+
+    fileChooser->launchAsync(fileChooserFlags,
+                             [this](const juce::FileChooser& chooser)
+                             {
+                                 if (chooser.getResults().isEmpty())
+                                 {
+                                     return;
+                                 }
+
+                                 auto xml = configValueTree->exportXml();
+                                 auto file = chooser.getResult();
+
+                                 xml->getDocumentElement()->writeTo(file);
+                                 fileChooser.reset();
+                             });
 }
 
 } // namespace gui
