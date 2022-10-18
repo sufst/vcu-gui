@@ -8,6 +8,9 @@
 
 #include <vector>
 
+namespace utility
+{
+
 /**
  * @brief       Creates a vector of linearly spaced values
  *
@@ -53,3 +56,5 @@ std::vector<T> linspace(T start, T end, int num)
 
     return linspaced;
 }
+
+} // namespace utility

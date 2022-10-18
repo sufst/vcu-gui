@@ -7,7 +7,7 @@
 #include "TorqueMapComponent.h"
 
 #include "../../../Application.h"
-#include "../../utility/clip.h"
+#include "../../../utility/clip.h"
 
 namespace gui
 {
