@@ -29,7 +29,7 @@ if(APPLE)
 ENDIF()
 
 # JUCE application setup
-add_subdirectory(lib/JUCE)
+add_subdirectory(lib/juce)
 
 juce_add_gui_app(${TARGET_NAME}
     PRODUCT_NAME "VCU GUI"

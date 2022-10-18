@@ -4,9 +4,9 @@
       "name": "Mac (ARM)",
       "includePath": [
         "${workspaceFolder}/src/**",
-        "${workspaceFolder}/lib/JUCE/modules/**",
+        "${workspaceFolder}/lib/juce/modules/**",
         "${workspaceFolder}/build/VCU-GUI_artefacts/JuceLibraryCode/**",
-        "${workspaceFolder}/lib/JUCE/modules",
+        "${workspaceFolder}/lib/juce/modules",
         "${workspaceFolder}/lib/spline/src"
       ],
       "defines": [],
