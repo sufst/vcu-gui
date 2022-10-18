@@ -10,21 +10,29 @@
 #include <memory>
 
 /**
- * @brief Stores the VCU configuration profile and notifies registered listeners when it changes
+ * @brief Stores the VCU configuration profile and notifies registered listeners
+ * when it changes
  */
 class ConfigurationValueTree final
 {
 public:
 
+    //==========================================================================
     ConfigurationValueTree();
 
+    //==========================================================================
     void addListener(juce::ValueTree::Listener* newListener);
+
+    //==========================================================================
     juce::ValueTree getRoot() const;
     juce::ValueTree getChildWithName(const juce::Identifier& identifier) const;
 
+    //==========================================================================
     std::unique_ptr<juce::XmlDocument> exportXml() const;
     void loadFromFile(const juce::File& file);
     static juce::ValueTree createTorqueMapPoint(int input, int output);
+
+    //==========================================================================
 
     /**
      * @brief Property type identifiers
@@ -35,10 +43,12 @@ public:
 
         // metadata
         inline static const juce::Identifier ProfileName = "ProfileName";
-        inline static const juce::Identifier ApplicationVersion = "ApplicationVersion";
+        inline static const juce::Identifier ApplicationVersion
+            = "ApplicationVersion";
 
         // torque map
-        inline static const juce::Identifier InterpolationMethod = "InterpolationMethod";
+        inline static const juce::Identifier InterpolationMethod
+            = "InterpolationMethod";
         inline static const juce::Identifier InputValue = "InputValue";
         inline static const juce::Identifier OutputValue = "OutputValue";
 
@@ -69,6 +79,9 @@ public:
 
 private:
 
+    //==========================================================================
     static juce::ValueTree createEmptyConfiguration();
+
+    //==========================================================================
     juce::ValueTree tree;
 };

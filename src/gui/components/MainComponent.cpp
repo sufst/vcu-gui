@@ -12,23 +12,31 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree), torqueMapGraph(sharedConfigValueTree)
+MainComponent::MainComponent(
+    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree),
+      inverterComponent(sharedConfigValueTree)
 {
     setSize(600, 400);
 
     configValueTree->addListener(this);
 
-    setupInterpolationCombo();
-    setupButtons();
+    auto& lf = getLookAndFeel();
+    auto tabColour = lf.findColour(juce::DocumentWindow::backgroundColourId);
+    // TODO: these can be put in a proper initializer list loop once all the
+    //       classes for the different tabs have been created
+    tabComponent.addTab("Metadata", tabColour, nullptr, false);
+    tabComponent.addTab("Inverter", tabColour, &inverterComponent, false);
+    tabComponent.addTab("Sensors", tabColour, nullptr, false);
+    tabComponent.addTab("Testbenches", tabColour, nullptr, false);
+    tabComponent.addTab("Summary", tabColour, nullptr, false);
 
-    addAndMakeVisible(torqueMapGraph);
-    addAndMakeVisible(interpolationCombo);
-    addAndMakeVisible(exportProfileButton);
-    addAndMakeVisible(importProfileButton);
+    addAndMakeVisible(tabComponent);
 }
 
 /**
@@ -39,107 +47,16 @@ MainComponent::~MainComponent()
     // nothing to do
 }
 
-/**
- * @brief Setup interpolation method combo box
- */
-void MainComponent::setupInterpolationCombo()
-{
-    const auto& interpolationMethods = utility::InterpolatorFactory<int>::getAllIdentifiers();
-
-    juce::ValueTree torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-    const juce::String selectedMethod = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
-
-    for (unsigned i = 0; i < interpolationMethods.size(); i++)
-    {
-        const auto itemId = static_cast<int>(i + 1);
-        const auto& method = interpolationMethods.at(i).toString();
-
-        interpolationCombo.addItem(method, itemId);
-
-        if (method == selectedMethod)
-        {
-            interpolationCombo.setSelectedId(itemId);
-        }
-    }
-
-    interpolationCombo.onChange = [this]() mutable
-    {
-        int selectedIndex = interpolationCombo.getSelectedItemIndex();
-        juce::String value = interpolationCombo.getItemText(selectedIndex);
-        auto map = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-
-        map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod, value, nullptr);
-    };
-}
+//==============================================================================
 
 /**
- * @brief Sets up the buttons
- */
-void MainComponent::setupButtons()
-{
-    // export profile
-    exportProfileButton.setButtonText("Export Profile");
-
-    exportProfileButton.onClick = [this]()
-    {
-        fileChooser = std::make_unique<juce::FileChooser>("Save VCU configuration",
-                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                          "*.xml",
-                                                          true);
-
-        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
-                                | juce::FileBrowserComponent::warnAboutOverwriting
-                                | juce::FileBrowserComponent::saveMode;
-
-        fileChooser->launchAsync(fileChooserFlags,
-                                 [this](const juce::FileChooser& chooser)
-                                 {
-                                     if (chooser.getResults().isEmpty())
-                                     {
-                                         return;
-                                     }
-
-                                     auto xml = configValueTree->exportXml();
-                                     auto file = chooser.getResult();
-
-                                     xml->getDocumentElement()->writeTo(file);
-                                 });
-    };
-
-    // import profile
-    importProfileButton.setButtonText("Import Profile");
-
-    importProfileButton.onClick = [this]()
-    {
-        fileChooser = std::make_unique<juce::FileChooser>("Load VCU configuration",
-                                                          juce::File::getSpecialLocation(juce::File::userHomeDirectory),
-                                                          "*.xml",
-                                                          true);
-
-        auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::openMode;
-
-        fileChooser->launchAsync(fileChooserFlags,
-                                 [this](const juce::FileChooser& chooser)
-                                 {
-                                     if (chooser.getResults().isEmpty())
-                                     {
-                                         return;
-                                     }
-
-                                     configValueTree->loadFromFile(chooser.getResult());
-                                 });
-    };
-}
-
-/**
- * @brief Painter
- *
- * @param[in]   g   Graphics context
+ * @brief Implements juce::Component::paint()
  */
 void MainComponent::paint(juce::Graphics& g)
 {
     auto& lf = getLookAndFeel();
-    auto backgroundColour = lf.findColour(juce::ResizableWindow::backgroundColourId);
+    auto backgroundColour
+        = lf.findColour(juce::ResizableWindow::backgroundColourId);
 
     if (fileIsBeingDragged)
     {
@@ -150,32 +67,15 @@ void MainComponent::paint(juce::Graphics& g)
 }
 
 /**
- * @brief Resize handler
+ * @brief Implements juce::Component::resized()
  */
 void MainComponent::resized()
 {
-    auto bounds = getLocalBounds().reduced(20);
-    auto footer = bounds.removeFromBottom(42);
-    footer.removeFromTop(10);
-    footer.removeFromBottom(2);
-
-    // graph
-    torqueMapGraph.setBounds(bounds);
-
-    // footer
-    std::initializer_list<juce::Component*> footerComponents
-        = {&interpolationCombo, &exportProfileButton, &importProfileButton};
-
-    const int numFooterComponents = static_cast<int>(footerComponents.size());
-    const int footerItemSpacing = borderSize / numFooterComponents;
-    const int footerItemWidth = (footer.getWidth() - footerItemSpacing) / numFooterComponents;
-
-    for (juce::Component* component : footerComponents)
-    {
-        component->setBounds(footer.removeFromLeft(footerItemWidth));
-        footer.removeFromLeft(footerItemSpacing);
-    }
+    auto bounds = getLocalBounds();
+    tabComponent.setBounds(bounds);
 }
+
+//==============================================================================
 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::isInterestedInFileDrag()
@@ -197,7 +97,9 @@ bool MainComponent::isInterestedInFileDrag(const juce::StringArray& files)
 /**
  * @brief   Implements juce::FileDragAndDropTarget::filesDropped()
  */
-void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int /*y*/)
+void MainComponent::filesDropped(const juce::StringArray& files,
+                                 int /*x*/,
+                                 int /*y*/)
 {
     const auto& fileName = files[0];
     jassert(fileName.endsWithIgnoreCase(".xml"));
@@ -211,7 +113,9 @@ void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::fileDragEnter()
  */
-void MainComponent::fileDragEnter(const juce::StringArray& /*files*/, int /*x*/, int /*y*/)
+void MainComponent::fileDragEnter(const juce::StringArray& /*files*/,
+                                  int /*x*/,
+                                  int /*y*/)
 {
     fileIsBeingDragged = true;
     repaint();
@@ -226,28 +130,33 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
     repaint();
 }
 
+//==============================================================================
+
 /**
  * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
  */
 void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 {
-    if (redirectedTree == configValueTree->getRoot())
-    {
-        auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+    // TODO: this should belong to InverterConfigComponent???
+    // if (redirectedTree == configValueTree->getRoot())
+    // {
+    //     auto torqueMap =
+    //     configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
 
-        // TODO: this should be replaced by something (1) faster (2) that is its own function!
-        juce::String interpolationMethod
-            = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+    //     // TODO: this should be replaced by something (1) faster (2) that is
+    //     its own function! juce::String interpolationMethod
+    //         =
+    //         torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
 
-        for (int i = 0; i < interpolationCombo.getNumItems(); i++)
-        {
-            if (interpolationCombo.getItemText(i) == interpolationMethod)
-            {
-                interpolationCombo.setSelectedItemIndex(i);
-                break;
-            }
-        }
-    }
+    //     for (int i = 0; i < interpolationCombo.getNumItems(); i++)
+    //     {
+    //         if (interpolationCombo.getItemText(i) == interpolationMethod)
+    //         {
+    //             interpolationCombo.setSelectedItemIndex(i);
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 } // namespace gui

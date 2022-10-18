@@ -15,7 +15,7 @@ Language: Cpp
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-ColumnLimit: 120
+ColumnLimit: 80
 
 # alignment
 AccessModifierOffset: -4
@@ -58,6 +58,7 @@ SpaceBeforeSquareBrackets: false
 SpacesInCStyleCastParentheses: false
 SpacesInConditionalStatement: false
 SpacesInParentheses: false
+IndentPPDirectives: BeforeHash
 
 # braces
 BraceWrapping:
