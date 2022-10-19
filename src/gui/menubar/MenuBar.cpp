@@ -67,55 +67,14 @@ void MenuBar::setupAppleMenu()
 #endif
 
 /**
- * @brief   Creates the 'File' menu
+ * @brief       Creates a popup menu with the specified command manager commands
+ *
+ * @param[in]   commands    List of command IDs
  */
-juce::PopupMenu MenuBar::createFileMenu()
+juce::PopupMenu MenuBar::createMenuWithCommands(
+    std::initializer_list<CommandManager::CommandIDs> commands)
 {
     juce::PopupMenu menu;
-
-    std::initializer_list<CommandManager::CommandIDs> commands = {
-        CommandManager::OpenFile,
-        CommandManager::SaveFile,
-    };
-
-    for (const auto& cmd : commands)
-    {
-        menu.addCommandItem(commandManager.get(), cmd);
-    }
-
-    return menu;
-}
-
-/**
- * @brief Creates the 'Window' menu
- */
-juce::PopupMenu MenuBar::createWindowMenu()
-{
-    juce::PopupMenu menu;
-
-    std::initializer_list<CommandManager::CommandIDs> commands = {
-        CommandManager::CloseWindow,
-        CommandManager::MinimiseWindow,
-    };
-
-    for (const auto& cmd : commands)
-    {
-        menu.addCommandItem(commandManager.get(), cmd);
-    }
-
-    return menu;
-}
-
-/**
- * @brief Creates the 'View' menu
- */
-juce::PopupMenu MenuBar::createViewMenu()
-{
-    juce::PopupMenu menu;
-
-    std::initializer_list<CommandManager::CommandIDs> commands = {
-        CommandManager::ToggleFullScreen,
-    };
 
     for (const auto& cmd : commands)
     {
@@ -151,13 +110,21 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
     switch (topLevelMenuIndex)
     {
     case MenuIndex::File:
-        return createFileMenu();
+        return createMenuWithCommands({
+            CommandManager::OpenFile,
+            CommandManager::SaveFile,
+        });
 
     case MenuIndex::Window:
-        return createWindowMenu();
+        return createMenuWithCommands({
+            CommandManager::CloseWindow,
+            CommandManager::MinimiseWindow,
+        });
 
     case MenuIndex::View:
-        return createViewMenu();
+        return createMenuWithCommands({
+            CommandManager::ToggleFullScreen,
+        });
 
     default:
         return juce::PopupMenu();
