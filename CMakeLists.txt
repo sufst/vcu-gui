@@ -54,6 +54,7 @@ target_include_directories(${TARGET_NAME}
 )
 
 add_subdirectory(src/gui)
+add_subdirectory(src/config)
 
 # binary data
 juce_add_binary_data(${TARGET_NAME}Data
@@ -78,8 +79,6 @@ execute_process(
     OUTPUT_VARIABLE GIT_COMMIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-
-
 
 # compilation
 target_compile_definitions(${TARGET_NAME}
@@ -108,4 +107,6 @@ target_link_libraries(${TARGET_NAME}
 )
 
 # symlink compile commands to repo root
+# this needs to be in the repo root for trunk to work
+# TODO: this won't work on windows!
 execute_process(COMMAND ln -sf ${CMAKE_SOURCE_DIR}/build/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
