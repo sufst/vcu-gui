@@ -44,9 +44,8 @@ private:
 
     //==========================================================================
     void createMainMenu();
-    juce::PopupMenu createFileMenu();
-    juce::PopupMenu createWindowMenu();
-    juce::PopupMenu createViewMenu();
+    juce::PopupMenu createMenuWithCommands(
+        std::initializer_list<CommandManager::CommandIDs> commands);
 
 #if (JUCE_MAC)
     void setupAppleMenu();
