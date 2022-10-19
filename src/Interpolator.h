@@ -15,8 +15,7 @@
     #pragma GCC diagnostic ignored "-Wmissing-prototypes"
     #pragma GCC diagnostic ignored "-Wc++98-compat-extra-semi"
 #elif (JUCE_WINDOWS)
-    // TODO: add MSVC equivalent pragmas
-    #define M_PI juce::MathConstants<float>::pi
+// TODO: add MSVC equivalent pragmas
 #endif
 
 #ifndef NDEBUG
