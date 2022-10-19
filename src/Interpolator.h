@@ -9,7 +9,7 @@
 #include <JuceHeader.h>
 
 JUCE_BEGIN_IGNORE_WARNINGS_GCC_LIKE("-Wconversion", "-Wextra-semi", "-Wmissing-prototypes", "-Wc++98-compat-extra-semi")
-JUCE_BEGIN_IGNORE_WARNINGS_MSVC(4267)
+JUCE_BEGIN_IGNORE_WARNINGS_MSVC(4267 4068)
 
 #if (JUCE_WINDOWS)
     #define M_PI juce::MathConstants<float>::pi
