@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../../../Interpolator.h"
+#include "../../../utility/Interpolator.h"
 #include "../../../utility/PointComparator.h"
 #include "../../../utility/clip.h"
 #include "../../appearance/Colours.h"

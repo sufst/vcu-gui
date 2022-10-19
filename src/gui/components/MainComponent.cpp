@@ -7,8 +7,6 @@
 
 #include "MainComponent.h"
 
-#include "../../Interpolator.h"
-
 namespace gui
 {
 
