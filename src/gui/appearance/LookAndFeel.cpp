@@ -9,6 +9,8 @@
 namespace sufst
 {
 
+//==============================================================================
+
 /**
  * @brief Constructor
  */
@@ -19,15 +21,20 @@ LookAndFeel::LookAndFeel()
     setDefaultSansSerifTypeface(karla);
 }
 
+//==============================================================================
+
 /**
  * @brief Loads the Karla font from the binary data library
  */
 const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
 {
-    static auto typeface
-        = juce::Typeface::createSystemTypefaceFor(BinaryData::KarlaLight_ttf, BinaryData::KarlaLight_ttfSize);
+    static auto typeface = juce::Typeface::createSystemTypefaceFor(
+        BinaryData::KarlaLight_ttf,
+        BinaryData::KarlaLight_ttfSize);
     return typeface;
 }
+
+//==============================================================================
 
 /**
  * @brief   Resizes tab bar buttons to equally use up available space
@@ -38,7 +45,8 @@ const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
  *
  * @return  Equal width spacing for all tabs
  */
-int LookAndFeel::getTabButtonBestWidth(juce::TabBarButton& button, int /*tabDepth*/)
+int LookAndFeel::getTabButtonBestWidth(juce::TabBarButton& button,
+                                       int /*tabDepth*/)
 {
     float totalWidth = button.getTabbedButtonBar().getWidth();
     float numTabs = button.getTabbedButtonBar().getNumTabs();

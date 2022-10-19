@@ -1,6 +1,6 @@
 /******************************************************************************
- * @file    TabComponent.h
- * @author  Tim Brewis (@t-bre)
+ * @file    ConfigEditorComponent.h
+ * @author  Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
  *****************************************************************************/
 
 #pragma once
@@ -11,14 +11,15 @@ namespace gui
 {
 
 /**
- * @brief   Tabbed component
+ * @brief   Base class for components providing editors for configuration
+ *          parameters
  */
-class TabbedComponent : public juce::TabbedComponent
+class ConfigEditorComponent : public juce::Component
 {
 public:
 
     //==========================================================================
-    TabbedComponent();
+    ConfigEditorComponent() = default;
 };
 
 } // namespace gui

@@ -18,14 +18,19 @@ class LookAndFeel : public juce::LookAndFeel_V4
 {
 public:
 
+    //==========================================================================
     LookAndFeel();
 
-    int getTabButtonBestWidth(juce::TabBarButton& button, int tabDepth) override;
+    //==========================================================================
+    int getTabButtonBestWidth(juce::TabBarButton& button,
+                              int tabDepth) override;
 
 private:
 
+    //==========================================================================
     static const juce::Typeface::Ptr getKarlaTypeface();
 
+    //==========================================================================
     JUCE_DECLARE_NON_COPYABLE(LookAndFeel)
 };
 

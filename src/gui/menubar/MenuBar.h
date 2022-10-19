@@ -22,37 +22,45 @@ class MenuBar : public juce::MenuBarModel, public juce::ApplicationCommandTarget
 {
 public:
 
+    //==========================================================================
     MenuBar(std::shared_ptr<CommandManager> sharedCommandManager);
     ~MenuBar() override;
 
+    //==========================================================================
     juce::StringArray getMenuBarNames() override;
-    juce::PopupMenu getMenuForIndex(int topLevelMenuIndex, const juce::String& menuName) override;
+    juce::PopupMenu getMenuForIndex(int topLevelMenuIndex,
+                                    const juce::String& menuName) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
     void menuBarActivated(bool isActive) override;
 
+    //==========================================================================
     void getAllCommands(juce::Array<juce::CommandID>& commands) override;
     juce::ApplicationCommandTarget* getNextCommandTarget() override;
-    void getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result) override;
+    void getCommandInfo(juce::CommandID commandID,
+                        juce::ApplicationCommandInfo& result) override;
     bool perform(const InvocationInfo& info) override;
 
 private:
 
+    //==========================================================================
     void createMainMenu();
-    juce::PopupMenu createWindowMenu();
-    juce::PopupMenu createViewMenu();
+    juce::PopupMenu createMenuWithCommands(
+        std::initializer_list<CommandManager::CommandIDs> commands);
 
-#if JUCE_MAC
+#if (JUCE_MAC)
     void setupAppleMenu();
 #endif
 
+    //==========================================================================
     juce::PopupMenu mainMenu;
     std::shared_ptr<CommandManager> commandManager;
     std::unique_ptr<AboutWindow> aboutWindow;
 
     typedef enum
     {
-        View = 0,
-        Window = 1,
+        File = 0,
+        View = 1,
+        Window = 2
     } MenuIndex;
 
     static const std::map<MenuIndex, juce::String> menuNameMap;

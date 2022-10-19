@@ -12,10 +12,11 @@ runtimes:
     - node@16.14.2
 lint:
   enabled:
-    - git-diff-check
     - gitleaks@8.15.0
     - clang-tidy@14.0.0
     - clang-format@13.0.0
+  disabled:
+    - git-diff-check
   ignore:
     - linters: [ALL]
       paths:

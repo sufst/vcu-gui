@@ -9,10 +9,13 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
- * @brief Constructor
+ * @brief Default constructor
  */
-MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager) : commandManager(sharedCommandManager)
+MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager)
+    : commandManager(sharedCommandManager)
 {
     jassert(commandManager);
     commandManager->registerAllCommandsForTarget(this);
@@ -35,12 +38,15 @@ MenuBar::~MenuBar()
 #endif
 }
 
+//==============================================================================
+
 /**
  * @brief Creates the main menu
  */
 void MenuBar::createMainMenu()
 {
-    mainMenu.addCommandItem(commandManager.get(), CommandManager::CommandIDs::ShowAboutWindow);
+    mainMenu.addCommandItem(commandManager.get(),
+                            CommandManager::CommandIDs::ShowAboutWindow);
 }
 
 #if JUCE_MAC
@@ -61,35 +67,14 @@ void MenuBar::setupAppleMenu()
 #endif
 
 /**
- * @brief Creates the 'Window' menu
+ * @brief       Creates a popup menu with the specified command manager commands
+ *
+ * @param[in]   commands    List of command IDs
  */
-juce::PopupMenu MenuBar::createWindowMenu()
+juce::PopupMenu MenuBar::createMenuWithCommands(
+    std::initializer_list<CommandManager::CommandIDs> commands)
 {
     juce::PopupMenu menu;
-
-    std::initializer_list<CommandManager::CommandIDs> commands = {
-        CommandManager::CloseWindow,
-        CommandManager::MinimiseWindow,
-    };
-
-    for (const auto& cmd : commands)
-    {
-        menu.addCommandItem(commandManager.get(), cmd);
-    }
-
-    return menu;
-}
-
-/**
- * @brief Creates the 'View' menu
- */
-juce::PopupMenu MenuBar::createViewMenu()
-{
-    juce::PopupMenu menu;
-
-    std::initializer_list<CommandManager::CommandIDs> commands = {
-        CommandManager::ToggleFullScreen,
-    };
 
     for (const auto& cmd : commands)
     {
@@ -115,19 +100,31 @@ juce::StringArray MenuBar::getMenuBarNames()
 }
 
 /**
- * Implements juce::MenuBarModel::getMenuForIndex()
+ * @brief Implements juce::MenuBarModel::getMenuForIndex()
  */
-juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex, const juce::String& menuName)
+juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
+                                         const juce::String& menuName)
 {
     (void) menuName;
 
     switch (topLevelMenuIndex)
     {
+    case MenuIndex::File:
+        return createMenuWithCommands({
+            CommandManager::OpenFile,
+            CommandManager::SaveFile,
+        });
+
     case MenuIndex::Window:
-        return createWindowMenu();
+        return createMenuWithCommands({
+            CommandManager::CloseWindow,
+            CommandManager::MinimiseWindow,
+        });
 
     case MenuIndex::View:
-        return createViewMenu();
+        return createMenuWithCommands({
+            CommandManager::ToggleFullScreen,
+        });
 
     default:
         return juce::PopupMenu();
@@ -135,7 +132,7 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex, const juce::Stri
 }
 
 /**
- * Implements juce::MenuBarModel::menuItemSelected()
+ * @brief Implements juce::MenuBarModel::menuItemSelected()
  */
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
 void MenuBar::menuItemSelected(int /*menuItemID*/, int /*topLevelMenuIndex*/)
@@ -144,14 +141,16 @@ void MenuBar::menuItemSelected(int /*menuItemID*/, int /*topLevelMenuIndex*/)
 // NOLINTEND(bugprone-easily-swappable-parameters)
 
 /**
- * Implements juce::MenuBarModel::menuBarActivated()
+ * @brief Implements juce::MenuBarModel::menuBarActivated()
  */
 void MenuBar::menuBarActivated(bool /*isActive*/)
 {
 }
 
+//==============================================================================
+
 /**
- * Implements juce::ApplicationCommandTarget::getAllCommands()
+ * @brief Implements juce::ApplicationCommandTarget::getAllCommands()
  */
 void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 {
@@ -163,9 +162,10 @@ void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 }
 
 /**
- * Implements juce::ApplicationCommandTarget::getCommandInfo()
+ * @brief Implements juce::ApplicationCommandTarget::getCommandInfo()
  */
-void MenuBar::getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result)
+void MenuBar::getCommandInfo(juce::CommandID commandID,
+                             juce::ApplicationCommandInfo& result)
 {
     switch (commandID)
     {
@@ -184,7 +184,7 @@ void MenuBar::getCommandInfo(juce::CommandID commandID, juce::ApplicationCommand
 }
 
 /**
- * Implements juce::ApplicationCommandTarget::perform()
+ * @brief Implements juce::ApplicationCommandTarget::perform()
  */
 bool MenuBar::perform(const InvocationInfo& info)
 {
@@ -196,7 +196,8 @@ bool MenuBar::perform(const InvocationInfo& info)
         {
             aboutWindow = std::make_unique<AboutWindow>(commandManager);
 
-            aboutWindow->onCloseButtonPressed = [this]() { aboutWindow.reset(); };
+            aboutWindow->onCloseButtonPressed
+                = [this]() { aboutWindow.reset(); };
         }
         break;
     }
@@ -209,17 +210,23 @@ bool MenuBar::perform(const InvocationInfo& info)
 }
 
 /**
- * juce::ApplicationCommandTarget::getNextCommandTarget()
+ * @brief Implements juce::ApplicationCommandTarget::getNextCommandTarget()
  */
 juce::ApplicationCommandTarget* MenuBar::getNextCommandTarget()
 {
     return nullptr;
 }
 
+//==============================================================================
+
 /**
- * @brief Map between menu indexes and identifying strings
+ * @brief   Map between menu indexes and identifying strings
+ *
+ * @note    This is done as a map and not an array to allow the menus to be
+ *          re-ordered without having to re-order the array.
  */
 const std::map<MenuBar::MenuIndex, juce::String> MenuBar::menuNameMap = {
+    {MenuBar::MenuIndex::File, "File"},
     {MenuBar::MenuIndex::View, "View"},
     {MenuBar::MenuIndex::Window, "Window"},
 };

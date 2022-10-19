@@ -9,11 +9,14 @@
 namespace gui
 {
 
+//==============================================================================
+
 /**
- * @brief Constructor
+ * @brief Default constructor
  */
 AboutWindow::AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager)
-    : juce::DialogWindow("About", juce::Colours::white, true), commandManager(sharedCommandManager)
+    : juce::DialogWindow("About", juce::Colours::white, true),
+      commandManager(sharedCommandManager)
 {
     setUsingNativeTitleBar(true);
     setResizable(false, false);
@@ -27,6 +30,8 @@ AboutWindow::AboutWindow(std::shared_ptr<CommandManager> sharedCommandManager)
     commandManager->registerAllCommandsForTarget(this);
 }
 
+//==============================================================================
+
 /**
  * @brief Implements juce::DialogWindow::paint()
  */
@@ -34,6 +39,8 @@ void AboutWindow::paint(juce::Graphics& g)
 {
     g.fillAll(getLookAndFeel().findColour(backgroundColourId));
 }
+
+//==============================================================================
 
 /**
  * @brief Implements juce::DialogWindow::closeButtonPressed()
@@ -45,6 +52,8 @@ void AboutWindow::closeButtonPressed()
         onCloseButtonPressed();
     }
 }
+
+//==============================================================================
 
 /**
  * @brief Implements juce::ApplicationCommandTarget::getAllCommands()
@@ -61,14 +70,19 @@ void AboutWindow::getAllCommands(juce::Array<juce::CommandID>& commands)
 /**
  * @brief Implements juce::ApplicationCommandTarget::getCommandInfo()
  */
-void AboutWindow::getCommandInfo(juce::CommandID commandID, juce::ApplicationCommandInfo& result)
+void AboutWindow::getCommandInfo(juce::CommandID commandID,
+                                 juce::ApplicationCommandInfo& result)
 {
     switch (commandID)
     {
     case CommandManager::CloseWindow:
     {
-        result.setInfo(juce::String("Close"), "Closes the window", CommandManager::CommandCategories::GUI, 0);
-        result.defaultKeypresses.add(juce::KeyPress('w', juce::ModifierKeys::commandModifier, 0));
+        result.setInfo(juce::String("Close"),
+                       "Closes the window",
+                       CommandManager::CommandCategories::GUI,
+                       0);
+        result.defaultKeypresses.add(
+            juce::KeyPress('w', juce::ModifierKeys::commandModifier, 0));
         break;
     }
 
@@ -105,6 +119,8 @@ juce::ApplicationCommandTarget* AboutWindow::getNextCommandTarget()
     return nullptr;
 }
 
+//==============================================================================
+
 /**
  * @brief Constructor for internal content component
  */
@@ -113,7 +129,8 @@ AboutWindow::AboutComponent::AboutComponent()
     setupLabels();
 
     appIconImage.setImage(
-        juce::ImageCache::getFromMemory(BinaryData::AppIcon_1024_png, BinaryData::AppIcon_1024_pngSize));
+        juce::ImageCache::getFromMemory(BinaryData::AppIcon_1024_png,
+                                        BinaryData::AppIcon_1024_pngSize));
 
     addAndMakeVisible(appIconImage);
 }
@@ -123,25 +140,31 @@ AboutWindow::AboutComponent::AboutComponent()
  */
 void AboutWindow::AboutComponent::setupLabels()
 {
-    using Initialiser = std::tuple<juce::Label*, const juce::String, float, juce::Justification, juce::Colour>;
+    using Initialiser = std::tuple<juce::Label*,
+                                   const juce::String,
+                                   float,
+                                   juce::Justification,
+                                   juce::Colour>;
 
-    const std::initializer_list<Initialiser> initList = {{&appNameLabel,
-                                                          juce::String(ProjectInfo::projectName),
-                                                          50,
-                                                          juce::Justification::bottomLeft,
-                                                          juce::Colour(225, 225, 225)},
-                                                         {&versionLabel,
-                                                          juce::String("Version ") + ProjectInfo::versionString,
-                                                          18,
-                                                          juce::Justification::topLeft,
-                                                          juce::Colour(180, 180, 180)},
-                                                         {&commitHashLabel,
-                                                          juce::String(GIT_COMMIT_HASH),
-                                                          10,
-                                                          juce::Justification::centredLeft,
-                                                          juce::Colour(120, 120, 120)}};
+    const std::initializer_list<Initialiser> initList
+        = {{&appNameLabel,
+            juce::String(ProjectInfo::projectName),
+            50,
+            juce::Justification::bottomLeft,
+            juce::Colour(225, 225, 225)},
+           {&versionLabel,
+            juce::String("Version ") + ProjectInfo::versionString,
+            18,
+            juce::Justification::topLeft,
+            juce::Colour(180, 180, 180)},
+           {&commitHashLabel,
+            juce::String(GIT_COMMIT_HASH),
+            10,
+            juce::Justification::centredLeft,
+            juce::Colour(120, 120, 120)}};
 
-    for (const auto& [component, text, fontHeight, justification, textColour] : initList)
+    for (const auto& [component, text, fontHeight, justification, textColour] :
+         initList)
     {
         addAndMakeVisible(*component);
         component->setText(text, juce::dontSendNotification);

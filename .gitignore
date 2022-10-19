@@ -29,6 +29,7 @@ compile_commands.json
 !.vscode/settings.json 
 !.vscode/tasks.json 
 !.vscode/c_cpp_properties.json
+!.vscode/extensions.json
 
 # macOS
 .DS_Store

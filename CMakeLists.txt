@@ -29,7 +29,7 @@ if(APPLE)
 ENDIF()
 
 # JUCE application setup
-add_subdirectory(lib/JUCE)
+add_subdirectory(lib/juce)
 
 juce_add_gui_app(${TARGET_NAME}
     PRODUCT_NAME "VCU GUI"
@@ -79,11 +79,13 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-
-
 # compilation
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
+    # Must define '_USE_MATH_DEFINES' before #include <cmath>.
+    # See https://learn.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=msvc-170
+    # We define it globally here.
+        _USE_MATH_DEFINES=1
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"

@@ -7,23 +7,33 @@
 
 #include "MainComponent.h"
 
-#include "../../Interpolator.h"
-
 namespace gui
 {
+
+//==============================================================================
 
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent(std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree), inverterComponent(sharedConfigValueTree)
+MainComponent::MainComponent(
+    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
+    : configValueTree(sharedConfigValueTree),
+      inverterComponent(sharedConfigValueTree)
 {
     setSize(600, 400);
 
     configValueTree->addListener(this);
 
     auto& lf = getLookAndFeel();
-    tabComponent.addTab("Inverter", lf.findColour(juce::DocumentWindow::backgroundColourId), &inverterComponent, false);
+    auto tabColour = lf.findColour(juce::DocumentWindow::backgroundColourId);
+    // TODO: these can be put in a proper initializer list loop once all the
+    //       classes for the different tabs have been created
+    tabComponent.addTab("Metadata", tabColour, nullptr, false);
+    tabComponent.addTab("Inverter", tabColour, &inverterComponent, false);
+    tabComponent.addTab("Sensors", tabColour, nullptr, false);
+    tabComponent.addTab("Testbenches", tabColour, nullptr, false);
+    tabComponent.addTab("Summary", tabColour, nullptr, false);
+
     addAndMakeVisible(tabComponent);
 }
 
@@ -35,15 +45,16 @@ MainComponent::~MainComponent()
     // nothing to do
 }
 
+//==============================================================================
+
 /**
- * @brief Painter
- *
- * @param[in]   g   Graphics context
+ * @brief Implements juce::Component::paint()
  */
 void MainComponent::paint(juce::Graphics& g)
 {
     auto& lf = getLookAndFeel();
-    auto backgroundColour = lf.findColour(juce::ResizableWindow::backgroundColourId);
+    auto backgroundColour
+        = lf.findColour(juce::ResizableWindow::backgroundColourId);
 
     if (fileIsBeingDragged)
     {
@@ -54,13 +65,15 @@ void MainComponent::paint(juce::Graphics& g)
 }
 
 /**
- * @brief Resize handler
+ * @brief Implements juce::Component::resized()
  */
 void MainComponent::resized()
 {
     auto bounds = getLocalBounds();
     tabComponent.setBounds(bounds);
 }
+
+//==============================================================================
 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::isInterestedInFileDrag()
@@ -82,7 +95,9 @@ bool MainComponent::isInterestedInFileDrag(const juce::StringArray& files)
 /**
  * @brief   Implements juce::FileDragAndDropTarget::filesDropped()
  */
-void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int /*y*/)
+void MainComponent::filesDropped(const juce::StringArray& files,
+                                 int /*x*/,
+                                 int /*y*/)
 {
     const auto& fileName = files[0];
     jassert(fileName.endsWithIgnoreCase(".xml"));
@@ -96,7 +111,9 @@ void MainComponent::filesDropped(const juce::StringArray& files, int /*x*/, int 
 /**
  * @brief   Implements juce::FileDragAndDropTarget::fileDragEnter()
  */
-void MainComponent::fileDragEnter(const juce::StringArray& /*files*/, int /*x*/, int /*y*/)
+void MainComponent::fileDragEnter(const juce::StringArray& /*files*/,
+                                  int /*x*/,
+                                  int /*y*/)
 {
     fileIsBeingDragged = true;
     repaint();
@@ -111,18 +128,23 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
     repaint();
 }
 
+//==============================================================================
+
 /**
  * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
  */
 void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
 {
+    // TODO: this should belong to InverterConfigComponent???
     // if (redirectedTree == configValueTree->getRoot())
     // {
-    //     auto torqueMap = configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
+    //     auto torqueMap =
+    //     configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
 
-    //     // TODO: this should be replaced by something (1) faster (2) that is its own function!
-    //     juce::String interpolationMethod
-    //         = torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
+    //     // TODO: this should be replaced by something (1) faster (2) that is
+    //     its own function! juce::String interpolationMethod
+    //         =
+    //         torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
 
     //     for (int i = 0; i < interpolationCombo.getNumItems(); i++)
     //     {

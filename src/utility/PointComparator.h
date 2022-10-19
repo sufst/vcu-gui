@@ -27,7 +27,8 @@ public:
      * @param[in]   p1      First point
      * @param[in]   p2      Second point
      */
-    static int compareElements(const juce::Point<ValueType>& p1, const juce::Point<ValueType>& p2)
+    static int compareElements(const juce::Point<ValueType>& p1,
+                               const juce::Point<ValueType>& p2)
     {
         if (p1.getX() < p2.getX())
         {
