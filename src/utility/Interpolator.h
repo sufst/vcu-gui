@@ -30,7 +30,7 @@
     #pragma GCC diagnostic pop
 #endif
 
-#include "utility/linspace.h"
+#include "linspace.h"
 #include <algorithm>
 #include <cmath>
 #include <memory>
