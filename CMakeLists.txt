@@ -17,11 +17,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(VCU-GUI VERSION 1.1.0)
 set(TARGET_NAME ${PROJECT_NAME})
 
-# Must define '_USE_MATH_DEFINES' before #include <cmath>.
-# See https://learn.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=msvc-170
-# We define it globally here.
-add_compile_definitions(_USE_MATH_DEFINES=1)
-
 # OS / architecture specific
 if(APPLE)
     if(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -84,11 +79,13 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-
-
 # compilation
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
+    # Must define '_USE_MATH_DEFINES' before #include <cmath>.
+    # See https://learn.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=msvc-170
+    # We define it globally here.
+        _USE_MATH_DEFINES=1
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
