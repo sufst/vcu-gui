@@ -29,6 +29,11 @@ DECLARE_ID(Input)
 DECLARE_ID(Output)
 DECLARE_ID(InterpolationMethod)
 
+DECLARE_ID(METADATA)
+DECLARE_ID(ConfigName)
+DECLARE_ID(VersionNumber)
+DECLARE_ID(Comments)
+
 } // namespace IDs
 } // namespace config
 
