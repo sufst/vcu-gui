@@ -16,13 +16,15 @@ namespace gui
 /**
  * @brief Default constructor
  */
-TorqueMapComponent::TorqueMapComponent()
+TorqueMapComponent::TorqueMapComponent(juce::ValueTree torqueMapTree)
+    : torqueMap(torqueMapTree)
 {
+    jassert(torqueMapTree.isValid());
     // TODO: re-integrate
     // configValueTree->addListener(this);
 
-    setRangeX(0, inputMax);
-    setRangeY(0, outputMax);
+    setRangeX(TorqueMapPoint::MinInput, TorqueMapPoint::MaxInput);
+    setRangeY(TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput);
 
     loadTorqueMapData();
 }
@@ -34,7 +36,7 @@ TorqueMapComponent::TorqueMapComponent()
  */
 void TorqueMapComponent::loadTorqueMapData()
 {
-    // TODO: re-integrate
+    // TODO: re-integrate interpolation method choice
     // // interpolation method
     // auto torqueMap = configValueTree->getChildWithName(
     //     ConfigurationValueTree::Children::TorqueMap);
@@ -45,25 +47,13 @@ void TorqueMapComponent::loadTorqueMapData()
     //             ConfigurationValueTree::Properties::InterpolationMethod)
     //         .toString());
 
-    // // data points
-    // clear();
+    // data points
+    clear();
 
-    // int numChildren = torqueMap.getNumChildren();
-
-    // for (int i = 0; i < numChildren; i++)
-    // {
-    //     const auto& child = torqueMap.getChild(i);
-
-    //     if (child.hasType(ConfigurationValueTree::Children::TorqueMapPoint))
-    //     {
-    //         int input = child.getProperty(
-    //             ConfigurationValueTree::Properties::InputValue);
-    //         int output = child.getProperty(
-    //             ConfigurationValueTree::Properties::OutputValue);
-
-    //         addPoint({input, output});
-    //     }
-    // }
+    for (const auto* point : torqueMap.getPoints())
+    {
+        addPoint(point->input.get(), point->output.get());
+    }
 
     // deadzone
     deadzonePosition = points.getFirst().getX();
@@ -74,23 +64,19 @@ void TorqueMapComponent::loadTorqueMapData()
  */
 void TorqueMapComponent::syncTorqueMapData()
 {
-    // TODO: re-integrate
-    // // TODO: this function isn't called that often, but rewriting the entire
-    // set
-    // // of points is not a very efficient way
-    // //       to update the tree
-    // auto torqueMap = configValueTree->getChildWithName(
-    //     ConfigurationValueTree::Children::TorqueMap);
-    // torqueMap.removeAllChildren(nullptr);
+    // TODO: this function isn't called that often, but rewriting the entire
+    //       set of points is not a very efficient way to update the tree...
+    for (const auto& point : torqueMap.getPoints())
+    {
+        torqueMap.removePoint(*point);
+    }
 
-    // for (const auto& point : points)
-    // {
-    //     torqueMap.addChild(
-    //         ConfigurationValueTree::createTorqueMapPoint(point.getX(),
-    //                                                      point.getY()),
-    //         -1,
-    //         nullptr);
-    // }
+    for (const auto& point : points)
+    {
+        torqueMap.addPoint(point.getX(), point.getY());
+    }
+
+    DBG(torqueMap.tree.toXmlString());
 }
 
 //==============================================================================
@@ -279,11 +265,11 @@ void TorqueMapComponent::showDeadzoneTooltip()
     int tipX = this->getScreenX() + deadzoneX - 10;
     int tipY = juce::Desktop::getMousePosition().getY();
 
-    juce::String tipText
-        = juce::String::toDecimalStringWithSignificantFigures(
-              100 * static_cast<float>(deadzonePosition) / inputMax,
-              2)
-          + "%";
+    juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(
+                               100 * static_cast<float>(deadzonePosition)
+                                   / TorqueMapPoint::MaxInput,
+                               2)
+                           + "%";
 
     deadzoneTooltip->displayTip({tipX, tipY}, tipText);
     deadzoneTooltip->setVisible(true);

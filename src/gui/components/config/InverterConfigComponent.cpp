@@ -5,6 +5,8 @@
 
 #include "InverterConfigComponent.h"
 
+#include "../../../config/Identifiers.h"
+
 namespace gui
 {
 
@@ -14,6 +16,8 @@ namespace gui
  * @brief   Constructor
  */
 InverterConfigComponent::InverterConfigComponent(config::DataModel& configData)
+    : torqueMapComponent(
+        configData.tree.getChildWithName(config::IDs::TORQUE_MAP))
 {
     setupInterpolationCombo();
 

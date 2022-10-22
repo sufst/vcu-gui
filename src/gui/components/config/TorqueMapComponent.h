@@ -15,6 +15,9 @@
 namespace gui
 {
 
+using config::TorqueMap;
+using config::TorqueMapPoint;
+
 /**
  * @brief   Component for editing torque map
  */
@@ -23,7 +26,7 @@ class TorqueMapComponent : public GraphComponent<int>, juce::ValueTree::Listener
 public:
 
     //==========================================================================
-    TorqueMapComponent();
+    TorqueMapComponent(juce::ValueTree torqueMapTree);
 
     //==========================================================================
     void paint(juce::Graphics& g) override;
@@ -58,12 +61,9 @@ private:
     void syncTorqueMapData();
 
     //==========================================================================
-    // TODO: this needs to be part of the torque map properties
-    static const int inputResolution = 10;
-    static const int outputResolution = 15;
-    static const int inputMax = (1 << inputResolution) - 1;
-    static const int outputMax = (1 << outputResolution) - 1;
+    TorqueMap torqueMap;
 
+    //==========================================================================
     const juce::Colour deadzoneColour = sufst::Colours::skyblue;
 };
 

@@ -34,7 +34,7 @@ TorqueMapPoint::TorqueMapPoint(const juce::ValueTree& v) : state(v)
  *
  * @param[in]   v   Value tree holding data
  */
-TorqueMap::TorqueMap(const juce::ValueTree& v) : ValueTreeObjectList(v)
+TorqueMap::TorqueMap(const juce::ValueTree& v) : ValueTreeObjectList(v), tree(v)
 {
     rebuildObjects();
 }
@@ -45,6 +45,40 @@ TorqueMap::TorqueMap(const juce::ValueTree& v) : ValueTreeObjectList(v)
 TorqueMap::~TorqueMap()
 {
     freeObjects();
+}
+
+/**
+ * @brief       Adds a point to the torque map
+ *
+ * @param[in]   input   Input value of point
+ * @param[in]   output  Output value of point
+ */
+void TorqueMap::addPoint(TorqueMapPoint::ValueType input,
+                         TorqueMapPoint::ValueType output)
+{
+    juce::ValueTree vt(IDs::TorqueMapPoint);
+    TorqueMapPoint point(vt);
+
+    point.input.setValue(input, nullptr);
+    point.output.setValue(output, nullptr);
+
+    tree.addChild(vt, -1, nullptr);
+}
+
+/**
+ * @brief   Returns the list of torque map points
+ */
+juce::Array<TorqueMapPoint*> TorqueMap::getPoints()
+{
+    return objects;
+}
+
+/**
+ * @brief   Removes the given point from the torque map
+ */
+void TorqueMap::removePoint(TorqueMapPoint& point)
+{
+    tree.removeChild(point.state, nullptr);
 }
 
 /**

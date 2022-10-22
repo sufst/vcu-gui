@@ -21,25 +21,26 @@ namespace config
  */
 struct TorqueMapPoint : public ReferenceCountedObject
 {
-    using RawValueType = int;
+    using ValueType = int;
 
+    static constexpr const int InputResolution = 10;
+    static constexpr const int OutputResolution = 15;
     static constexpr const int MinInput = 0;
-    static constexpr const int MaxInput = (1 << 10) - 1;
+    static constexpr const int MaxInput = (1 << InputResolution) - 1;
     static constexpr const int MinOutput = 0;
-    static constexpr const int MaxOutput = (1 << 15) - 1;
+    static constexpr const int MaxOutput = (1 << OutputResolution) - 1;
 
     //==========================================================================
     TorqueMapPoint(const juce::ValueTree& v);
 
     //==========================================================================
     using InputConstrainerType
-        = RangeConstrainer<RawValueType, MinInput, MaxInput>;
+        = RangeConstrainer<ValueType, MinInput, MaxInput>;
     using OutputConstrainerType
-        = RangeConstrainer<RawValueType, MinInput, MaxOutput>;
-    using InputValueType
-        = ConstrainerWrapper<RawValueType, InputConstrainerType>;
+        = RangeConstrainer<ValueType, MinInput, MaxOutput>;
+    using InputValueType = ConstrainerWrapper<ValueType, InputConstrainerType>;
     using OutputValueType
-        = ConstrainerWrapper<RawValueType, OutputConstrainerType>;
+        = ConstrainerWrapper<ValueType, OutputConstrainerType>;
 
     juce::ValueTree state;
     juce::CachedValue<InputValueType> input;
@@ -58,12 +59,21 @@ struct TorqueMap : public ValueTreeObjectList<TorqueMapPoint>
     ~TorqueMap() override;
 
     //==========================================================================
+    void addPoint(TorqueMapPoint::ValueType input,
+                  TorqueMapPoint::ValueType output);
+    juce::Array<TorqueMapPoint*> getPoints();
+    void removePoint(TorqueMapPoint& point);
+
+    //==========================================================================
     bool isSuitableType(const ValueTree& v) const override;
     TorqueMapPoint* createNewObject(const juce::ValueTree& v) override;
     void deleteObject(TorqueMapPoint* p) override;
     void newObjectAdded(TorqueMapPoint*) override;
     void objectRemoved(TorqueMapPoint*) override;
     void objectOrderChanged() override;
+
+    //==========================================================================
+    juce::ValueTree tree;
 };
 
 } // namespace config
