@@ -98,9 +98,27 @@ void DataModel::loadFromFile(const juce::File& file)
     if (auto xml
         = std::unique_ptr<juce::XmlElement>(juce::XmlDocument::parse(file)))
     {
-        auto newModel = juce::ValueTree::fromXml(*xml);
+        const auto newModel = juce::ValueTree::fromXml(*xml);
 
-        tree.copyPropertiesAndChildrenFrom(newModel, nullptr);
+        // we'll manually copy across the new properties to the existing tree so
+        // that any open editors will be kept up to date..
+        tree.copyPropertiesFrom(newModel, nullptr);
+
+        for (int i = tree.getNumChildren(); --i >= 0;) // what the
+        {
+            ValueTree c(tree.getChild(i));
+
+            const ValueTree newValue(newModel.getChildWithName(c.getType()));
+
+            if (newValue.isValid())
+            {
+                c.copyPropertiesFrom(newValue, nullptr);
+            }
+        }
+
+        // tree.copyPropertiesAndChildrenFrom(newModel, nullptr);
+        DBG("Imported configuration:\n");
+        DBG(tree.toXmlString());
     }
 }
 

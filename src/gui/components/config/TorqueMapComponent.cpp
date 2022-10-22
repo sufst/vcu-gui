@@ -25,6 +25,8 @@ TorqueMapComponent::TorqueMapComponent(juce::ValueTree torqueMapTree)
     setRangeY(TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput);
 
     loadTorqueMapData();
+
+    torqueMapTree.addListener(this);
 }
 
 //==============================================================================
