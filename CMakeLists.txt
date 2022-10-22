@@ -46,7 +46,6 @@ target_sources(${TARGET_NAME}
     PRIVATE 
         src/Application.cpp 
         src/Main.cpp
-        src/ConfigurationValueTree.cpp
 )
 
 target_include_directories(${TARGET_NAME} 
@@ -54,6 +53,7 @@ target_include_directories(${TARGET_NAME}
 )
 
 add_subdirectory(src/gui)
+add_subdirectory(src/config)
 
 # binary data
 juce_add_binary_data(${TARGET_NAME}Data

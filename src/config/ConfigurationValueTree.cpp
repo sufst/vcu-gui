@@ -6,7 +6,7 @@
 
 #include "ConfigurationValueTree.h"
 
-#include "utility/Interpolator.h"
+#include "../utility/Interpolator.h"
 
 using utility::InterpolatorFactory;
 using utility::LinearInterpolator;
