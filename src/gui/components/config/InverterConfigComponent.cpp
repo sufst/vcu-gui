@@ -18,7 +18,10 @@ namespace gui
 InverterConfigComponent::InverterConfigComponent(config::DataModel& configData)
     : torqueMap(configData.tree.getChildWithName(config::IDs::TORQUE_MAP)),
       torqueMapComponent(
-          configData.tree.getChildWithName(config::IDs::TORQUE_MAP))
+          configData.tree.getChildWithName(config::IDs::TORQUE_MAP)),
+      interpolationAttachment(
+          &interpolationCombo,
+          torqueMap.interpolationMethod.getPropertyAsValue())
 {
     setupInterpolationCombo();
 
@@ -31,7 +34,6 @@ InverterConfigComponent::InverterConfigComponent(config::DataModel& configData)
  */
 void InverterConfigComponent::setupInterpolationCombo()
 {
-    // TODO: re-integrate
     const auto& interpolationMethods = utility::InterpolatorFactory<
         TorqueMapPoint::ValueType>::getAllIdentifiers();
 
@@ -47,14 +49,6 @@ void InverterConfigComponent::setupInterpolationCombo()
             interpolationCombo.setSelectedId(itemId);
         }
     }
-
-    interpolationCombo.onChange = [this]() mutable
-    {
-        int selectedIndex = interpolationCombo.getSelectedItemIndex();
-        juce::String value = interpolationCombo.getItemText(selectedIndex);
-        torqueMap.interpolationMethod.setValue(value, nullptr);
-        DBG(torqueMap.state.toXmlString());
-    };
 }
 
 //==============================================================================

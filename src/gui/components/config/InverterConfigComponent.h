@@ -6,6 +6,7 @@
 #pragma once
 
 #include "../../../config/DataModel.h"
+#include "Attachments.h"
 #include "ConfigEditorComponent.h"
 #include "TorqueMapComponent.h"
 #include <JuceHeader.h>
@@ -35,6 +36,7 @@ private:
     TorqueMap torqueMap;
     TorqueMapComponent torqueMapComponent;
     juce::ComboBox interpolationCombo;
+    ComboBoxAttachment interpolationAttachment;
 };
 
 } // namespace gui

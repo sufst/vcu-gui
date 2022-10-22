@@ -28,10 +28,12 @@ void DataModel::createDefaultModel()
     TorqueMap torqueMap(torqueMapTree);
     tree.addChild(torqueMapTree, -1, nullptr);
 
-    std::initializer_list<std::pair<int, int>> defaultPoints{
-        {TorqueMapPoint::MinInput, TorqueMapPoint::MinOutput},
-        {TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput},
-    };
+    std::initializer_list<
+        std::pair<TorqueMapPoint::ValueType, TorqueMapPoint::ValueType>>
+        defaultPoints{
+            {TorqueMapPoint::MinInput, TorqueMapPoint::MinOutput},
+            {TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput},
+        };
 
     for (const auto& [input, output] : defaultPoints)
     {
@@ -79,6 +81,52 @@ bool DataModel::saveToFile(const juce::File& file)
     }
 
     return false;
+}
+
+/**
+ * @brief   Attempts to load the model from a file
+ *
+ * @note    Taken from the Projucer code
+ */
+void DataModel::loadFromFile(const juce::File& file)
+{
+    if (auto xml
+        = std::unique_ptr<juce::XmlElement>(juce::XmlDocument::parse(file)))
+    {
+        auto newModel = juce::ValueTree::fromXml(*xml);
+
+        syncValueTreeNotifyListeners(newModel, tree);
+        DBG(newModel.toXmlString());
+        DBG(tree.toXmlString());
+    }
+}
+
+void DataModel::syncValueTreeNotifyListeners(const juce::ValueTree& source,
+                                             juce::ValueTree& destination)
+{
+    const int numProperties = source.getNumProperties();
+    for (int i = 0; i < numProperties; i++)
+    {
+        auto propertyName = source.getPropertyName(i);
+
+        if (destination.hasProperty(propertyName))
+        {
+            destination.setProperty(propertyName,
+                                    source.getProperty(propertyName),
+                                    nullptr);
+        }
+    }
+
+    for (const auto& child : source)
+    {
+        auto childType = child.getType();
+        auto childInDestination = destination.getChildWithName(childType);
+
+        if (childInDestination.isValid())
+        {
+            syncValueTreeNotifyListeners(child, childInDestination);
+        }
+    }
 }
 
 //==============================================================================

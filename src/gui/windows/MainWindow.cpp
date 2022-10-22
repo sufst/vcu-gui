@@ -213,18 +213,16 @@ void MainWindow::loadConfig()
                             | juce::FileBrowserComponent::openMode;
 
     // TODO: re-integrate
-    // fileChooser->launchAsync(fileChooserFlags,
-    //                          [this](const juce::FileChooser& chooser)
-    //                          {
-    //                              if (chooser.getResults().isEmpty())
-    //                              {
-    //                                  return;
-    //                              }
+    auto onChoose = [this](const juce::FileChooser& chooser)
+    {
+        if (!chooser.getResults().isEmpty())
+        {
+            configData.loadFromFile(chooser.getResult());
+        }
+        fileChooser.reset();
+    };
 
-    //                              configValueTree->loadFromFile(
-    //                                  chooser.getResult());
-    //                              fileChooser.reset();
-    //                          });
+    fileChooser->launchAsync(fileChooserFlags, onChoose);
 }
 
 /**
@@ -247,16 +245,13 @@ void MainWindow::saveConfig()
 
     auto onChoose = [this](const juce::FileChooser& chooser)
     {
-        if (chooser.getResults().isEmpty())
+        if (!chooser.getResults().isEmpty())
         {
-            return;
+            configData.saveToFile(chooser.getResult());
         }
-
-        configData.saveToFile(chooser.getResult());
         fileChooser.reset();
     };
 
-    // TODO: re-integrate
     fileChooser->launchAsync(fileChooserFlags, onChoose);
 }
 
