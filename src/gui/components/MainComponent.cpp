@@ -16,7 +16,8 @@ namespace gui
  * @brief Default constructor
  */
 MainComponent::MainComponent(config::DataModel& configData)
-    : configData(configData), inverterComponent(configData)
+    : configData(configData), inverterComponent(configData),
+      metadataEditor(configData.tree.getChildWithName(config::IDs::METADATA))
 {
     setSize(600, 400);
 
@@ -27,7 +28,7 @@ MainComponent::MainComponent(config::DataModel& configData)
     auto tabColour = lf.findColour(juce::DocumentWindow::backgroundColourId);
     // TODO: these can be put in a proper initializer list loop once all the
     //       classes for the different tabs have been created
-    tabComponent.addTab("Metadata", tabColour, nullptr, false);
+    tabComponent.addTab("Metadata", tabColour, &metadataEditor, false);
     tabComponent.addTab("Inverter", tabColour, &inverterComponent, false);
     tabComponent.addTab("Sensors", tabColour, nullptr, false);
     tabComponent.addTab("Testbenches", tabColour, nullptr, false);

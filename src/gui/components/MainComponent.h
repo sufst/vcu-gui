@@ -10,6 +10,7 @@
 #include "../../config/DataModel.h"
 #include "TabbedComponent.h"
 #include "config/InverterConfigComponent.h"
+#include "config/MetadataEditor.h"
 #include <JuceHeader.h>
 
 namespace gui
@@ -49,6 +50,7 @@ private:
 
     TabbedComponent tabComponent;
     InverterConfigComponent inverterComponent;
+    MetadataEditor metadataEditor;
 
     //==========================================================================
     static const int borderSize = 20;
