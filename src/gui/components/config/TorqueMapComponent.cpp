@@ -148,8 +148,9 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
     else if (!shouldPreventPointEdit(event))
     {
         GraphComponent<int>::mouseUp(event);
-        syncTorqueMapData();
     }
+
+    syncTorqueMapData();
 }
 
 /**
