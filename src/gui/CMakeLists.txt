@@ -14,6 +14,7 @@ target_sources(${TARGET_NAME}
         components/MainComponent.cpp 
         components/config/TorqueMapComponent.cpp
         components/config/InverterConfigComponent.cpp
+        components/config/Attachments.cpp
         components/TabbedComponent.cpp
         menubar/MenuBar.cpp
         windows/AboutWindow.cpp

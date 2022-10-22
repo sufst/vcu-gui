@@ -20,8 +20,6 @@ TorqueMapComponent::TorqueMapComponent(juce::ValueTree torqueMapTree)
     : torqueMap(torqueMapTree)
 {
     jassert(torqueMapTree.isValid());
-    // TODO: re-integrate
-    // configValueTree->addListener(this);
 
     setRangeX(TorqueMapPoint::MinInput, TorqueMapPoint::MaxInput);
     setRangeY(TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput);
@@ -36,16 +34,8 @@ TorqueMapComponent::TorqueMapComponent(juce::ValueTree torqueMapTree)
  */
 void TorqueMapComponent::loadTorqueMapData()
 {
-    // TODO: re-integrate interpolation method choice
-    // // interpolation method
-    // auto torqueMap = configValueTree->getChildWithName(
-    //     ConfigurationValueTree::Children::TorqueMap);
-
-    // setInterpolationMethod(
-    //     torqueMap
-    //         .getProperty(
-    //             ConfigurationValueTree::Properties::InterpolationMethod)
-    //         .toString());
+    // TODO: interpolation method does not update!
+    // setInterpolationMethod(juce::String(torqueMap.interpolationMethod.get()));
 
     // data points
     clear();
