@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "../../../config/ConfigurationValueTree.h"
+#include "../../../config/DataModel.h"
 #include "ConfigEditorComponent.h"
 #include "TorqueMapComponent.h"
 #include <JuceHeader.h>
@@ -22,8 +22,7 @@ class InverterConfigComponent : public ConfigEditorComponent
 public:
 
     //==========================================================================
-    InverterConfigComponent(
-        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    InverterConfigComponent(config::DataModel& configData);
 
     void setupInterpolationCombo();
 
@@ -33,8 +32,6 @@ public:
 private:
 
     //==========================================================================
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
-
     TorqueMapComponent torqueMapComponent;
     juce::ComboBox interpolationCombo;
 };

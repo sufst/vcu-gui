@@ -17,13 +17,11 @@ void Application::initialise(const juce::String& /*commandLine*/)
 {
     handleCommandLine(getCommandLineParameterArray());
 
-    configValueTree = std::make_shared<ConfigurationValueTree>();
-
     commandManager = std::make_shared<CommandManager>();
     commandManager->registerAllCommandsForTarget(this);
 
     mainWindow = std::make_unique<gui::MainWindow>(getApplicationName(),
-                                                   configValueTree,
+                                                   configData,
                                                    commandManager);
 
     LookAndFeel::setDefaultLookAndFeel(&lookAndFeel);

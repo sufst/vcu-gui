@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../../CommandManager.h"
-#include "../../config/ConfigurationValueTree.h"
+#include "../../config/DataModel.h"
 #include "../components/MainComponent.h"
 #include "../menubar/MenuBar.h"
 #include <JuceHeader.h>
@@ -26,7 +26,7 @@ public:
 
     //==========================================================================
     MainWindow(const juce::String& name,
-               std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
+               config::DataModel& configData,
                std::shared_ptr<CommandManager> sharedCommandManager);
     ~MainWindow() override;
 
@@ -50,7 +50,6 @@ private:
     MenuBar menuBar;
     MainComponent mainComponent;
     std::shared_ptr<CommandManager> commandManager;
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
     std::unique_ptr<juce::FileChooser> fileChooser;
 
     //==========================================================================
