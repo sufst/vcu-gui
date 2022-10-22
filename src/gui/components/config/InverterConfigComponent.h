@@ -32,6 +32,7 @@ public:
 private:
 
     //==========================================================================
+    TorqueMap torqueMap;
     TorqueMapComponent torqueMapComponent;
     juce::ComboBox interpolationCombo;
 };

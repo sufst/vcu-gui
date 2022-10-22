@@ -34,9 +34,11 @@ TorqueMapPoint::TorqueMapPoint(const juce::ValueTree& v) : state(v)
  *
  * @param[in]   v   Value tree holding data
  */
-TorqueMap::TorqueMap(const juce::ValueTree& v) : ValueTreeObjectList(v), tree(v)
+TorqueMap::TorqueMap(const juce::ValueTree& v)
+    : ValueTreeObjectList(v), state(v)
 {
     rebuildObjects();
+    interpolationMethod.referTo(state, IDs::InterpolationMethod, nullptr);
 }
 
 /**
@@ -62,7 +64,7 @@ void TorqueMap::addPoint(TorqueMapPoint::ValueType input,
     point.input.setValue(input, nullptr);
     point.output.setValue(output, nullptr);
 
-    tree.addChild(vt, -1, nullptr);
+    state.addChild(vt, -1, nullptr);
 }
 
 /**
@@ -78,7 +80,7 @@ juce::Array<TorqueMapPoint*> TorqueMap::getPoints()
  */
 void TorqueMap::removePoint(TorqueMapPoint& point)
 {
-    tree.removeChild(point.state, nullptr);
+    state.removeChild(point.state, nullptr);
 }
 
 /**

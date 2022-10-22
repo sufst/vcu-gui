@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../utility/Interpolator.h"
 #include "Constrainers.h"
 #include "Identifiers.h"
 #include "ValueTreeObjectList.h"
@@ -73,7 +74,13 @@ struct TorqueMap : public ValueTreeObjectList<TorqueMapPoint>
     void objectOrderChanged() override;
 
     //==========================================================================
-    juce::ValueTree tree;
+    using InterpolatorConstrainerType
+        = ConstrainerWrapper<juce::String,
+                             InterpolatorNameConstrainer<
+                                 TorqueMapPoint::ValueType>>; // formatting bad?
+
+    juce::CachedValue<InterpolatorConstrainerType> interpolationMethod;
+    juce::ValueTree state;
 };
 
 } // namespace config
