@@ -67,7 +67,7 @@ public:
      */
     virtual ~ValueTreeObjectList() override
     {
-        jassert(objects.size() != 0);
+        jassert(objects.size() == 0);
     }
 
     //==========================================================================
