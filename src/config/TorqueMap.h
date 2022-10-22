@@ -23,16 +23,27 @@ struct TorqueMapPoint : public ReferenceCountedObject
 {
     using RawValueType = int;
 
+    static constexpr const int MinInput = 0;
+    static constexpr const int MaxInput = (1 << 10) - 1;
+    static constexpr const int MinOutput = 0;
+    static constexpr const int MaxOutput = (1 << 15) - 1;
+
     //==========================================================================
     TorqueMapPoint(const juce::ValueTree& v);
 
     //==========================================================================
-    using ConstrainerType = RangeConstrainer<RawValueType, 0, 1023>;
-    using ValueType = ConstrainerWrapper<RawValueType, ConstrainerType>;
+    using InputConstrainerType
+        = RangeConstrainer<RawValueType, MinInput, MaxInput>;
+    using OutputConstrainerType
+        = RangeConstrainer<RawValueType, MinInput, MaxOutput>;
+    using InputValueType
+        = ConstrainerWrapper<RawValueType, InputConstrainerType>;
+    using OutputValueType
+        = ConstrainerWrapper<RawValueType, OutputConstrainerType>;
 
     juce::ValueTree state;
-    juce::CachedValue<ValueType> input;
-    juce::CachedValue<ValueType> output;
+    juce::CachedValue<InputValueType> input;
+    juce::CachedValue<OutputValueType> output;
 };
 
 //==============================================================================
