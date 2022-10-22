@@ -23,7 +23,28 @@ DataModel::DataModel() : tree(IDs::CONFIGURATION)
  */
 void DataModel::createDefaultModel()
 {
-    // TODO: create model!
+    // torque map
+    juce::ValueTree torqueMapTree(IDs::TORQUE_MAP);
+    TorqueMap torqueMap(torqueMapTree);
+    tree.addChild(torqueMapTree, -1, nullptr);
+
+    std::initializer_list<std::pair<int, int>> defaultPoints{
+        {TorqueMapPoint::MinInput, TorqueMapPoint::MinOutput},
+        {TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput},
+    };
+
+    for (const auto& [input, output] : defaultPoints)
+    {
+        juce::ValueTree pointTree = juce::ValueTree(IDs::TorqueMapPoint);
+        torqueMapTree.addChild(pointTree, -1, nullptr);
+
+        TorqueMapPoint point(pointTree);
+        point.input = input;
+        point.output = output;
+    }
+
+    DBG("Created default configuration:\n");
+    DBG(tree.createXml()->toString());
 }
 
 //==============================================================================
