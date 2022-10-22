@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <JuceHeader.h>
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 
 namespace config
@@ -23,7 +24,7 @@ namespace IDs
 DECLARE_ID(CONFIGURATION)
 
 DECLARE_ID(TORQUE_MAP)
-DECLARE_ID(Point)
+DECLARE_ID(TorqueMapPoint)
 DECLARE_ID(Input)
 DECLARE_ID(Output)
 DECLARE_ID(InterpolationMethod)
