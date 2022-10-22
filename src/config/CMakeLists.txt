@@ -10,6 +10,5 @@
 
 target_sources(${TARGET_NAME}
     PRIVATE 
-        ConfigurationValueTree.cpp
         TorqueMap.cpp
 )
