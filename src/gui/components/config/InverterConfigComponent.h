@@ -15,6 +15,7 @@
 namespace gui
 {
 
+// TODO: rename this to InverterEditor
 /**
  * @brief   Configuration provider for inverter related properties
  */
