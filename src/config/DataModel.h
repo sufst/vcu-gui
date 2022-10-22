@@ -24,8 +24,6 @@ struct DataModel
     void createDefaultModel();
     bool saveToFile(const juce::File& file);
     void loadFromFile(const juce::File& file);
-    void syncValueTreeNotifyListeners(const juce::ValueTree& source,
-                                      juce::ValueTree& destination);
 
     //==========================================================================
     juce::ValueTree tree;

@@ -27,6 +27,11 @@ void DataModel::createDefaultModel()
     juce::ValueTree torqueMapTree(IDs::TORQUE_MAP);
     TorqueMap torqueMap(torqueMapTree);
     tree.addChild(torqueMapTree, -1, nullptr);
+    tree.setProperty(
+        IDs::InterpolationMethod,
+        utility::SplineInterpolator<TorqueMapPoint::ValueType>::identifier
+            .toString(),
+        nullptr);
 
     std::initializer_list<
         std::pair<TorqueMapPoint::ValueType, TorqueMapPoint::ValueType>>
@@ -95,37 +100,7 @@ void DataModel::loadFromFile(const juce::File& file)
     {
         auto newModel = juce::ValueTree::fromXml(*xml);
 
-        syncValueTreeNotifyListeners(newModel, tree);
-        DBG(newModel.toXmlString());
-        DBG(tree.toXmlString());
-    }
-}
-
-void DataModel::syncValueTreeNotifyListeners(const juce::ValueTree& source,
-                                             juce::ValueTree& destination)
-{
-    const int numProperties = source.getNumProperties();
-    for (int i = 0; i < numProperties; i++)
-    {
-        auto propertyName = source.getPropertyName(i);
-
-        if (destination.hasProperty(propertyName))
-        {
-            destination.setProperty(propertyName,
-                                    source.getProperty(propertyName),
-                                    nullptr);
-        }
-    }
-
-    for (const auto& child : source)
-    {
-        auto childType = child.getType();
-        auto childInDestination = destination.getChildWithName(childType);
-
-        if (childInDestination.isValid())
-        {
-            syncValueTreeNotifyListeners(child, childInDestination);
-        }
+        tree.copyPropertiesAndChildrenFrom(newModel, nullptr);
     }
 }
 
