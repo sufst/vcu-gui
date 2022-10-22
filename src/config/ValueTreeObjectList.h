@@ -79,7 +79,7 @@ public:
      */
     void rebuildObjects()
     {
-        jassert(objects.size() != 0);
+        jassert(objects.size() == 0);
 
         for (const auto& v : parent)
         {
