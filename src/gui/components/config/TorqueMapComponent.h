@@ -20,8 +20,10 @@ using config::TorqueMapPoint;
 
 /**
  * @brief   Component for editing torque map
+ *
+ *          TODO: what happens when the config is reloaded from file??
  */
-class TorqueMapComponent : public GraphComponent<int>, juce::ValueTree::Listener
+class TorqueMapComponent : public GraphComponent<int>
 {
 public:
 
@@ -36,11 +38,6 @@ public:
     void mouseUp(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
-
-    //==========================================================================
-    void valueTreePropertyChanged(juce::ValueTree& changedTree,
-                                  const juce::Identifier& property) override;
-    void valueTreeRedirected(juce::ValueTree& redirectedTree) override;
 
 private:
 

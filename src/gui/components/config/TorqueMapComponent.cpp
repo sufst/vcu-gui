@@ -283,41 +283,4 @@ void TorqueMapComponent::hideDeadzoneTooltip()
     deadzoneTooltip.reset();
 }
 
-//==============================================================================
-
-/**
- * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
- */
-void TorqueMapComponent::valueTreeRedirected(
-    juce::ValueTree& /*redirectedTree*/)
-{
-    loadTorqueMapData();
-}
-
-/**
- * @brief Implements juce::ValueTree::Listener::valueTreePropertyChanged()
- */
-void TorqueMapComponent::valueTreePropertyChanged(
-    juce::ValueTree& changedTree,
-    const juce::Identifier& property)
-{
-    // TODO: re-integrate
-    // auto torqueMap = configValueTree->getChildWithName(
-    //     ConfigurationValueTree::Children::TorqueMap);
-
-    // if (changedTree == torqueMap)
-    // {
-    //     if (property ==
-    //     ConfigurationValueTree::Properties::InterpolationMethod)
-    //     {
-    //         setInterpolationMethod(
-    //             torqueMap
-    //                 .getProperty(
-    //                     ConfigurationValueTree::Properties::InterpolationMethod)
-    //                 .toString());
-    //         repaint();
-    //     }
-    // }
-}
-
 } // namespace gui
