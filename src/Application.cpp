@@ -15,6 +15,8 @@
  */
 void Application::initialise(const juce::String& /*commandLine*/)
 {
+    handleCommandLine(getCommandLineParameterArray());
+
     configValueTree = std::make_shared<ConfigurationValueTree>();
 
     commandManager = std::make_shared<CommandManager>();
@@ -53,6 +55,44 @@ void Application::systemRequestedQuit()
  */
 void Application::anotherInstanceStarted(const juce::String& /*commandLine*/)
 {
+}
+
+/**
+ * @brief   Handles
+ *
+ * @param commandLineArguments
+ */
+void Application::handleCommandLine(
+    const juce::StringArray& commandLineArguments)
+{
+
+#if UNIT_TEST
+    juce::ArgumentList args(ProjectInfo::projectName, commandLineArguments);
+
+    // quick way to run unit tests
+    juce::String testOption = "--test|-t";
+
+    if (args.containsOption(testOption))
+    {
+        juce::UnitTestRunner unitTestRunner;
+        unitTestRunner.setAssertOnFailure(false);
+
+        auto value = args.getValueForOption(testOption);
+
+        if (value.length() != 0)
+        {
+            unitTestRunner.runTestsInCategory(value);
+        }
+        else
+        {
+            unitTestRunner.runAllTests();
+        }
+
+        quit();
+    }
+#else
+    ignoreUnused(commandLineArguments);
+#endif
 }
 
 //==============================================================================

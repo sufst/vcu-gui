@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../../CommandManager.h"
-#include "../../ConfigurationValueTree.h"
+#include "../../config/ConfigurationValueTree.h"
 #include "../components/MainComponent.h"
 #include "../menubar/MenuBar.h"
 #include <JuceHeader.h>

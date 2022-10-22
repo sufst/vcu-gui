@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../../../ConfigurationValueTree.h"
+#include "../../../config/ConfigurationValueTree.h"
 #include "../../appearance/Colours.h"
 #include "GraphComponent.h"
 #include <JuceHeader.h>

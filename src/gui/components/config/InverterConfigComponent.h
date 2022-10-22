@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "../../../ConfigurationValueTree.h"
+#include "../../../config/ConfigurationValueTree.h"
 #include "ConfigEditorComponent.h"
 #include "TorqueMapComponent.h"
 #include <JuceHeader.h>

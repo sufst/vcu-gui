@@ -1,7 +1,7 @@
 {
   "configurations": [
     {
-      "name": "(lldb) Launch",
+      "name": "macOS: lldb (launch)",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
@@ -11,6 +11,20 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb"
-    }
+    },
+    {
+        "name": "macOS: unit test (all)",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
+        "args": [
+            "--test",
+        ],
+        "stopAtEntry": false,
+        "cwd": "${fileDirname}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "lldb"
+      }
   ]
 }

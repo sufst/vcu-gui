@@ -7,7 +7,7 @@
 #pragma once
 
 #include "CommandManager.h"
-#include "ConfigurationValueTree.h"
+#include "config/ConfigurationValueTree.h"
 #include "gui/appearance/LookAndFeel.h"
 #include "gui/windows/MainWindow.h"
 #include <JuceHeader.h>
@@ -28,6 +28,7 @@ public:
     void shutdown() override;
     void systemRequestedQuit() override;
     void anotherInstanceStarted(const juce::String& commandLine) override;
+    void handleCommandLine(const juce::StringArray& commandLineArguments);
 
     //==========================================================================
     const juce::String getApplicationName() override;
