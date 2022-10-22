@@ -22,11 +22,11 @@ if(APPLE)
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         # build natively for debug
         set(CMAKE_OSX_ARCHITECTURES "${CMAKE_HOST_SYSTEM_PROCESSOR}" CACHE INTERNAL "" FORCE)
-    ELSE()
+    else()
         # universal binary for release
         set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE INTERNAL "" FORCE)
-    ENDIF()
-ENDIF()
+    endif()
+endif()
 
 # JUCE application setup
 add_subdirectory(lib/juce)
@@ -80,6 +80,13 @@ execute_process(
 )
 
 # compilation
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    target_compile_definitions(${TARGET_NAME}
+        PRIVATE
+            -DUNIT_TEST=1 # note: run unit tests using --test as arg
+    )
+endif()
+
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
     # Must define '_USE_MATH_DEFINES' before #include <cmath>.
