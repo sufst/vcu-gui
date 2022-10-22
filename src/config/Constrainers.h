@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "../utility/Interpolator.h"
 #include <JuceHeader.h>
+#include <algorithm>
 
 namespace config
 {
@@ -57,7 +59,7 @@ struct ConstrainerWrapper
     template <typename OtherType>
     ConstrainerWrapper(const OtherType& other)
     {
-        value = Constrainer::constrain(other);
+        value = Constrainer::constrain(other, value);
     }
 
     ConstrainerWrapper(const ConstrainerWrapper& other)
@@ -69,7 +71,7 @@ struct ConstrainerWrapper
 
     ConstrainerWrapper& operator=(const ConstrainerWrapper& other) noexcept
     {
-        value = Constrainer::constrain(other.value);
+        value = Constrainer::constrain(other.value, value);
         return *this;
     }
 
@@ -86,12 +88,12 @@ struct ConstrainerWrapper
 
     operator var() const noexcept
     {
-        return Constrainer::constrain(value);
+        return Constrainer::constrain(value, value);
     }
 
     operator ValueType() const noexcept
     {
-        return Constrainer::constrain(value);
+        return Constrainer::constrain(value, value);
     }
 
     //==========================================================================
@@ -137,9 +139,40 @@ struct ConstrainerWrapper
 template <typename ValueType, ValueType MinValue, ValueType MaxValue>
 struct RangeConstrainer
 {
-    static ValueType constrain(const ValueType& value)
+    // TODO: is there away to adjust ConstrainerWrapper so that this constrainer
+    //       doesn't need to have the second unused parameter?
+    static ValueType constrain(const ValueType& value, const ValueType&)
     {
         return juce::Range<ValueType>(MinValue, MaxValue).clipValue(value);
+    }
+};
+
+//==============================================================================
+
+/**
+ * @brief   Constrains to the set of interpolator identifiers
+ */
+template <typename ValueType>
+struct InterpolatorNameConstrainer
+{
+    static juce::String constrain(const juce::String& value,
+                                  const juce::String& previousValue)
+    {
+        const auto& validChoices
+            = utility::InterpolatorFactory<ValueType>::getAllIdentifiers();
+
+        auto idMatchesString = [&value](const juce::Identifier& id)
+        { return id.toString() == value; };
+
+        if (std::find_if(validChoices.begin(),
+                         validChoices.end(),
+                         idMatchesString)
+            != validChoices.end())
+        {
+            return value;
+        }
+
+        return previousValue;
     }
 };
 

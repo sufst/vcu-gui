@@ -75,8 +75,6 @@ void TorqueMapComponent::syncTorqueMapData()
     {
         torqueMap.addPoint(point.getX(), point.getY());
     }
-
-    DBG(torqueMap.tree.toXmlString());
 }
 
 //==============================================================================
