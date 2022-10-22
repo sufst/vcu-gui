@@ -89,7 +89,7 @@ struct ConstrainerWrapper
         return Constrainer::constrain(value);
     }
 
-    operator Type() const noexcept
+    operator ValueType() const noexcept
     {
         return Constrainer::constrain(value);
     }
@@ -134,15 +134,12 @@ struct ConstrainerWrapper
  * SOFTWARE.
  *
  */
-template <typename ValueType, int MinValue, int MaxValue>
+template <typename ValueType, ValueType MinValue, ValueType MaxValue>
 struct RangeConstrainer
 {
-    static ValueType constrain(const Type& value)
+    static ValueType constrain(const ValueType& value)
     {
-        const ValueType min = static_cast<ValueType>(MinValue);
-        const ValueType max = static_cast < ValueType(MaxValue);
-
-        return juce::Range<ValueType>(min, max).clipValue(value);
+        return juce::Range<ValueType>(MinValue, MaxValue).clipValue(value);
     }
 };
 
