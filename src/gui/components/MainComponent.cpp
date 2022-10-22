@@ -15,14 +15,13 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent(
-    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree),
-      inverterComponent(sharedConfigValueTree)
+MainComponent::MainComponent(config::DataModel& configData)
+    : configData(configData), inverterComponent(configData)
 {
     setSize(600, 400);
 
-    configValueTree->addListener(this);
+    // TODO: re-integrate
+    // configValueTree->addListener(this);
 
     auto& lf = getLookAndFeel();
     auto tabColour = lf.findColour(juce::DocumentWindow::backgroundColourId);
@@ -102,10 +101,11 @@ void MainComponent::filesDropped(const juce::StringArray& files,
     const auto& fileName = files[0];
     jassert(fileName.endsWithIgnoreCase(".xml"));
 
-    configValueTree->loadFromFile(juce::File(fileName));
+    // TODO: re-implement file loading
+    // configValueTree->loadFromFile(juce::File(fileName));
 
-    fileIsBeingDragged = false;
-    repaint();
+    // fileIsBeingDragged = false;
+    // repaint();
 }
 
 /**

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../../../config/ConfigurationValueTree.h"
+#include "../../../config/TorqueMap.h"
 #include "../../appearance/Colours.h"
 #include "GraphComponent.h"
 #include <JuceHeader.h>
@@ -23,8 +23,7 @@ class TorqueMapComponent : public GraphComponent<int>, juce::ValueTree::Listener
 public:
 
     //==========================================================================
-    TorqueMapComponent(
-        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    TorqueMapComponent();
 
     //==========================================================================
     void paint(juce::Graphics& g) override;
@@ -57,8 +56,6 @@ private:
     //==========================================================================
     void loadTorqueMapData();
     void syncTorqueMapData();
-
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
 
     //==========================================================================
     // TODO: this needs to be part of the torque map properties

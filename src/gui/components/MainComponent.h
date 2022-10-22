@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "../../config/DataModel.h"
 #include "TabbedComponent.h"
 #include "config/InverterConfigComponent.h"
 #include <JuceHeader.h>
@@ -24,8 +25,7 @@ class MainComponent : public juce::Component,
 public:
 
     //==========================================================================
-    MainComponent(
-        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    MainComponent(config::DataModel& configData);
     ~MainComponent() override;
 
     //==========================================================================
@@ -48,8 +48,7 @@ private:
     void setupButtons();
 
     //==========================================================================
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
-
+    config::DataModel configData;
     std::unique_ptr<juce::FileChooser> fileChooser;
     bool fileIsBeingDragged = false;
 

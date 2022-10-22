@@ -13,10 +13,7 @@ namespace gui
 /**
  * @brief   Constructor
  */
-InverterConfigComponent::InverterConfigComponent(
-    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree),
-      torqueMapComponent(sharedConfigValueTree)
+InverterConfigComponent::InverterConfigComponent(config::DataModel& configData)
 {
     setupInterpolationCombo();
 
@@ -29,38 +26,39 @@ InverterConfigComponent::InverterConfigComponent(
  */
 void InverterConfigComponent::setupInterpolationCombo()
 {
-    const auto& interpolationMethods
-        = utility::InterpolatorFactory<int>::getAllIdentifiers();
+    // TODO: re-integrate
+    // const auto& interpolationMethods
+    //     = utility::InterpolatorFactory<int>::getAllIdentifiers();
 
-    juce::ValueTree torqueMap = configValueTree->getChildWithName(
-        ConfigurationValueTree::Children::TorqueMap);
-    const juce::String selectedMethod = torqueMap.getProperty(
-        ConfigurationValueTree::Properties::InterpolationMethod);
+    // juce::ValueTree torqueMap = configValueTree->getChildWithName(
+    //     ConfigurationValueTree::Children::TorqueMap);
+    // const juce::String selectedMethod = torqueMap.getProperty(
+    //     ConfigurationValueTree::Properties::InterpolationMethod);
 
-    for (unsigned i = 0; i < interpolationMethods.size(); i++)
-    {
-        const auto itemId = static_cast<int>(i + 1);
-        const auto& method = interpolationMethods.at(i).toString();
+    // for (unsigned i = 0; i < interpolationMethods.size(); i++)
+    // {
+    //     const auto itemId = static_cast<int>(i + 1);
+    //     const auto& method = interpolationMethods.at(i).toString();
 
-        interpolationCombo.addItem(method, itemId);
+    //     interpolationCombo.addItem(method, itemId);
 
-        if (method == selectedMethod)
-        {
-            interpolationCombo.setSelectedId(itemId);
-        }
-    }
+    //     if (method == selectedMethod)
+    //     {
+    //         interpolationCombo.setSelectedId(itemId);
+    //     }
+    // }
 
-    interpolationCombo.onChange = [this]() mutable
-    {
-        int selectedIndex = interpolationCombo.getSelectedItemIndex();
-        juce::String value = interpolationCombo.getItemText(selectedIndex);
-        auto map = configValueTree->getChildWithName(
-            ConfigurationValueTree::Children::TorqueMap);
+    // interpolationCombo.onChange = [this]() mutable
+    // {
+    //     int selectedIndex = interpolationCombo.getSelectedItemIndex();
+    //     juce::String value = interpolationCombo.getItemText(selectedIndex);
+    //     auto map = configValueTree->getChildWithName(
+    //         ConfigurationValueTree::Children::TorqueMap);
 
-        map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod,
-                        value,
-                        nullptr);
-    };
+    //     map.setProperty(ConfigurationValueTree::Properties::InterpolationMethod,
+    //                     value,
+    //                     nullptr);
+    // };
 }
 
 //==============================================================================
