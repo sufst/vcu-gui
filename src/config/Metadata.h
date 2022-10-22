@@ -1,31 +1,29 @@
 /******************************************************************************
- * @file    DataModel.h
+ * @file    Metadata.h
  * @author  Tim Brewis (@t-bre)
+ * @brief   Data model for metadata
  *****************************************************************************/
 
 #pragma once
 
-#include "Identifiers.h"
 #include <JuceHeader.h>
 
 namespace config
 {
 
 /**
- * @brief   Data model for VCU configuration
+ * @brief   Metadata data model
  */
-struct DataModel
+struct Metadata
 {
     //==========================================================================
-    DataModel();
+    Metadata(const juce::ValueTree& v);
 
     //==========================================================================
-    void createDefaultModel();
-    bool saveToFile(const juce::File& file);
-    void loadFromFile(const juce::File& file);
-
-    //==========================================================================
-    juce::ValueTree tree;
+    juce::CachedValue<juce::String> configName;
+    juce::CachedValue<juce::String> versionNumber;
+    juce::CachedValue<juce::String> comments;
+    juce::ValueTree state;
 };
 
 } // namespace config

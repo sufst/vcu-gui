@@ -5,6 +5,9 @@
 
 #include "DataModel.h"
 
+#include "Metadata.h"
+#include "TorqueMap.h"
+
 namespace config
 {
 
@@ -23,6 +26,11 @@ DataModel::DataModel() : tree(IDs::CONFIGURATION)
  */
 void DataModel::createDefaultModel()
 {
+    // metadata
+    juce::ValueTree metadataTree(IDs::METADATA);
+    Metadata metadata(metadataTree);
+    tree.addChild(metadataTree, -1, nullptr);
+
     // torque map
     juce::ValueTree torqueMapTree(IDs::TORQUE_MAP);
     TorqueMap torqueMap(torqueMapTree);

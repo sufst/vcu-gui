@@ -39,6 +39,10 @@ TorqueMap::TorqueMap(const juce::ValueTree& v)
 {
     rebuildObjects();
     interpolationMethod.referTo(state, IDs::InterpolationMethod, nullptr);
+    interpolationMethod.setDefault(
+        utility::SplineInterpolator<TorqueMapPoint::ValueType>::identifier
+            .toString());
+    interpolationMethod.setValue(interpolationMethod.getDefault(), nullptr);
 }
 
 /**
