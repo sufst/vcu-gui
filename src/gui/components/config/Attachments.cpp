@@ -57,6 +57,10 @@ void ComboBoxAttachment::valueChanged(juce::Value& value)
             }
         }
     }
+    else
+    {
+        ignoreUpdate = false;
+    }
 }
 
 } // namespace gui
