@@ -47,6 +47,40 @@ void DataModel::createDefaultModel()
     DBG(tree.createXml()->toString());
 }
 
+/**
+ * @brief       Saves the model to a file
+ *
+ * @param[in]   file    File to save to
+ *
+ * @return      true    Success
+ * @return      false   Error
+ */
+bool DataModel::saveToFile(const juce::File& file)
+{
+    const juce::TemporaryFile tmpFile(file);
+
+    {
+        juce::FileOutputStream os(tmpFile.getFile());
+
+        if (!os.getStatus().wasOk())
+        {
+            return false;
+        }
+
+        if (auto xml = std::unique_ptr<juce::XmlElement>(tree.createXml()))
+        {
+            xml->writeTo(os);
+        }
+    }
+
+    if (tmpFile.getFile().existsAsFile())
+    {
+        return tmpFile.overwriteTargetFileWithTemporary();
+    }
+
+    return false;
+}
+
 //==============================================================================
 
 #if UNIT_TEST

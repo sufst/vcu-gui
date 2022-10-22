@@ -18,9 +18,7 @@ namespace gui
 /**
  * @brief Main GUI component
  */
-class MainComponent : public juce::Component,
-                      public juce::FileDragAndDropTarget,
-                      public juce::ValueTree::Listener
+class MainComponent : public juce::Component, public juce::FileDragAndDropTarget
 {
 public:
 
@@ -37,9 +35,6 @@ public:
     void filesDropped(const juce::StringArray& files, int x, int y) override;
     void fileDragEnter(const juce::StringArray& files, int x, int y) override;
     void fileDragExit(const juce::StringArray& files) override;
-
-    //==========================================================================
-    void valueTreeRedirected(juce::ValueTree& redirectedTree) override;
 
 private:
 

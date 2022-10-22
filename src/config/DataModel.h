@@ -22,6 +22,7 @@ struct DataModel
 
     //==========================================================================
     void createDefaultModel();
+    bool saveToFile(const juce::File& file);
 
     //==========================================================================
     juce::ValueTree tree;
