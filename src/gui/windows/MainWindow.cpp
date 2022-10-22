@@ -26,7 +26,8 @@ MainWindow::MainWindow(const juce::String& name,
         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
             juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons),
-      menuBar(sharedCommandManager), mainComponent(configData),
+      configData(configData), menuBar(sharedCommandManager),
+      mainComponent(configData),
       commandManager(sharedCommandManager) // ^^^^yikes
 {
     setUsingNativeTitleBar(true);
@@ -244,21 +245,19 @@ void MainWindow::saveConfig()
                             | juce::FileBrowserComponent::warnAboutOverwriting
                             | juce::FileBrowserComponent::saveMode;
 
+    auto onChoose = [this](const juce::FileChooser& chooser)
+    {
+        if (chooser.getResults().isEmpty())
+        {
+            return;
+        }
+
+        configData.saveToFile(chooser.getResult());
+        fileChooser.reset();
+    };
+
     // TODO: re-integrate
-    // fileChooser->launchAsync(fileChooserFlags,
-    //                          [this](const juce::FileChooser& chooser)
-    //                          {
-    //                              if (chooser.getResults().isEmpty())
-    //                              {
-    //                                  return;
-    //                              }
-
-    //                              auto xml = configValueTree->exportXml();
-    //                              auto file = chooser.getResult();
-
-    //                              xml->getDocumentElement()->writeTo(file);
-    //                              fileChooser.reset();
-    //                          });
+    fileChooser->launchAsync(fileChooserFlags, onChoose);
 }
 
 } // namespace gui

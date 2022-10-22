@@ -55,6 +55,8 @@ void MainComponent::paint(juce::Graphics& g)
     auto backgroundColour
         = lf.findColour(juce::ResizableWindow::backgroundColourId);
 
+    // TODO: this no longer works because the entire component is covered by
+    //       its children! need an overlay type solution
     if (fileIsBeingDragged)
     {
         backgroundColour = backgroundColour.brighter(0.05f);
@@ -126,35 +128,6 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
 {
     fileIsBeingDragged = false;
     repaint();
-}
-
-//==============================================================================
-
-/**
- * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
- */
-void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
-{
-    // TODO: this should belong to InverterConfigComponent???
-    // if (redirectedTree == configValueTree->getRoot())
-    // {
-    //     auto torqueMap =
-    //     configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-
-    //     // TODO: this should be replaced by something (1) faster (2) that is
-    //     its own function! juce::String interpolationMethod
-    //         =
-    //         torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
-
-    //     for (int i = 0; i < interpolationCombo.getNumItems(); i++)
-    //     {
-    //         if (interpolationCombo.getItemText(i) == interpolationMethod)
-    //         {
-    //             interpolationCombo.setSelectedItemIndex(i);
-    //             break;
-    //         }
-    //     }
-    // }
 }
 
 } // namespace gui

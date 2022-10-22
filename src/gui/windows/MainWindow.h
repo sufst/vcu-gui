@@ -47,6 +47,7 @@ private:
     void saveConfig();
 
     //==========================================================================
+    config::DataModel configData;
     MenuBar menuBar;
     MainComponent mainComponent;
     std::shared_ptr<CommandManager> commandManager;
