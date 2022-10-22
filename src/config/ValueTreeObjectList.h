@@ -55,7 +55,7 @@ public:
      *
      * @param[in]   parentTree  Parent value tree
      */
-    ValueTreeObjectList(const juce::ValueTree& parentTree)
+    ValueTreeObjectList(const juce::ValueTree& parentTree) : parent(parentTree)
     {
         parent.addListener(this);
     }
@@ -65,7 +65,7 @@ public:
      *
      * @note    Must call freeObjects in subclass destructor!
      */
-    virtual ~ValueTreeObjectList()
+    virtual ~ValueTreeObjectList() override
     {
         jassert(objects.size() != 0);
     }
