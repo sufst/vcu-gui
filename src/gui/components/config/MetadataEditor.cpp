@@ -63,8 +63,6 @@ void MetadataEditor::resized()
     constexpr int labelWidth = 100;
     auto bounds = getLocalBounds().reduced(spacing);
 
-    // should really use a flexbox or similar for the label layout
-
     std::initializer_list<std::tuple<juce::Label*, juce::Component*, int>> sizes
         = {{&nameLabel, &nameEditor, spacing},
            {&versionLabel, &versionEditor, spacing},

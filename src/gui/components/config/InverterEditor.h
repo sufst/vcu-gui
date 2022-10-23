@@ -1,6 +1,7 @@
 /******************************************************************************
- * @file    InverterConfigComponent.h
+ * @file    InverterEditor.h
  * @author  Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
+ * @brief   Editor for inverter related data modles
  *****************************************************************************/
 
 #pragma once
@@ -19,12 +20,12 @@ namespace gui
 /**
  * @brief   Configuration provider for inverter related properties
  */
-class InverterConfigComponent : public ConfigEditorComponent
+class InverterEditor : public ConfigEditorComponent
 {
 public:
 
     //==========================================================================
-    InverterConfigComponent(config::DataModel& configData);
+    InverterEditor(config::DataModel& configData);
 
     void setupInterpolationCombo();
 
