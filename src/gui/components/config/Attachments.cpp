@@ -26,6 +26,11 @@ ComboBoxAttachment::ComboBoxAttachment(juce::ComboBox* combo, juce::Value value)
     {
         attachedValue.setValue(attachedCombo->getText());
         ignoreUpdate = true;
+
+        if (onChange)
+        {
+            onChange();
+        }
     };
 }
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <functional>
 
 namespace gui
 {
@@ -21,6 +22,8 @@ namespace gui
  *          options in the combo box, the change will be ignored
  *
  * @note    Make sure that the combo box doesn't go out of scope!
+ *          Do not use juce::ComboBox::onChange, use the onChange callback
+ *          function in this class as a replacement
  */
 class ComboBoxAttachment : public juce::Value::Listener
 {
@@ -32,6 +35,9 @@ public:
 
     //==========================================================================
     void valueChanged(juce::Value& value) override;
+
+    //==========================================================================
+    std::function<void()> onChange; // set this as a change callback
 
 private:
 

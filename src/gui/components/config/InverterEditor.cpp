@@ -39,7 +39,7 @@ void InverterEditor::setupInterpolationCombo()
 
     for (unsigned i = 0; i < interpolationMethods.size(); i++)
     {
-        const auto itemId = static_cast<int>(i + 1);
+        const auto itemId = static_cast<int>(i + 1); // IDs start at 1
         const auto& method = interpolationMethods.at(i).toString();
 
         interpolationCombo.addItem(method, itemId);
@@ -49,6 +49,12 @@ void InverterEditor::setupInterpolationCombo()
             interpolationCombo.setSelectedId(itemId);
         }
     }
+
+    interpolationAttachment.onChange = [this]()
+    {
+        juce::Identifier identifier(interpolationCombo.getText());
+        torqueMapComponent.setInterpolationMethod(identifier);
+    };
 }
 
 //==============================================================================
