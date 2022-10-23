@@ -1,7 +1,6 @@
 /******************************************************************************
  * @file   MainComponent.h
  * @author Tim Brewis (tab1g19@soton.ac.uk)
- * @date   2022-02-09
  * @brief  Main GUI component
  *****************************************************************************/
 
@@ -9,7 +8,7 @@
 
 #include "../../config/DataModel.h"
 #include "TabbedComponent.h"
-#include "config/InverterConfigComponent.h"
+#include "config/InverterEditor.h"
 #include "config/MetadataEditor.h"
 #include <JuceHeader.h>
 
@@ -49,7 +48,7 @@ private:
     bool fileIsBeingDragged = false;
 
     TabbedComponent tabComponent;
-    InverterConfigComponent inverterComponent;
+    InverterEditor inverterComponent;
     MetadataEditor metadataEditor;
 
     //==========================================================================

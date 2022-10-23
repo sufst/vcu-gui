@@ -1,9 +1,9 @@
 /******************************************************************************
- * @file    InverterConfigComponent.cpp
+ * @file    InverterEditor.cpp
  * @author  Tim Brewis (@t-bre)
  *****************************************************************************/
 
-#include "InverterConfigComponent.h"
+#include "InverterEditor.h"
 
 #include "../../../config/Identifiers.h"
 
@@ -15,7 +15,7 @@ namespace gui
 /**
  * @brief   Constructor
  */
-InverterConfigComponent::InverterConfigComponent(config::DataModel& configData)
+InverterEditor::InverterEditor(config::DataModel& configData)
     : torqueMap(configData.tree.getChildWithName(config::IDs::TORQUE_MAP)),
       torqueMapComponent(
           configData.tree.getChildWithName(config::IDs::TORQUE_MAP)),
@@ -32,7 +32,7 @@ InverterConfigComponent::InverterConfigComponent(config::DataModel& configData)
 /**
  * @brief Setup interpolation method combo box
  */
-void InverterConfigComponent::setupInterpolationCombo()
+void InverterEditor::setupInterpolationCombo()
 {
     const auto& interpolationMethods = utility::InterpolatorFactory<
         TorqueMapPoint::ValueType>::getAllIdentifiers();
@@ -56,7 +56,7 @@ void InverterConfigComponent::setupInterpolationCombo()
 /**
  * @brief   Implements juce::Component::resized()
  */
-void InverterConfigComponent::resized()
+void InverterEditor::resized()
 {
     auto bounds = getLocalBounds().reduced(20);
     auto footerBounds = bounds.removeFromBottom(50);
