@@ -1,7 +1,7 @@
 {
   "configurations": [
     {
-      "name": "(gdb) Launch",
+      "name": "(gdb - Linux) Launch",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI",
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "name": "(lldb) Launch",
+      "name": "(lldb - Mac) Launch",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
