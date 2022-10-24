@@ -15,8 +15,8 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent(config::DataModel& configData)
-    : configData(configData), inverterComponent(configData),
+MainComponent::MainComponent(config::DataModel& config)
+    : configData(config), inverterComponent(configData),
       metadataEditor(configData.tree.getChildWithName(config::IDs::METADATA))
 {
     setSize(600, 400);

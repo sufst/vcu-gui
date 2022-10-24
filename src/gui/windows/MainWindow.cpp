@@ -19,14 +19,14 @@ namespace gui
  * @param[in]   name    Window name
  */
 MainWindow::MainWindow(const juce::String& name,
-                       config::DataModel& configData,
+                       config::DataModel& config,
                        std::shared_ptr<CommandManager> sharedCommandManager)
     : juce::DocumentWindow(
         name,
         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
             juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons),
-      configData(configData), menuBar(sharedCommandManager),
+      configData(config), menuBar(sharedCommandManager),
       mainComponent(configData),
       commandManager(sharedCommandManager) // ^^^^yikes
 {

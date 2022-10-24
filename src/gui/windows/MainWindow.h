@@ -26,7 +26,7 @@ public:
 
     //==========================================================================
     MainWindow(const juce::String& name,
-               config::DataModel& configData,
+               config::DataModel& config,
                std::shared_ptr<CommandManager> sharedCommandManager);
     ~MainWindow() override;
 

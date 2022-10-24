@@ -23,7 +23,7 @@ class MainComponent : public juce::Component, public juce::FileDragAndDropTarget
 public:
 
     //==========================================================================
-    MainComponent(config::DataModel& configData);
+    MainComponent(config::DataModel& config);
     ~MainComponent() override;
 
     //==========================================================================
