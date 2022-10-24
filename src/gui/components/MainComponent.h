@@ -1,14 +1,15 @@
 /******************************************************************************
  * @file   MainComponent.h
  * @author Tim Brewis (tab1g19@soton.ac.uk)
- * @date   2022-02-09
  * @brief  Main GUI component
  *****************************************************************************/
 
 #pragma once
 
+#include "../../config/DataModel.h"
 #include "TabbedComponent.h"
-#include "config/InverterConfigComponent.h"
+#include "config/InverterEditor.h"
+#include "config/MetadataEditor.h"
 #include <JuceHeader.h>
 
 namespace gui
@@ -17,15 +18,12 @@ namespace gui
 /**
  * @brief Main GUI component
  */
-class MainComponent : public juce::Component,
-                      public juce::FileDragAndDropTarget,
-                      public juce::ValueTree::Listener
+class MainComponent : public juce::Component, public juce::FileDragAndDropTarget
 {
 public:
 
     //==========================================================================
-    MainComponent(
-        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    MainComponent(config::DataModel& config);
     ~MainComponent() override;
 
     //==========================================================================
@@ -38,9 +36,6 @@ public:
     void fileDragEnter(const juce::StringArray& files, int x, int y) override;
     void fileDragExit(const juce::StringArray& files) override;
 
-    //==========================================================================
-    void valueTreeRedirected(juce::ValueTree& redirectedTree) override;
-
 private:
 
     //==========================================================================
@@ -48,13 +43,13 @@ private:
     void setupButtons();
 
     //==========================================================================
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
-
+    config::DataModel configData;
     std::unique_ptr<juce::FileChooser> fileChooser;
     bool fileIsBeingDragged = false;
 
     TabbedComponent tabComponent;
-    InverterConfigComponent inverterComponent;
+    InverterEditor inverterComponent;
+    MetadataEditor metadataEditor;
 
     //==========================================================================
     static const int borderSize = 20;

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "CommandManager.h"
-#include "ConfigurationValueTree.h"
+#include "config/DataModel.h"
 #include "gui/appearance/LookAndFeel.h"
 #include "gui/windows/MainWindow.h"
 #include <JuceHeader.h>
@@ -28,6 +28,7 @@ public:
     void shutdown() override;
     void systemRequestedQuit() override;
     void anotherInstanceStarted(const juce::String& commandLine) override;
+    void handleCommandLine(const juce::StringArray& commandLineArguments);
 
     //==========================================================================
     const juce::String getApplicationName() override;
@@ -41,8 +42,8 @@ private:
 
     //==========================================================================
     std::unique_ptr<gui::MainWindow> mainWindow;
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
     std::shared_ptr<CommandManager> commandManager;
 
+    config::DataModel configData;
     sufst::LookAndFeel lookAndFeel;
 };

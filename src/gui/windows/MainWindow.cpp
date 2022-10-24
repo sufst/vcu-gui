@@ -18,18 +18,17 @@ namespace gui
  *
  * @param[in]   name    Window name
  */
-MainWindow::MainWindow(
-    const juce::String& name,
-    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree,
-    std::shared_ptr<CommandManager> sharedCommandManager)
+MainWindow::MainWindow(const juce::String& name,
+                       config::DataModel& config,
+                       std::shared_ptr<CommandManager> sharedCommandManager)
     : juce::DocumentWindow(
         name,
         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(
             juce::ResizableWindow::backgroundColourId),
         DocumentWindow::allButtons),
-      menuBar(sharedCommandManager), mainComponent(sharedConfigValueTree),
-      commandManager(sharedCommandManager),
-      configValueTree(sharedConfigValueTree) // ^^^^yikes
+      configData(config), menuBar(sharedCommandManager),
+      mainComponent(configData),
+      commandManager(sharedCommandManager) // ^^^^yikes
 {
     setUsingNativeTitleBar(true);
     setResizeLimits(minWidth, minHeight, INT_MAX, INT_MAX);
@@ -37,7 +36,6 @@ MainWindow::MainWindow(
     setVisible(true);
     centreWithSize(getWidth(), getHeight());
 
-    jassert(sharedConfigValueTree);
     setContentNonOwned(&mainComponent, true);
 
     jassert(commandManager);
@@ -214,18 +212,17 @@ void MainWindow::loadConfig()
     auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles
                             | juce::FileBrowserComponent::openMode;
 
-    fileChooser->launchAsync(fileChooserFlags,
-                             [this](const juce::FileChooser& chooser)
-                             {
-                                 if (chooser.getResults().isEmpty())
-                                 {
-                                     return;
-                                 }
+    // TODO: re-integrate
+    auto onChoose = [this](const juce::FileChooser& chooser)
+    {
+        if (!chooser.getResults().isEmpty())
+        {
+            configData.loadFromFile(chooser.getResult());
+        }
+        fileChooser.reset();
+    };
 
-                                 configValueTree->loadFromFile(
-                                     chooser.getResult());
-                                 fileChooser.reset();
-                             });
+    fileChooser->launchAsync(fileChooserFlags, onChoose);
 }
 
 /**
@@ -246,20 +243,16 @@ void MainWindow::saveConfig()
                             | juce::FileBrowserComponent::warnAboutOverwriting
                             | juce::FileBrowserComponent::saveMode;
 
-    fileChooser->launchAsync(fileChooserFlags,
-                             [this](const juce::FileChooser& chooser)
-                             {
-                                 if (chooser.getResults().isEmpty())
-                                 {
-                                     return;
-                                 }
+    auto onChoose = [this](const juce::FileChooser& chooser)
+    {
+        if (!chooser.getResults().isEmpty())
+        {
+            configData.saveToFile(chooser.getResult());
+        }
+        fileChooser.reset();
+    };
 
-                                 auto xml = configValueTree->exportXml();
-                                 auto file = chooser.getResult();
-
-                                 xml->getDocumentElement()->writeTo(file);
-                                 fileChooser.reset();
-                             });
+    fileChooser->launchAsync(fileChooserFlags, onChoose);
 }
 
 } // namespace gui

@@ -1,11 +1,13 @@
 /******************************************************************************
- * @file    InverterConfigComponent.h
+ * @file    InverterEditor.h
  * @author  Tim Brewis (@t-bre, tab1g19@soton.ac.uk)
+ * @brief   Editor for inverter related data modles
  *****************************************************************************/
 
 #pragma once
 
-#include "../../../ConfigurationValueTree.h"
+#include "../../../config/DataModel.h"
+#include "Attachments.h"
 #include "ConfigEditorComponent.h"
 #include "TorqueMapComponent.h"
 #include <JuceHeader.h>
@@ -14,16 +16,16 @@
 namespace gui
 {
 
+// TODO: rename this to InverterEditor
 /**
  * @brief   Configuration provider for inverter related properties
  */
-class InverterConfigComponent : public ConfigEditorComponent
+class InverterEditor : public ConfigEditorComponent
 {
 public:
 
     //==========================================================================
-    InverterConfigComponent(
-        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    InverterEditor(config::DataModel& configData);
 
     void setupInterpolationCombo();
 
@@ -33,10 +35,10 @@ public:
 private:
 
     //==========================================================================
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
-
+    TorqueMap torqueMap;
     TorqueMapComponent torqueMapComponent;
     juce::ComboBox interpolationCombo;
+    ComboBoxAttachment interpolationAttachment;
 };
 
 } // namespace gui

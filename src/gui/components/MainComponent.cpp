@@ -15,20 +15,20 @@ namespace gui
 /**
  * @brief Default constructor
  */
-MainComponent::MainComponent(
-    std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree)
-    : configValueTree(sharedConfigValueTree),
-      inverterComponent(sharedConfigValueTree)
+MainComponent::MainComponent(config::DataModel& config)
+    : configData(config), inverterComponent(configData),
+      metadataEditor(configData.tree.getChildWithName(config::IDs::METADATA))
 {
     setSize(600, 400);
 
-    configValueTree->addListener(this);
+    // TODO: re-integrate
+    // configValueTree->addListener(this);
 
     auto& lf = getLookAndFeel();
     auto tabColour = lf.findColour(juce::DocumentWindow::backgroundColourId);
     // TODO: these can be put in a proper initializer list loop once all the
     //       classes for the different tabs have been created
-    tabComponent.addTab("Metadata", tabColour, nullptr, false);
+    tabComponent.addTab("Metadata", tabColour, &metadataEditor, false);
     tabComponent.addTab("Inverter", tabColour, &inverterComponent, false);
     tabComponent.addTab("Sensors", tabColour, nullptr, false);
     tabComponent.addTab("Testbenches", tabColour, nullptr, false);
@@ -56,6 +56,8 @@ void MainComponent::paint(juce::Graphics& g)
     auto backgroundColour
         = lf.findColour(juce::ResizableWindow::backgroundColourId);
 
+    // TODO: this no longer works because the entire component is covered by
+    //       its children! need an overlay type solution
     if (fileIsBeingDragged)
     {
         backgroundColour = backgroundColour.brighter(0.05f);
@@ -102,10 +104,11 @@ void MainComponent::filesDropped(const juce::StringArray& files,
     const auto& fileName = files[0];
     jassert(fileName.endsWithIgnoreCase(".xml"));
 
-    configValueTree->loadFromFile(juce::File(fileName));
+    // TODO: re-implement file loading
+    // configValueTree->loadFromFile(juce::File(fileName));
 
-    fileIsBeingDragged = false;
-    repaint();
+    // fileIsBeingDragged = false;
+    // repaint();
 }
 
 /**
@@ -126,35 +129,6 @@ void MainComponent::fileDragExit(const juce::StringArray& /*files*/)
 {
     fileIsBeingDragged = false;
     repaint();
-}
-
-//==============================================================================
-
-/**
- * @brief Implements juce::ValueTree::Listener::valueTreeRedirected()
- */
-void MainComponent::valueTreeRedirected(juce::ValueTree& redirectedTree)
-{
-    // TODO: this should belong to InverterConfigComponent???
-    // if (redirectedTree == configValueTree->getRoot())
-    // {
-    //     auto torqueMap =
-    //     configValueTree->getChildWithName(ConfigurationValueTree::Children::TorqueMap);
-
-    //     // TODO: this should be replaced by something (1) faster (2) that is
-    //     its own function! juce::String interpolationMethod
-    //         =
-    //         torqueMap.getProperty(ConfigurationValueTree::Properties::InterpolationMethod);
-
-    //     for (int i = 0; i < interpolationCombo.getNumItems(); i++)
-    //     {
-    //         if (interpolationCombo.getItemText(i) == interpolationMethod)
-    //         {
-    //             interpolationCombo.setSelectedItemIndex(i);
-    //             break;
-    //         }
-    //     }
-    // }
 }
 
 } // namespace gui

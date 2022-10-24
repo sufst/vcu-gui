@@ -35,6 +35,20 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb"
-    }
+    },
+    {
+        "name": "(lldb - Mac) Unit Test (All)",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
+        "args": [
+            "--test",
+        ],
+        "stopAtEntry": false,
+        "cwd": "${fileDirname}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "lldb"
+      }
   ]
 }

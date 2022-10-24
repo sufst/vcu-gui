@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../../../ConfigurationValueTree.h"
+#include "../../../config/TorqueMap.h"
 #include "../../appearance/Colours.h"
 #include "GraphComponent.h"
 #include <JuceHeader.h>
@@ -15,16 +15,21 @@
 namespace gui
 {
 
+using config::TorqueMap;
+using config::TorqueMapPoint;
+
 /**
  * @brief   Component for editing torque map
+ *
+ *          TODO: what happens when the config is reloaded from file??
  */
-class TorqueMapComponent : public GraphComponent<int>, juce::ValueTree::Listener
+class TorqueMapComponent : public GraphComponent<TorqueMapPoint::ValueType>,
+                           public juce::ValueTree::Listener
 {
 public:
 
     //==========================================================================
-    TorqueMapComponent(
-        std::shared_ptr<ConfigurationValueTree> sharedConfigValueTree);
+    TorqueMapComponent(juce::ValueTree torqueMapTree);
 
     //==========================================================================
     void paint(juce::Graphics& g) override;
@@ -36,13 +41,22 @@ public:
     void mouseMove(const juce::MouseEvent& event) override;
 
     //==========================================================================
-    void valueTreePropertyChanged(juce::ValueTree& changedTree,
-                                  const juce::Identifier& property) override;
-    void valueTreeRedirected(juce::ValueTree& redirectedTree) override;
+    void valueTreeChildAdded(juce::ValueTree&, juce::ValueTree&) override;
+    void
+    valueTreeChildRemoved(juce::ValueTree&, juce::ValueTree&, int) override;
 
 private:
 
     //==========================================================================
+    int getNumPoints() const override;
+    PointType getPoint(int index) const override;
+    int movePoint(int index, PointType newPosition) override;
+    void addPoint(PointType newPoint) override;
+    void removePoint(int index) override;
+
+    //==========================================================================
+    int getDeadzonePosition() const;
+    void setDeadzonePosition(int newPosition);
     juce::Rectangle<int> getDeadzoneBounds() const;
     void paintDeadzoneOverlay(juce::Graphics& g) const;
     bool mouseEventInDeadzone(const juce::MouseEvent& event) const;
@@ -50,23 +64,13 @@ private:
     void showDeadzoneTooltip();
     void hideDeadzoneTooltip();
 
-    int deadzonePosition = 0;
     bool movingDeadzone = false;
     std::unique_ptr<juce::TooltipWindow> deadzoneTooltip;
 
     //==========================================================================
-    void loadTorqueMapData();
-    void syncTorqueMapData();
-
-    std::shared_ptr<ConfigurationValueTree> configValueTree;
+    TorqueMap torqueMap;
 
     //==========================================================================
-    // TODO: this needs to be part of the torque map properties
-    static const int inputResolution = 10;
-    static const int outputResolution = 15;
-    static const int inputMax = (1 << inputResolution) - 1;
-    static const int outputMax = (1 << outputResolution) - 1;
-
     const juce::Colour deadzoneColour = sufst::Colours::skyblue;
 };
 
