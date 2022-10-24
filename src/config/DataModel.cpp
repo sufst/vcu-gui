@@ -108,19 +108,48 @@ void DataModel::loadFromFile(const juce::File& file)
     {
         const auto newModel = juce::ValueTree::fromXml(*xml);
 
-        // we'll manually copy across the new properties to the existing tree so
-        // that any open editors will be kept up to date..
+        // manually copy across the new properties to the existing tree so
+        // that the GUI is updated without reloading it
+        //
+        // TODO: this was taken from the Projucer code
+        //       does this work for any depth of tree?
         tree.copyPropertiesFrom(newModel, nullptr);
 
         for (int i = tree.getNumChildren(); --i >= 0;) // what the
         {
             ValueTree c(tree.getChild(i));
 
-            const ValueTree newValue(newModel.getChildWithName(c.getType()));
-
-            if (newValue.isValid())
+            if (c.getType() == IDs::TORQUE_MAP)
             {
-                c.copyPropertiesFrom(newValue, nullptr);
+                // TODO: this is a hack for importing the torque map since
+                //       the only array. surely there is a better way?
+                TorqueMap actualMap(c);
+                TorqueMap newMap(newModel.getChildWithName(IDs::TORQUE_MAP));
+
+                for (const auto& point : actualMap.getPoints())
+                {
+                    actualMap.removePoint(*point);
+                }
+
+                for (const auto* point : newMap.getPoints())
+                {
+                    actualMap.addPoint(point->input.get(), point->output.get());
+                }
+                actualMap.state.sendPropertyChangeMessage(IDs::TORQUE_MAP);
+
+                // c.copyPropertiesAndChildrenFrom(
+                //     newModel.getChildWithName(IDs::TORQUE_MAP),
+                //     nullptr);
+            }
+            else
+            {
+                const ValueTree newValue(
+                    newModel.getChildWithName(c.getType()));
+
+                if (newValue.isValid())
+                {
+                    c.copyPropertiesFrom(newValue, nullptr);
+                }
             }
         }
 

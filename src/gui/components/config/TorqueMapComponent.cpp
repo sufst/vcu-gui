@@ -13,6 +13,7 @@ namespace gui
 {
 
 //==============================================================================
+
 /**
  * @brief Default constructor
  */
@@ -21,67 +22,147 @@ TorqueMapComponent::TorqueMapComponent(juce::ValueTree torqueMapTree)
 {
     jassert(torqueMapTree.isValid());
 
-    setRangeX(TorqueMapPoint::MinInput, TorqueMapPoint::MaxInput);
-    setRangeY(TorqueMapPoint::MaxInput, TorqueMapPoint::MaxOutput);
+    setRangeX({TorqueMapPoint::MinInput, TorqueMapPoint::MaxInput});
+    setRangeY({TorqueMapPoint::MinOutput, TorqueMapPoint::MaxOutput});
+    setTickSpacing(TorqueMapPoint::MaxInput / 10,
+                   TorqueMapPoint::MaxOutput / 10);
+    setInterpolationMethod(
+        juce::Identifier(torqueMap.interpolationMethod.get()));
 
-    loadTorqueMapData();
-
-    torqueMapTree.addListener(this);
+    // TODO: this should really use a juce::ChangeListener instead of listening
+    //       to the value tree directly
+    torqueMap.state.addListener(this);
 }
 
 //==============================================================================
 
 /**
- * @brief Loads torque map data from the value tree
+ * @brief   Returns the number of points in the torque map
  */
-void TorqueMapComponent::loadTorqueMapData()
+int TorqueMapComponent::getNumPoints() const
 {
-    // TODO: interpolation method does not update!
-    // setInterpolationMethod(juce::String(torqueMap.interpolationMethod.get()));
-
-    // data points
-    clear();
-
-    for (const auto* point : torqueMap.getPoints())
-    {
-        addPoint(point->input.get(), point->output.get());
-    }
-
-    // deadzone
-    deadzonePosition = points.getFirst().getX();
+    return torqueMap.objects.size();
 }
 
 /**
- * @brief Updates the torque map when the points on the graph change
+ * @brief   Returns the point at the specified index
+ *
+ * @param   index   Index of point
  */
-void TorqueMapComponent::syncTorqueMapData()
+TorqueMapComponent::PointType TorqueMapComponent::getPoint(int index) const
 {
-    // TODO: this function isn't called that often, but rewriting the entire
-    //       set of points is not a very efficient way to update the tree...
-    for (const auto& point : torqueMap.getPoints())
+    // TODO: accessing the objects directly is perhaps not ideal?
+    auto* point = torqueMap.objects[index];
+    return PointType(point->input.get(), point->output.get());
+}
+
+/**
+ * @brief   Moves the point at the specified index to a new position
+ *
+ * @param   index           Index of point to move
+ * @param   newPosition     New position to put the point
+ *
+ * @return  New index of the moved point, if it was swapped with another
+ */
+int TorqueMapComponent::movePoint(int index, PointType newPosition)
+{
+    // TODO: handle swapping of points
+    auto* pointToMove = torqueMap.getPoints()[index];
+    pointToMove->input = newPosition.getX();
+    pointToMove->output = newPosition.getY();
+
+    // check if point has moved past the x-coordinate of another point
+    // swap them if this is the case
+    // TODO: this is potentially inefficient
+    // TODO: also don't like that torqueMap.objects is accessed directly
+    int newIndex = index;
+
+    if (index != 0 && getPoint(index - 1).getX() > getPoint(index).getX())
     {
-        torqueMap.removePoint(*point);
+        torqueMap.getPoints().swap(index, index - 1);
+        newIndex = index - 1;
+    }
+    else if (index != getNumPoints() - 1
+             && getPoint(index).getX() > getPoint(index + 1).getX())
+    {
+        torqueMap.getPoints().swap(index, index + 1);
+        newIndex = index + 1;
     }
 
-    for (const auto& point : points)
-    {
-        torqueMap.addPoint(point.getX(), point.getY());
-    }
+    return newIndex;
+    ;
+}
+
+/**
+ * @brief   Adds a point to the torque map
+ *
+ * @param   newPoint Point to be added
+ */
+void TorqueMapComponent::addPoint(PointType newPoint)
+{
+    torqueMap.addPoint(newPoint.getX(), newPoint.getY());
+}
+
+/**
+ * @brief   Removes a point from the torque map
+ *
+ * @param   index   Index of point to remove
+ */
+void TorqueMapComponent::removePoint(int index)
+{
+    torqueMap.removePoint(*torqueMap.getPoints()[index]);
 }
 
 //==============================================================================
 
 /**
- * @brief Overrides GraphComponent<int>::paint()
+ * @brief Overrides GraphComponent::paint()
  */
 void TorqueMapComponent::paint(juce::Graphics& g)
 {
-    GraphComponent<int>::paint(g);
-
+    GraphComponent<TorqueMapPoint::ValueType>::paint(g);
     paintDeadzoneOverlay(g);
 }
 
 //==============================================================================
+
+/**
+ * @brief   Reloads the torque map if the data structure changes
+ */
+void TorqueMapComponent::valueTreeChildAdded(juce::ValueTree&, juce::ValueTree&)
+{
+    pointsChanged();
+}
+
+/**
+ * @brief   Reloads the torque map if the data structure changes
+ */
+void TorqueMapComponent::valueTreeChildRemoved(juce::ValueTree&,
+                                               juce::ValueTree&,
+                                               int)
+{
+    pointsChanged();
+}
+
+//==============================================================================
+
+/**
+ * @brief   Returns the x position of the deadzone
+ */
+int TorqueMapComponent::getDeadzonePosition() const
+{
+    return getPoint(0).getX();
+}
+
+/**
+ * @brief   Sets the x position of the deadzone
+ *
+ */
+void TorqueMapComponent::setDeadzonePosition(int newPosition)
+{
+    movePoint(0, {newPosition, getPoint(0).getY()});
+    pointsChanged();
+}
 
 /**
  * @brief Returns the bounds of the deadzone
@@ -89,8 +170,7 @@ void TorqueMapComponent::paint(juce::Graphics& g)
 juce::Rectangle<int> TorqueMapComponent::getDeadzoneBounds() const
 {
     auto deadzoneEdgePoint
-        = transformPointForPaint(getLocalBounds().toFloat(),
-                                 {deadzonePosition, getHeight()});
+        = transformPointForPaint({getDeadzonePosition(), getHeight()});
     return juce::Rectangle<int>({0, 0}, deadzoneEdgePoint);
 }
 
@@ -149,10 +229,8 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
     }
     else if (!shouldPreventPointEdit(event))
     {
-        GraphComponent<int>::mouseUp(event);
+        GraphComponent<TorqueMapPoint::ValueType>::mouseUp(event);
     }
-
-    syncTorqueMapData();
 }
 
 /**
@@ -167,27 +245,23 @@ void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
     {
         if (movingDeadzone)
         {
-            jassert(points.size() >= 2);
+            jassert(getNumPoints() >= 2);
 
             auto newDeadzonePosition
                 = transformPointToGraph(event.getPosition()).getX();
             auto maxDeadzonePosition
-                = points[1]
-                      .getX(); // don't allow deadzone to pass 2nd graph point
+                = getPoint(1).getX(); // don't allow deadzone to pass 2nd graph
 
-            deadzonePosition
-                = utility::clip(newDeadzonePosition, 0, maxDeadzonePosition);
-            points.getReference(0).setX(deadzonePosition);
-
+            setDeadzonePosition(juce::Range(0, maxDeadzonePosition)
+                                    .clipValue(newDeadzonePosition));
             pointsChanged();
-            repaint();
         }
 
         showDeadzoneTooltip();
     }
     else if (!shouldPreventPointEdit(event))
     {
-        GraphComponent<int>::mouseDrag(event);
+        GraphComponent<TorqueMapPoint::ValueType>::mouseDrag(event);
     }
 }
 
@@ -207,7 +281,7 @@ void TorqueMapComponent::mouseMove(const juce::MouseEvent& event)
     else if (!shouldPreventPointEdit(event))
     {
         hideDeadzoneTooltip();
-        GraphComponent<int>::mouseMove(event);
+        GraphComponent<TorqueMapPoint::ValueType>::mouseMove(event);
     }
 }
 
@@ -221,7 +295,7 @@ bool TorqueMapComponent::mouseEventInDeadzone(
 {
     const int deadzoneEdgeOffset = 2;
     auto point = transformPointToGraph(event.getPosition());
-    return point.getX() < deadzonePosition + deadzoneEdgeOffset;
+    return point.getX() < getDeadzonePosition() + deadzoneEdgeOffset;
 }
 
 /**
@@ -235,8 +309,8 @@ bool TorqueMapComponent::mouseEventInDeadzone(
 bool TorqueMapComponent::shouldPreventPointEdit(
     const juce::MouseEvent& event) const
 {
-    return (pointHitTest(event.getPosition(), points.getFirst())
-            || pointHitTest(event.getPosition(), points.getLast()));
+    return (pointHitTest(event.getPosition(), getPoint(0))
+            || pointHitTest(event.getPosition(), getPoint(getNumPoints() - 1)));
 }
 
 /**
@@ -249,15 +323,13 @@ void TorqueMapComponent::showDeadzoneTooltip()
         deadzoneTooltip = std::make_unique<juce::TooltipWindow>(this, 0);
     }
 
-    auto deadzoneX = transformPointForPaint(getLocalBounds().toFloat(),
-                                            {deadzonePosition, 0})
-                         .getX();
+    auto deadzoneX = transformPointForPaint({getDeadzonePosition(), 0}).getX();
 
     int tipX = this->getScreenX() + deadzoneX - 10;
     int tipY = juce::Desktop::getMousePosition().getY();
 
     juce::String tipText = juce::String::toDecimalStringWithSignificantFigures(
-                               100 * static_cast<float>(deadzonePosition)
+                               100 * static_cast<float>(getDeadzonePosition())
                                    / TorqueMapPoint::MaxInput,
                                2)
                            + "%";

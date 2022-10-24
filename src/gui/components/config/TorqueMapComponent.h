@@ -23,7 +23,7 @@ using config::TorqueMapPoint;
  *
  *          TODO: what happens when the config is reloaded from file??
  */
-class TorqueMapComponent : public GraphComponent<int>,
+class TorqueMapComponent : public GraphComponent<TorqueMapPoint::ValueType>,
                            public juce::ValueTree::Listener
 {
 public:
@@ -40,14 +40,23 @@ public:
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
 
-    void valueTreeParentChanged(juce::ValueTree& vt) override
-    {
-        DBG("Redirected!");
-    };
+    //==========================================================================
+    void valueTreeChildAdded(juce::ValueTree&, juce::ValueTree&) override;
+    void
+    valueTreeChildRemoved(juce::ValueTree&, juce::ValueTree&, int) override;
 
 private:
 
     //==========================================================================
+    int getNumPoints() const override;
+    PointType getPoint(int index) const override;
+    int movePoint(int index, PointType newPosition) override;
+    void addPoint(PointType newPoint) override;
+    void removePoint(int index) override;
+
+    //==========================================================================
+    int getDeadzonePosition() const;
+    void setDeadzonePosition(int newPosition);
     juce::Rectangle<int> getDeadzoneBounds() const;
     void paintDeadzoneOverlay(juce::Graphics& g) const;
     bool mouseEventInDeadzone(const juce::MouseEvent& event) const;
@@ -55,13 +64,8 @@ private:
     void showDeadzoneTooltip();
     void hideDeadzoneTooltip();
 
-    int deadzonePosition = 0;
     bool movingDeadzone = false;
     std::unique_ptr<juce::TooltipWindow> deadzoneTooltip;
-
-    //==========================================================================
-    void loadTorqueMapData();
-    void syncTorqueMapData();
 
     //==========================================================================
     TorqueMap torqueMap;

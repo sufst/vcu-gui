@@ -17,89 +17,91 @@
 namespace gui
 {
 
-using utility::Interpolator; // TODO: does this pollute the namespace when
-                             // #include'ing this file?
+using utility::Interpolator; // TODO: does this pollute the namespace?
 using utility::InterpolatorFactory;
 using utility::SplineInterpolator;
 
-//==============================================================================
-
 /**
- * @brief   A graph drawing component which is optionally editable by mouse
- *          events
+ * @brief   A base component for drawing points on a graph
  *
- * @details Currently supports only a graph in the positive x/y quadrant, but
- *          should easily be extendible to all four quadrants
+ * @details The data model is left to derived classes for flexibility
+ *
+ * @tparam  ValueType   Data type for points on the graph
  */
 template <typename ValueType>
 class GraphComponent : public juce::Component, public juce::KeyListener
 {
 public:
 
+    using PointType = juce::Point<ValueType>;
+
     //==========================================================================
     GraphComponent();
 
     //==========================================================================
-    void setRangeX(ValueType min, ValueType max);
-    void setRangeY(ValueType min, ValueType max);
-    void setEditable(bool shouldBeEditable = true);
+    void setRangeX(juce::Range<ValueType> range);
+    void setRangeY(juce::Range<ValueType> range);
+    void setTickSpacing(ValueType xSpacing, ValueType ySpacing);
     void setInterpolationMethod(const juce::Identifier& identifier);
-    void setDrawsInterpolatedCurve(bool shouldDrawInterpolatedCurve = true);
 
-    //==========================================================================
     ValueType getMinX() const;
-    ValueType getMinY() const;
     ValueType getMaxX() const;
+    ValueType getMinY() const;
     ValueType getMaxY() const;
-    bool isEditable() const;
 
-    //==========================================================================
-    void addPoint(ValueType x, ValueType y);
-    void addPoint(const juce::Point<ValueType>& point);
-    void clear();
+protected:
 
     //==========================================================================
     void paint(juce::Graphics& g) override;
     void resized() override;
 
-    //==========================================================================
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseMove(const juce::MouseEvent& event) override;
     void mouseUp(const juce::MouseEvent& event) override;
+    void updateCursor();
+
     bool keyPressed(const juce::KeyPress& key,
                     juce::Component* originatingComponent) override;
     bool keyPressed(const juce::KeyPress& key) override;
 
-protected:
+    //==========================================================================
+    virtual int getNumPoints() const = 0;
+    virtual PointType getPoint(int index) const = 0;
+    virtual int movePoint(int index, PointType newPosition) = 0;
+    virtual void addPoint(PointType newPoint) = 0;
+    virtual void removePoint(int index) = 0;
 
     //==========================================================================
-    juce::Point<int>
-    transformPointForPaint(const juce::Rectangle<float>& bounds,
-                           const juce::Point<ValueType>& point) const;
-    juce::Point<ValueType>
-    transformPointToGraph(const juce::Point<int>& point) const;
-    bool pointHitTest(const juce::Point<int>& guiPoint,
-                      const juce::Point<ValueType>& graphPoint) const;
-    int getPointNearMouseEvent(const juce::MouseEvent& event) const;
+    juce::AffineTransform graphToGuiTransform() const;
+    juce::AffineTransform guiToGraphTransform() const;
+    juce::Point<int> transformPointForPaint(const PointType& point) const;
+    juce::Point<int> transformPointToGraph(const PointType& point) const;
 
     void pointsChanged();
 
     //==========================================================================
-    // TODO: the encapsulation is not great here
-    juce::Rectangle<ValueType> valueBounds;
-    juce::Array<juce::Point<ValueType>> points;
-    juce::Path interpolatedPath;
-
-private:
-
-    //==========================================================================
-    void paintTicks(juce::Graphics& g) const;
     void paintBorder(juce::Graphics& g) const;
+    void paintTicks(juce::Graphics& g) const;
     void paintPoints(juce::Graphics& g) const;
     void paintCurve(juce::Graphics& g) const;
+
     void recalculateInterpolatedPath();
-    void updateCursor();
+
+    bool pointHitTest(const juce::Point<int>& guiPoint,
+                      const juce::Point<ValueType>& graphPoint) const;
+    int getPointNearMouseEvent(const juce::MouseEvent& event) const;
+
+    //==========================================================================
+    ValueType tickSpacingX = 1;
+    ValueType tickSpacingY = 1;
+
+    const PointType origin = {0, 0};
+    PointType topRight = {1, 1};
+    PointType bottomLeft = {-1, 1};
+
+    juce::Path interpolatedPath;
+    std::unique_ptr<Interpolator<ValueType>> interpolator = nullptr;
 
     //==========================================================================
     enum class PointEditingState
@@ -111,12 +113,9 @@ private:
         Delete,
     };
 
-    bool editable;
-    bool shouldInterpolate;
     PointEditingState pointEditState = PointEditingState::None;
     int movingPointIndex = -1;
-
-    std::unique_ptr<Interpolator<int>> interpolator;
+    static constexpr int clickRadius = 10;
 
     //==========================================================================
     const juce::Colour pointColour = sufst::Colours::sfsyellow;
@@ -128,50 +127,54 @@ private:
 //==============================================================================
 
 /**
- * @brief Default constructor
+ * @brief   Default constructor
  */
 template <typename ValueType>
 GraphComponent<ValueType>::GraphComponent()
 {
-    setRangeX(0, 1);
-    setRangeY(0, 1);
-    setEditable(true);
-    setSize(100,
-            100); // need to start with non-zero size for point transformations
+    setSize(100, 100); // this prevents infinite affine transforms
     setWantsKeyboardFocus(true);
-    setDrawsInterpolatedCurve(true);
-
-    setInterpolationMethod(SplineInterpolator<ValueType>::identifier);
-
     addKeyListener(this);
 }
 
 //==============================================================================
 
 /**
- * @brief       Set the range of the x-axis
+ * @brief   Sets the range of the x-axis
  *
- * @param[in]   min     Minimum value
- * @param[in]   max     Maximum value
+ * @param   range   Range [min, max]
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::setRangeX(ValueType min, ValueType max)
+void GraphComponent<ValueType>::setRangeX(juce::Range<ValueType> range)
 {
-    valueBounds.setX(min);
-    valueBounds.setWidth(max - min);
+    bottomLeft.setX(range.getStart());
+    topRight.setX(range.getEnd());
 }
 
 /**
- * @brief       Set the range of the y-axis
+ * @brief   Sets the range of the y-axis
  *
- * @param[in]   min     Minimum value
- * @param[in]   max     Maximum value
+ * @param   range   Range [min, max]
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::setRangeY(ValueType min, ValueType max)
+void GraphComponent<ValueType>::setRangeY(juce::Range<ValueType> range)
 {
-    valueBounds.setY(min);
-    valueBounds.setHeight(max - min);
+    bottomLeft.setY(range.getStart());
+    topRight.setY(range.getEnd());
+}
+
+/**
+ * @brief   Sets the spacing between the ticks
+ *
+ * @param   xSpacing    Spacing between the x ticks
+ * @param   ySpacing    Spacing between the y ticks
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::setTickSpacing(ValueType xSpacing,
+                                               ValueType ySpacing)
+{
+    tickSpacingX = xSpacing;
+    tickSpacingY = ySpacing;
 }
 
 /**
@@ -185,128 +188,57 @@ void GraphComponent<ValueType>::setInterpolationMethod(
 {
     interpolator = InterpolatorFactory<ValueType>::makeInterpolator(identifier);
     jassert(interpolator);
-}
-
-/**
- * @brief       Sets whether or not the interpolated curve should be calculated
- * and drawn
- *
- * @param[in]   shouldDrawInterpolatedCurve     Set true to draw interpolated
- * curve
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::setDrawsInterpolatedCurve(
-    bool shouldDrawInterpolatedCurve)
-{
-    shouldInterpolate = shouldDrawInterpolatedCurve;
-}
-
-/**
- * @brief Allows the points on the graph to be edited by mouse events
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::setEditable(bool shouldBeEditable)
-{
-    editable = shouldBeEditable;
-    setInterceptsMouseClicks(shouldBeEditable, shouldBeEditable);
-}
-
-//==============================================================================
-
-/**
- * @brief Returns the minimum value of the x-axis
- */
-template <typename ValueType>
-ValueType GraphComponent<ValueType>::getMinX() const
-{
-    return valueBounds.getX();
-}
-
-/**
- * @brief Returns the minimum value of the y-axis
- */
-template <typename ValueType>
-ValueType GraphComponent<ValueType>::getMinY() const
-{
-    return valueBounds.getY();
-}
-
-/**
- * @brief Returns the maximum value of the x-axis
- */
-template <typename ValueType>
-ValueType GraphComponent<ValueType>::getMaxX() const
-{
-    return valueBounds.getWidth() - valueBounds.getX();
-}
-
-/**
- * @brief Returns the maximum value of the y-axis
- */
-template <typename ValueType>
-ValueType GraphComponent<ValueType>::getMaxY() const
-{
-    return valueBounds.getHeight() - valueBounds.getY();
-}
-
-/**
- * @brief Returns whether or not the graph is editable
- */
-template <typename ValueType>
-bool GraphComponent<ValueType>::isEditable() const
-{
-    return editable;
-}
-
-//==============================================================================
-
-/**
- * @brief       Adds a point to the graph
- *
- * @param[in]   x   x-coordinate of the point
- * @param[in]   y   y-coordinate of the point
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::addPoint(ValueType x, ValueType y)
-{
-    addPoint({x, y});
-}
-
-/**
- * @brief       Adds a point to the graph
- *
- * @param[in]   point   The point to add
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::addPoint(const juce::Point<ValueType>& point)
-{
-    static PointComparator<ValueType> comparator;
-    points.addSorted(comparator, point);
-
     pointsChanged();
 }
 
 /**
- * @brief Clears all points from the graph
+ * @brief   Returns the minimum value of the X axis
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::clear()
+ValueType GraphComponent<ValueType>::getMinX() const
 {
-    points.clear();
+    return bottomLeft.getX();
+}
+
+/**
+ * @brief   Returns the maximum value of the X axis
+ */
+template <typename ValueType>
+ValueType GraphComponent<ValueType>::getMaxX() const
+{
+    return topRight.getX();
+}
+
+/**
+ * @brief   Returns the minimum value of the Y axis
+ */
+template <typename ValueType>
+ValueType GraphComponent<ValueType>::getMinY() const
+{
+    return bottomLeft.getY();
+}
+
+/**
+ * @brief   Returnsthe maximum value of the Y axis
+ */
+template <typename ValueType>
+ValueType GraphComponent<ValueType>::getMaxY() const
+{
+    return topRight.getY();
 }
 
 //==============================================================================
 
 /**
- * @brief Implements juce::Component::paint()
+ * @brief   Implements juce::Component::paint()
  */
 template <typename ValueType>
 void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
-    paintTicks(g);
     paintBorder(g);
+    paintTicks(g);
 
-    if (shouldInterpolate)
+    if (interpolator)
     {
         paintCurve(g);
     }
@@ -315,10 +247,127 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 }
 
 /**
+ * @brief       Paints the graph border
+ *
+ * @param[in]   g   JUCE graphics context
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
+{
+    g.setColour(borderColour);
+    g.drawRect(0, 0, getWidth(), getHeight(), 1);
+}
+
+/**
+ * @brief       Paints the graph ticks
+ *
+ * @param[in]   g   JUCE graphics context
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
+{
+    // ticks
+    g.setColour(tickColour);
+
+    typedef struct
+    {
+        int numTicks;
+        enum
+        {
+            pos,
+            neg
+        } direction;
+        enum
+        {
+            y,
+            x
+        } axis;
+    } TickParams;
+
+    std::initializer_list<TickParams> tickParamsList = {
+        {std::abs(getMaxX()) / tickSpacingX, TickParams::pos, TickParams::x},
+        {std::abs(getMinX()) / tickSpacingX, TickParams::neg, TickParams::x},
+        {std::abs(getMaxY()) / tickSpacingY, TickParams::pos, TickParams::y},
+        {std::abs(getMinY()) / tickSpacingY, TickParams::neg, TickParams::y}};
+
+    for (const auto& params : tickParamsList)
+    {
+        for (int i = 0; i <= params.numTicks; i++)
+        {
+            auto dirMult = (params.direction == TickParams::pos) ? 1 : -1;
+
+            if (params.axis == TickParams::x)
+            {
+                int x = i * dirMult * tickSpacingX;
+                auto point = transformPointForPaint({x, 0});
+                g.drawVerticalLine(point.getX(), 0, getHeight());
+            }
+            else
+            {
+                int y = i * dirMult * tickSpacingY;
+                auto point = transformPointForPaint({0, y});
+                g.drawHorizontalLine(point.getY(), 0, getWidth());
+            }
+        }
+    }
+
+    // x/y axes
+    PointType centreLeft = transformPointForPaint({getMinX(), 0});
+    PointType topCentre = transformPointForPaint({0, getMaxY()});
+
+    g.setColour(borderColour);
+    g.drawVerticalLine(topCentre.getX(), 0, getHeight());
+    g.drawHorizontalLine(centreLeft.getY(), 0, getWidth());
+}
+
+/**
+ * @brief       Paint graph points
+ *
+ * @param[in]   g   JUCE graphics context
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::paintPoints(juce::Graphics& g) const
+{
+    const float circleSize = 4;
+    const float circleShift = circleSize / 2;
+
+    g.setColour(pointColour);
+
+    for (int i = 0; i < getNumPoints(); i++)
+    {
+        auto transformedPoint = transformPointForPaint(getPoint(i)).toFloat();
+
+        const auto x
+            = static_cast<float>(transformedPoint.getX() - circleShift);
+        const auto y
+            = static_cast<float>(transformedPoint.getY() - circleShift);
+
+        g.drawEllipse(x, y, circleSize, circleSize, circleSize);
+    }
+}
+
+/**
+ * @brief       Paint graph curve
+ *
+ * @param[in]   g   JUCE graphics context
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
+{
+    if (getNumPoints() < 2)
+    {
+        return;
+    }
+
+    g.setColour(lineColour);
+    g.strokePath(interpolatedPath, juce::PathStrokeType(1));
+}
+
+/**
  * @brief   Implements juce::Component::resized()
  *
- * @details This applies an affine transform to the interpolated path to resize
- *          it to the available bounds
+ * @details This applies an affine transform to the interpolated path to
+ *          resize it to the available bounds
  *
  * @note    The component must start with a non-zero size, else the calls to
  *          resized() on app initialisation will result in an invalid (infinite)
@@ -327,9 +376,71 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 template <typename ValueType>
 void GraphComponent<ValueType>::resized()
 {
-    auto bounds = getLocalBounds().toFloat();
-    auto transform = interpolatedPath.getTransformToScaleToFit(bounds, false);
-    interpolatedPath.applyTransform(transform);
+    pointsChanged();
+
+    if (interpolator && getNumPoints() >= 2)
+    {
+        auto p1 = transformPointForPaint(getPoint(0));
+        auto p2 = transformPointForPaint(getPoint(getNumPoints() - 1));
+        juce::Rectangle<int> bounds(p1, p2);
+
+        auto transform
+            = interpolatedPath.getTransformToScaleToFit(bounds.toFloat(),
+                                                        false);
+        interpolatedPath.applyTransform(transform);
+    }
+}
+
+/**
+ * @brief   Call this when the points have changed (in derived class)
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::pointsChanged()
+{
+    if (interpolator)
+    {
+        interpolator->invalidateCache();
+        recalculateInterpolatedPath();
+    }
+    repaint();
+}
+
+/**
+ * @brief   Re-calculates the interpolated path
+ */
+template <typename ValueType>
+void GraphComponent<ValueType>::recalculateInterpolatedPath()
+{
+    if (!interpolator)
+    {
+        return;
+    }
+
+    interpolatedPath.clear();
+
+    if (getNumPoints() > 1)
+    {
+        // compute interpolation
+        // TODO: this is pretty expensive, can it be made more efficient?
+        juce::Array<PointType> points;
+
+        for (int i = 0; i < getNumPoints(); i++)
+        {
+            points.add(getPoint(i));
+        }
+
+        interpolator->process(points, 500);
+
+        // construct path
+        auto start = transformPointForPaint(getPoint(0)).toFloat();
+        interpolatedPath.startNewSubPath(start.getX(), start.getY());
+
+        for (const auto& point : interpolator->getInterpolatedPoints())
+        {
+            auto transformedPoint = transformPointForPaint(point);
+            interpolatedPath.lineTo(transformedPoint.toFloat());
+        }
+    }
 }
 
 //==============================================================================
@@ -353,6 +464,8 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
         if (pointIndex == -1)
         {
             const auto newPoint = transformPointToGraph(event.getPosition());
+
+            // TODO: add point
             addPoint(newPoint);
 
             // TODO: this effectively searches for the point that was just
@@ -367,12 +480,12 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
 
         // always move, including after creation
         pointEditState = PointEditingState::Move;
+        pointsChanged();
     }
 
-    // check if should delete AFTER previous, since this goes to None state
     if (pointEditState == PointEditingState::Delete && pointIndex != -1)
     {
-        points.remove(pointIndex);
+        removePoint(pointIndex);
         pointsChanged();
     }
 
@@ -387,31 +500,11 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
 template <typename ValueType>
 void GraphComponent<ValueType>::mouseDrag(const juce::MouseEvent& event)
 {
-
     if (pointEditState == PointEditingState::Move)
     {
-        jassert(movingPointIndex != -1 && movingPointIndex < points.size());
-
-        // move the point
-        auto& point = points.getReference(movingPointIndex);
-        point = transformPointToGraph(event.getPosition());
-
-        // check if point has moved past the x-coordinate of another point
-        // swap them if this is the case
-        if (movingPointIndex != 0
-            && points[movingPointIndex - 1].getX() > point.getX())
-        {
-            points.swap(movingPointIndex, movingPointIndex - 1);
-            movingPointIndex = movingPointIndex - 1;
-        }
-        else if (movingPointIndex != points.size() - 1
-                 && points[movingPointIndex].getX()
-                        > points[movingPointIndex + 1].getX())
-        {
-            points.swap(movingPointIndex, movingPointIndex + 1);
-            movingPointIndex = movingPointIndex + 1;
-        }
-
+        jassert(movingPointIndex != -1 && movingPointIndex < getNumPoints());
+        auto newPosition = transformPointToGraph(event.getPosition());
+        movingPointIndex = movePoint(movingPointIndex, newPosition);
         pointsChanged();
     }
 }
@@ -455,41 +548,6 @@ void GraphComponent<ValueType>::mouseUp(const juce::MouseEvent& /*event*/)
 }
 
 /**
- * @brief   Implements juce::KeyListener::keyPressed()
- *
- * @details This is used to check for a 'delete' key press, toggling the delete
- *          point mode if the graph is editable
- */
-template <typename ValueType>
-bool GraphComponent<ValueType>::keyPressed(
-    const juce::KeyPress& key,
-    juce::Component* /*originatingComponent*/)
-{
-    if (editable && key.isKeyCode(juce::KeyPress::backspaceKey))
-    {
-        pointEditState = (pointEditState == PointEditingState::Delete)
-                             ? PointEditingState::None
-                             : PointEditingState::Delete;
-
-        updateCursor();
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @brief   Implements juce::KeyListener::keyPressed()
- *
- * @note    This second definition is needed to prevent -Woverloaded-virtual
- */
-template <typename ValueType>
-bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key)
-{
-    return keyPressed(key, nullptr);
-}
-
-/**
  * @brief Updates the cursor based on the point editing state
  */
 template <typename ValueType>
@@ -522,178 +580,108 @@ void GraphComponent<ValueType>::updateCursor()
 //==============================================================================
 
 /**
- * @brief   Call this when the points have changed (in derived class)
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::pointsChanged()
-{
-    interpolator->invalidateCache();
-    recalculateInterpolatedPath();
-    repaint();
-}
-
-/**
- * @brief   Re-calculates the interpolated path
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::recalculateInterpolatedPath()
-{
-    auto bounds = getLocalBounds().toFloat();
-    interpolatedPath.clear();
-
-    if (points.size() > 1)
-    {
-        auto start
-            = transformPointForPaint(bounds, points.getFirst()).toFloat();
-        interpolatedPath.startNewSubPath(start.getX(), start.getY());
-
-        interpolator->process(points, 500);
-
-        for (const auto& point : interpolator->getInterpolatedPoints())
-        {
-            auto transformedPoint = transformPointForPaint(bounds, point);
-            interpolatedPath.lineTo(transformedPoint.toFloat());
-        }
-    }
-}
-
-/**
- * @brief       Paint graph ticks
+ * @brief   Implements juce::KeyListener::keyPressed()
  *
- * @param[in]   g   JUCE graphics context
+ * @details This is used to check for a 'delete' key press, toggling the delete
+ *          point mode if the graph is editable
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
+bool GraphComponent<ValueType>::keyPressed(
+    const juce::KeyPress& key,
+    juce::Component* /*originatingComponent*/)
 {
-    const int numTicksX = 40;
-    const int numTicksY = 20;
-
-    auto bounds = getLocalBounds().toFloat();
-
-    g.setColour(tickColour);
-
-    for (int i = 0; i < numTicksX; i++)
+    if (key.isKeyCode(juce::KeyPress::backspaceKey))
     {
-        int x = i * getWidth() / numTicksX;
-        g.drawVerticalLine(x, 0, bounds.getHeight());
+        pointEditState = (pointEditState == PointEditingState::Delete)
+                             ? PointEditingState::None
+                             : PointEditingState::Delete;
+
+        updateCursor();
+        return true;
     }
 
-    for (int i = 0; i < numTicksY; i++)
-    {
-        int y = i * getHeight() / numTicksY;
-        g.drawHorizontalLine(y, 0, bounds.getWidth());
-    }
+    return false;
 }
 
 /**
- * @brief       Paint graph border
+ * @brief   Implements juce::KeyListener::keyPressed()
  *
- * @param[in]   g   JUCE graphics context
+ * @note    This second definition is needed to prevent -Woverloaded-virtual
  */
 template <typename ValueType>
-void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
+bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key)
 {
-    g.setColour(borderColour);
-    g.drawRect(0, 0, getWidth(), getHeight(), 1);
-}
-
-/**
- * @brief       Paint graph points
- *
- * @param[in]   g   JUCE graphics context
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::paintPoints(juce::Graphics& g) const
-{
-    auto bounds = getLocalBounds().toFloat();
-
-    const float circleSize = 4;
-    const float circleShift = circleSize / 2;
-
-    g.setColour(pointColour);
-
-    for (const auto& point : points)
-    {
-        auto transformedPoint = transformPointForPaint(bounds, point).toFloat();
-
-        const auto x
-            = static_cast<float>(transformedPoint.getX() - circleShift);
-        const auto y
-            = static_cast<float>(transformedPoint.getY() - circleShift);
-
-        g.drawEllipse(x, y, circleSize, circleSize, circleSize);
-    }
-}
-
-/**
- * @brief       Paint graph curve
- *
- * @param[in]   g   JUCE graphics context
- */
-template <typename ValueType>
-void GraphComponent<ValueType>::paintCurve(juce::Graphics& g) const
-{
-    if (points.size() < 2)
-    {
-        return;
-    }
-
-    g.setColour(lineColour);
-    g.strokePath(interpolatedPath, juce::PathStrokeType(1));
+    return keyPressed(key, nullptr);
 }
 
 //==============================================================================
 
 /**
- * @brief       Transforms a graph point to the coordinates system used for
- *              painting
- *
- * @param[in]   bounds  Bounds of component (?)
- * @param[in]   point   Point on the graph
+ * @brief   Returns an affine transform representing the transformation from
+ *          a point on the graph to a point in the component
  */
 template <typename ValueType>
-juce::Point<int> GraphComponent<ValueType>::transformPointForPaint(
-    const juce::Rectangle<float>& bounds,
-    const juce::Point<ValueType>& point) const
+juce::AffineTransform GraphComponent<ValueType>::graphToGuiTransform() const
 {
-    const float xScale
-        = bounds.getWidth() / static_cast<float>(valueBounds.getWidth());
-    const float yScale
-        = bounds.getHeight() / static_cast<float>(valueBounds.getHeight());
-    const auto fPoint = point.toFloat();
+    const float xRange
+        = static_cast<float>(getMaxX()) - static_cast<float>(getMinX());
+    const float yRange
+        = static_cast<float>(getMaxY()) - static_cast<float>(getMinY());
+    const float xScale = getWidth() / xRange;
+    const float yScale = getHeight() / yRange;
 
-    auto x = static_cast<int>(fPoint.getX() * xScale);
-    auto y = static_cast<int>(bounds.getHeight() - fPoint.getY() * yScale);
+    return juce::AffineTransform()
+        .scaled(xScale, -yScale)
+        .translated(-xScale * getMinX(), yScale * getMaxY());
+}
 
+/**
+ * @brief   Returns an affine transform representing the transformation from
+ *          a point on the component to a point on the graph
+ */
+template <typename ValueType>
+juce::AffineTransform GraphComponent<ValueType>::guiToGraphTransform() const
+{
+    return graphToGuiTransform().inverted();
+}
+
+/**
+ * @brief       Transforms a point on the graph to a point on the juce::Graphics
+ *              painting area
+ *
+ * @details     The coordinates system for the graph is the "normal" system
+ *              with the +y going up and +x going right. In the JUCE graphics
+ *              system, +y goes down and +x goes right. This requires a
+ *              transformation to convert between the two systems.
+ *
+ * @param[in]   point   Point to transform
+ */
+template <typename ValueType>
+juce::Point<int>
+GraphComponent<ValueType>::transformPointForPaint(const PointType& point) const
+{
+    auto x = point.getX();
+    auto y = point.getY();
+    graphToGuiTransform().transformPoint(x, y);
     return {x, y};
 }
 
 /**
- * @brief       Transforms a GUI point to the coordinates system of the graph
- *
- * @details     Use this in combination with mouse events to let the user add
- *              points to the graph
- *
- * @param[in]   point   The point to transform
+ * @brief       The inverse transform of transformPointForPaint()
  */
 template <typename ValueType>
-juce::Point<ValueType> GraphComponent<ValueType>::transformPointToGraph(
-    const juce::Point<int>& point) const
+juce::Point<int>
+GraphComponent<ValueType>::transformPointToGraph(const PointType& point) const
 {
-    const auto xScale = static_cast<double>(getMaxX()) / getWidth();
-    const auto yScale = static_cast<double>(getMaxY()) / getHeight();
-
-    auto x = static_cast<ValueType>(point.getX() * xScale);
-    auto y = getMaxY() - static_cast<ValueType>(point.getY() * yScale);
-
-    x = utility::clip(x, getMinX(), getMaxX());
-    y = utility::clip(y, getMinY(), getMaxY());
-
+    auto x = point.getX();
+    auto y = point.getY();
+    guiToGraphTransform().transformPoint(x, y);
     return {x, y};
 }
 
 /**
- * @brief       Checks if a mouse event is near a point on the graph, returning
+ * @brief       Checks if a mouse event is near a point on the graph,
+ returning
  *              the index of the point if it does and -1 otherwise
  *
  * @param[in]   event   Mouse event
@@ -707,9 +695,9 @@ int GraphComponent<ValueType>::getPointNearMouseEvent(
 {
     const auto eventPosition = event.getPosition().toInt();
 
-    for (int i = 0; i < points.size(); i++)
+    for (int i = 0; i < getNumPoints(); i++)
     {
-        const auto& point = points.getReference(i);
+        const auto point = getPoint(i);
 
         if (pointHitTest(eventPosition, point))
         {
@@ -738,10 +726,7 @@ bool GraphComponent<ValueType>::pointHitTest(
     const juce::Point<int>& guiPoint,
     const juce::Point<ValueType>& graphPoint) const
 {
-    const int clickRadius = 10;
-
-    auto transformedPoint
-        = transformPointForPaint(getLocalBounds().toFloat(), graphPoint);
+    auto transformedPoint = transformPointForPaint(graphPoint);
     int distance = transformedPoint.getDistanceFrom(guiPoint);
 
     return distance < clickRadius;

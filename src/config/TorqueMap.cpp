@@ -69,6 +69,9 @@ void TorqueMap::addPoint(TorqueMapPoint::ValueType input,
     point.output.setValue(output, nullptr);
 
     state.addChild(vt, -1, nullptr);
+
+    TorqueMapPointComparator comp;
+    state.sort(comp, nullptr, false);
 }
 
 /**

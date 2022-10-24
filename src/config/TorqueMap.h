@@ -83,4 +83,39 @@ struct TorqueMap : public ValueTreeObjectList<TorqueMapPoint>
     juce::ValueTree state;
 };
 
+//==============================================================================
+
+/**
+ * @brief       Compares two torque map points based on their x-coordinate
+ *
+ * @param[in]   v1      First point
+ * @param[in]   v2      Second point
+ */
+class TorqueMapPointComparator
+{
+public:
+
+    static int compareElements(const juce::ValueTree& v1,
+                               const juce::ValueTree& v2)
+    {
+        TorqueMapPoint p1 = TorqueMapPoint(v1);
+        TorqueMapPoint p2 = TorqueMapPoint(v2);
+        TorqueMapPoint::ValueType i1 = p1.input.get();
+        TorqueMapPoint::ValueType i2 = p2.input.get();
+
+        if (i1 < i2)
+        {
+            return -1;
+        }
+        else if (i1 > i2)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+};
+
 } // namespace config
