@@ -12,11 +12,13 @@ runtimes:
     - node@16.14.2
 lint:
   enabled:
+    - prettier@2.7.1
     - gitleaks@8.15.0
     - clang-tidy@14.0.0
-    - clang-format@13.0.0
+    - clang-format@14.0.0
   disabled:
     - git-diff-check
+    - markdownlint
   ignore:
     - linters: [ALL]
       paths:
@@ -25,7 +27,7 @@ lint:
         - res/**
   compile_commands: json
 cli:
-  version: 0.18.1-beta
+  version: 1.0.1
 plugins:
   sources:
     - id: trunk
