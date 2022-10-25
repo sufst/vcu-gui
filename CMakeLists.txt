@@ -89,10 +89,7 @@ endif()
 
 target_compile_definitions(${TARGET_NAME}
     PRIVATE
-    # Must define '_USE_MATH_DEFINES' before #include <cmath>.
-    # See https://learn.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=msvc-170
-    # We define it globally here.
-        _USE_MATH_DEFINES=1
+        _USE_MATH_DEFINES=1 # need _USE_MATH_DEFINES for <cmath> on Windows
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
@@ -116,5 +113,8 @@ target_link_libraries(${TARGET_NAME}
         juce::juce_recommended_warning_flags
 )
 
-# symlink compile commands to repo root
-execute_process(COMMAND ln -sf ${CMAKE_SOURCE_DIR}/build/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
+# symlink compile commands database to repo root on Mac/Linux
+# Trunk doesn't seem to have an option for specifying the path to compile commands and needs it to be there
+IF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Win32")
+   execute_process(COMMAND ln -sf ${CMAKE_SOURCE_DIR}/build/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
+ENDIF()
