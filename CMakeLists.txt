@@ -116,5 +116,7 @@ target_link_libraries(${TARGET_NAME}
         juce::juce_recommended_warning_flags
 )
 
-# symlink compile commands to repo root
-execute_process(COMMAND ln -sf ${CMAKE_SOURCE_DIR}/build/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
+# symlink compile commands to repo root on Mac/Linux for trunk tool.
+IF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Win32")
+   execute_process(COMMAND ln -sf ${CMAKE_SOURCE_DIR}/build/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json)
+ENDIF()
