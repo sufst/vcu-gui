@@ -49,6 +49,17 @@
         "environment": [],
         "externalConsole": false,
         "MIMode": "lldb"
+      },
+    {
+        "name": "(cppvsdbg-Windows) Launch",
+        "type": "cppvsdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${fileDirname}",
+        "environment": [],
+        "externalConsole": false,
       }
   ]
 }
