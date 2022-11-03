@@ -41,6 +41,26 @@
       },
       "compileCommands": "${workspaceFolder}/compile_commands.json",
       "configurationProvider": "ms-vscode.cmake-tools"
+    },
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/lib/juce/modules/**",
+        "${workspaceFolder}/build/VCU-GUI_artefacts/JuceLibraryCode/**",
+        "${workspaceFolder}/lib/juce/modules",
+        "${workspaceFolder}/lib/spline/src"
+      ],
+      "defines": [],
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-msvc-x86",
+      "browse": {
+        "limitSymbolsToIncludedHeaders": true,
+        "databaseFilename": ""
+      },
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+      "configurationProvider": "ms-vscode.cmake-tools"
     }
   ],
   "version": 4
