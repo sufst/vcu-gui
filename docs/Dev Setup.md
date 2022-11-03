@@ -64,6 +64,11 @@ Visual Studio build tools:
 - Uncheck all the "optional" SDKs **except MSVC** for a minimal install.
 - Locate the `msbuild` executable and add it to your path - it will be in a place something like `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\`.
 
+Visual Studio Debugger:
+- Download the Windows SDK from [this page](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-download-tools).
+- Select Debugging Tools for Windows
+- Check the for the `cdb` executable to ensure installation has been successful - it will be in `C:\Program Files (x86)\Windows Kits\10\Debuggers\x64`.
+
 To actually build on Windows, the process is a bit different.
 1. Open Powershell and navigate to `vcu-gui/build`.
 2. Run `cmake ..` from this folder, it should build `juceaide` and generate the file `VCU-GUI.sln`.
