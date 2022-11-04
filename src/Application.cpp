@@ -34,6 +34,10 @@ void Application::initialise(const juce::String& /*commandLine*/)
  */
 void Application::shutdown()
 {
+    // this prevents components from referencing the sufst::LookAndFeel instance
+    // after it is destroyed
+    LookAndFeel::setDefaultLookAndFeel(nullptr);
+
     mainWindow.reset();
 }
 

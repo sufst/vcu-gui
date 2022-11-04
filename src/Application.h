@@ -41,9 +41,10 @@ public:
 private:
 
     //==========================================================================
+    sufst::LookAndFeel lookAndFeel;
+
     std::unique_ptr<gui::MainWindow> mainWindow;
     std::shared_ptr<CommandManager> commandManager;
 
     config::DataModel configData;
-    sufst::LookAndFeel lookAndFeel;
 };
