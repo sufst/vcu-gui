@@ -8,6 +8,8 @@
 
 #include <climits>
 
+#define MENU_BAR_IN_WINDOW (JUCE_WINDOWS || JUCE_LINUX)
+
 namespace gui
 {
 
@@ -38,6 +40,10 @@ MainWindow::MainWindow(const juce::String& name,
 
     setContentNonOwned(&mainComponent, true);
 
+#if (MENU_BAR_IN_WINDOW)
+    setMenuBar(&menuBar);
+#endif
+
     jassert(commandManager);
     commandManager->registerAllCommandsForTarget(this);
     addKeyListener(commandManager->getKeyMappings());
@@ -49,6 +55,10 @@ MainWindow::MainWindow(const juce::String& name,
 MainWindow::~MainWindow()
 {
     commandManager->setFirstCommandTarget(nullptr);
+
+#if (MENU_BAR_IN_WINDOW)
+    setMenuBar(nullptr);
+#endif
 }
 
 //==============================================================================
