@@ -119,9 +119,8 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
         });
 
     case MenuIndex::Help:
-        return createMenuWithCommands({
-            CommandManager::ShowAboutWindow,
-        });
+        return createMenuWithCommands(
+            {CommandManager::ShowAboutWindow, CommandManager::ShowGitHubRepo});
 
     default:
         return juce::PopupMenu();
@@ -151,9 +150,9 @@ void MenuBar::menuBarActivated(bool /*isActive*/)
  */
 void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 {
-    std::initializer_list<juce::CommandID> targetCommands = {
-        CommandManager::CommandIDs::ShowAboutWindow,
-    };
+    std::initializer_list<juce::CommandID> targetCommands
+        = {CommandManager::CommandIDs::ShowAboutWindow,
+           CommandManager::CommandIDs::ShowGitHubRepo};
 
     commands.addArray(targetCommands);
 }
@@ -170,6 +169,15 @@ void MenuBar::getCommandInfo(juce::CommandID commandID,
     {
         result.setInfo(juce::String("About ") + ProjectInfo::projectName,
                        "Shows about window",
+                       CommandManager::CommandCategories::GUI,
+                       0);
+        break;
+    }
+
+    case CommandManager::ShowGitHubRepo:
+    {
+        result.setInfo("View project on GitHub...",
+                       "Opens GitHub repo for project",
                        CommandManager::CommandCategories::GUI,
                        0);
         break;
@@ -196,6 +204,13 @@ bool MenuBar::perform(const InvocationInfo& info)
             aboutWindow->onCloseButtonPressed
                 = [this]() { aboutWindow.reset(); };
         }
+        break;
+    }
+
+    case CommandManager::ShowGitHubRepo:
+    {
+        juce::URL url(GITHUB_REPO_URL);
+        url.launchInDefaultBrowser();
         break;
     }
 

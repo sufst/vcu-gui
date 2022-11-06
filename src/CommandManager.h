@@ -25,6 +25,7 @@ public:
         // menu bar
         ShowAboutWindow = 0x100020,
         ShowPreferencesWindow = 0x100021,
+        ShowGitHubRepo = 0x100022,
 
         // windows
         CloseWindow = 0x100030,
