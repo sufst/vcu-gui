@@ -21,8 +21,6 @@ MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager)
     commandManager->registerAllCommandsForTarget(this);
     setApplicationCommandManagerToWatch(commandManager.get());
 
-    createMainMenu();
-
 #if JUCE_MAC
     setupAppleMenu();
 #endif
@@ -40,29 +38,23 @@ MenuBar::~MenuBar()
 
 //==============================================================================
 
-/**
- * @brief Creates the main menu
- */
-void MenuBar::createMainMenu()
-{
-    mainMenu.addCommandItem(commandManager.get(),
-                            CommandManager::CommandIDs::ShowAboutWindow);
-}
-
 #if JUCE_MAC
 /**
  * @brief Set ups the 'Apple' menu (macOS only)
  */
 void MenuBar::setupAppleMenu()
 {
-    juce::PopupMenu::MenuItemIterator iter(mainMenu, false);
+    appleMenu.addCommandItem(commandManager.get(),
+                             CommandManager::CommandIDs::ShowAboutWindow);
+
+    juce::PopupMenu::MenuItemIterator iter(appleMenu, false);
 
     while (iter.next())
     {
         iter.getItem().setEnabled(true);
     }
 
-    setMacMainMenu(this, &mainMenu);
+    setMacMainMenu(this, &appleMenu);
 }
 #endif
 
