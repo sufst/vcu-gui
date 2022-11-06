@@ -118,6 +118,11 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
             CommandManager::ToggleFullScreen,
         });
 
+    case MenuIndex::Help:
+        return createMenuWithCommands({
+            CommandManager::ShowAboutWindow,
+        });
+
     default:
         return juce::PopupMenu();
     }
@@ -217,10 +222,10 @@ juce::ApplicationCommandTarget* MenuBar::getNextCommandTarget()
  * @note    This is done as a map and not an array to allow the menus to be
  *          re-ordered without having to re-order the array.
  */
-const std::map<MenuBar::MenuIndex, juce::String> MenuBar::menuNameMap = {
-    {MenuBar::MenuIndex::File, "File"},
-    {MenuBar::MenuIndex::View, "View"},
-    {MenuBar::MenuIndex::Window, "Window"},
-};
+const std::map<MenuBar::MenuIndex, juce::String> MenuBar::menuNameMap
+    = {{MenuBar::MenuIndex::File, "File"},
+       {MenuBar::MenuIndex::View, "View"},
+       {MenuBar::MenuIndex::Window, "Window"},
+       {MenuBar::MenuIndex::Help, "Help"}};
 
 } // namespace gui

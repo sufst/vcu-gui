@@ -62,7 +62,8 @@ private:
     {
         File = 0,
         View = 1,
-        Window = 2
+        Window = 2,
+        Help = 3
     } MenuIndex;
 
     static const std::map<MenuIndex, juce::String> menuNameMap;
