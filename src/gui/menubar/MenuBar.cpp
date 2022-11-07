@@ -21,8 +21,6 @@ MenuBar::MenuBar(std::shared_ptr<CommandManager> sharedCommandManager)
     commandManager->registerAllCommandsForTarget(this);
     setApplicationCommandManagerToWatch(commandManager.get());
 
-    createMainMenu();
-
 #if JUCE_MAC
     setupAppleMenu();
 #endif
@@ -40,29 +38,23 @@ MenuBar::~MenuBar()
 
 //==============================================================================
 
-/**
- * @brief Creates the main menu
- */
-void MenuBar::createMainMenu()
-{
-    mainMenu.addCommandItem(commandManager.get(),
-                            CommandManager::CommandIDs::ShowAboutWindow);
-}
-
 #if JUCE_MAC
 /**
  * @brief Set ups the 'Apple' menu (macOS only)
  */
 void MenuBar::setupAppleMenu()
 {
-    juce::PopupMenu::MenuItemIterator iter(mainMenu, false);
+    appleMenu.addCommandItem(commandManager.get(),
+                             CommandManager::CommandIDs::ShowAboutWindow);
+
+    juce::PopupMenu::MenuItemIterator iter(appleMenu, false);
 
     while (iter.next())
     {
         iter.getItem().setEnabled(true);
     }
 
-    setMacMainMenu(this, &mainMenu);
+    setMacMainMenu(this, &appleMenu);
 }
 #endif
 
@@ -126,6 +118,10 @@ juce::PopupMenu MenuBar::getMenuForIndex(int topLevelMenuIndex,
             CommandManager::ToggleFullScreen,
         });
 
+    case MenuIndex::Help:
+        return createMenuWithCommands(
+            {CommandManager::ShowAboutWindow, CommandManager::ShowGitHubRepo});
+
     default:
         return juce::PopupMenu();
     }
@@ -154,9 +150,9 @@ void MenuBar::menuBarActivated(bool /*isActive*/)
  */
 void MenuBar::getAllCommands(juce::Array<juce::CommandID>& commands)
 {
-    std::initializer_list<juce::CommandID> targetCommands = {
-        CommandManager::CommandIDs::ShowAboutWindow,
-    };
+    std::initializer_list<juce::CommandID> targetCommands
+        = {CommandManager::CommandIDs::ShowAboutWindow,
+           CommandManager::CommandIDs::ShowGitHubRepo};
 
     commands.addArray(targetCommands);
 }
@@ -173,6 +169,15 @@ void MenuBar::getCommandInfo(juce::CommandID commandID,
     {
         result.setInfo(juce::String("About ") + ProjectInfo::projectName,
                        "Shows about window",
+                       CommandManager::CommandCategories::GUI,
+                       0);
+        break;
+    }
+
+    case CommandManager::ShowGitHubRepo:
+    {
+        result.setInfo("View project on GitHub...",
+                       "Opens GitHub repo for project",
                        CommandManager::CommandCategories::GUI,
                        0);
         break;
@@ -202,6 +207,13 @@ bool MenuBar::perform(const InvocationInfo& info)
         break;
     }
 
+    case CommandManager::ShowGitHubRepo:
+    {
+        juce::URL url(GITHUB_REPO_URL);
+        url.launchInDefaultBrowser();
+        break;
+    }
+
     default:
         return false;
     }
@@ -225,10 +237,10 @@ juce::ApplicationCommandTarget* MenuBar::getNextCommandTarget()
  * @note    This is done as a map and not an array to allow the menus to be
  *          re-ordered without having to re-order the array.
  */
-const std::map<MenuBar::MenuIndex, juce::String> MenuBar::menuNameMap = {
-    {MenuBar::MenuIndex::File, "File"},
-    {MenuBar::MenuIndex::View, "View"},
-    {MenuBar::MenuIndex::Window, "Window"},
-};
+const std::map<MenuBar::MenuIndex, juce::String> MenuBar::menuNameMap
+    = {{MenuBar::MenuIndex::File, "File"},
+       {MenuBar::MenuIndex::View, "View"},
+       {MenuBar::MenuIndex::Window, "Window"},
+       {MenuBar::MenuIndex::Help, "Help"}};
 
 } // namespace gui

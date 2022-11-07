@@ -43,7 +43,6 @@ public:
 private:
 
     //==========================================================================
-    void createMainMenu();
     juce::PopupMenu createMenuWithCommands(
         std::initializer_list<CommandManager::CommandIDs> commands);
 
@@ -52,7 +51,10 @@ private:
 #endif
 
     //==========================================================================
-    juce::PopupMenu mainMenu;
+#if (JUCE_MAC)
+    juce::PopupMenu appleMenu;
+#endif
+
     std::shared_ptr<CommandManager> commandManager;
     std::unique_ptr<AboutWindow> aboutWindow;
 
@@ -60,7 +62,8 @@ private:
     {
         File = 0,
         View = 1,
-        Window = 2
+        Window = 2,
+        Help = 3
     } MenuIndex;
 
     static const std::map<MenuIndex, juce::String> menuNameMap;
