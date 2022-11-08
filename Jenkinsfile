@@ -22,7 +22,7 @@ pipeline {
     stage ('Lint') {
       steps {
         echo '==== Linting ===='
-        sh 'trunk check'
+        sh 'trunk --ci check'
       }
     }
   }
