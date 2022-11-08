@@ -18,5 +18,12 @@ pipeline {
         sh 'cd build && make -j4'
       }
     }
+
+    stage ('Lint') {
+      steps {
+        echo '==== Linting ===='
+        sh 'trunk check'
+      }
+    }
   }
 }
