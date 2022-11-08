@@ -22,7 +22,7 @@ pipeline {
     stage ('Lint') {
       steps {
         echo '==== Linting ===='
-        sh 'ln -s build/compile_commands.json ./compile_commands.json'
+        //sh 'ln -s build/compile_commands.json ./compile_commands.json'
         sh 'trunk --ci check'
       }
     }
