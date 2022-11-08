@@ -11,11 +11,13 @@ pipeline {
     }
 
     stage ('Build') {
-      echo '==== Running build ===='
-      sh 'mkdir build'
-      sh 'cd build'
-      sh 'cmake .. -DCMAKE_BUILD_TYPE=Release'
-      sh 'make -j4'
+      steps {
+        echo '==== Running build ===='
+        sh 'mkdir build'
+        sh 'cd build'
+        sh 'cmake .. -DCMAKE_BUILD_TYPE=Release'
+        sh 'make -j4'
+      }
     }
   }
 }
