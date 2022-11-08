@@ -23,7 +23,7 @@ pipeline {
       steps {
         echo '==== Linting ===='
         //sh 'ln -s build/compile_commands.json ./compile_commands.json'
-        sh 'trunk --ci check'
+        sh 'trunk check --ci --github-repository sufst/vcu-gui --github-commit "$(git rev-parse HEAD)" --github-annotate'
       }
     }
   }
