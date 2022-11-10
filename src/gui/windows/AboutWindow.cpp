@@ -149,17 +149,17 @@ void AboutWindow::AboutComponent::setupLabels()
     const std::initializer_list<Initialiser> initList
         = {{&appNameLabel,
             juce::String(ProjectInfo::projectName),
-            50,
+            50.f,
             juce::Justification::bottomLeft,
             juce::Colour(225, 225, 225)},
            {&versionLabel,
             juce::String("Version ") + ProjectInfo::versionString,
-            18,
+            18.f,
             juce::Justification::topLeft,
             juce::Colour(180, 180, 180)},
            {&commitHashLabel,
             juce::String(GIT_COMMIT_HASH),
-            10,
+            10.f,
             juce::Justification::centredLeft,
             juce::Colour(120, 120, 120)}};
 

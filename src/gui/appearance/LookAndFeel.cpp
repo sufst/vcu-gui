@@ -48,8 +48,8 @@ const juce::Typeface::Ptr LookAndFeel::getKarlaTypeface()
 int LookAndFeel::getTabButtonBestWidth(juce::TabBarButton& button,
                                        int /*tabDepth*/)
 {
-    float totalWidth = button.getTabbedButtonBar().getWidth();
-    float numTabs = button.getTabbedButtonBar().getNumTabs();
+    auto totalWidth = static_cast<float>(button.getTabbedButtonBar().getWidth());
+    auto numTabs = static_cast<float>(button.getTabbedButtonBar().getNumTabs());
     return static_cast<int>(totalWidth / numTabs);
 }
 

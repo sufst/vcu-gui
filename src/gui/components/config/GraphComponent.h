@@ -300,13 +300,13 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
             {
                 int x = i * dirMult * tickSpacingX;
                 auto point = transformPointForPaint({x, 0});
-                g.drawVerticalLine(point.getX(), 0, getHeight());
+                g.drawVerticalLine(point.getX(), 0.f, static_cast<float>(getHeight()));
             }
             else
             {
                 int y = i * dirMult * tickSpacingY;
                 auto point = transformPointForPaint({0, y});
-                g.drawHorizontalLine(point.getY(), 0, getWidth());
+                g.drawHorizontalLine(point.getY(), 0.f, static_cast<float>(getWidth()));
             }
         }
     }
@@ -316,8 +316,8 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
     PointType topCentre = transformPointForPaint({0, getMaxY()});
 
     g.setColour(borderColour);
-    g.drawVerticalLine(topCentre.getX(), 0, getHeight());
-    g.drawHorizontalLine(centreLeft.getY(), 0, getWidth());
+    g.drawVerticalLine(topCentre.getX(), 0.f, static_cast<float>(getHeight()));
+    g.drawHorizontalLine(centreLeft.getY(), 0.f, static_cast<float>(getWidth()));
 }
 
 /**
