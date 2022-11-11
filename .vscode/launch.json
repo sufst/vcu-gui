@@ -12,20 +12,20 @@
       "externalConsole": false,
       "MIMode": "gdb",
       "setupCommands": [
-          {
-              "description": "Enable pretty-printing for gdb",
-              "text": "-enable-pretty-printing",
-              "ignoreFailures": true
-          },
-          {
-              "description":  "Set Disassembly Flavor to Intel",
-              "text": "-gdb-set disassembly-flavor intel",
-              "ignoreFailures": true
-          }
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Set Disassembly Flavor to Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
       ]
     },
     {
-      "name": "(lldb - Mac) Launch",
+      "name": "(lldb - Mac ARM) Launch",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
@@ -34,32 +34,45 @@
       "cwd": "${fileDirname}",
       "environment": [],
       "externalConsole": false,
-      "MIMode": "lldb"
+      "MIMode": "lldb",
+      "targetArchitecture": "arm64"
     },
     {
-        "name": "(lldb - Mac) Unit Test (All)",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
-        "args": [
-            "--test",
-        ],
-        "stopAtEntry": false,
-        "cwd": "${fileDirname}",
-        "environment": [],
-        "externalConsole": false,
-        "MIMode": "lldb"
-      },
+      "name": "(lldb - Mac Intel) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "targetArchitecture": "x64"
+    },
     {
-        "name": "(cppvsdbg-Windows) Launch",
-        "type": "cppvsdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.exe",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${fileDirname}",
-        "environment": [],
-        "externalConsole": false,
-      }
+      "name": "(lldb - Mac ARM) Unit Test (All)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.app/Contents/MacOS/VCU GUI",
+      "args": ["--test"],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "targetArchitecture": "arm64"
+    },
+    {
+      "name": "(cppvsdbg-Windows) Launch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/VCU-GUI_artefacts/Debug/VCU GUI.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false
+    }
   ]
 }
