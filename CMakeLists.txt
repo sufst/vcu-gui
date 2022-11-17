@@ -94,8 +94,8 @@ target_compile_definitions(${TARGET_NAME}
         JUCE_USE_CURL=0
         JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_PRODUCT_NAME>"
         JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:${PROJECT_NAME},JUCE_VERSION>"
-        -DGIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"
-        -DGITHUB_REPO_URL="https://github.com/sufst/vcu-gui"
+        GIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"
+        GITHUB_REPO_URL="https://github.com/sufst/vcu-gui"
 )
 
 # linking
