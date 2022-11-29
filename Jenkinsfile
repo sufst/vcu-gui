@@ -31,4 +31,10 @@ pipeline {
       }
     }
   }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'build/VCU-GUI_artefacts/Release/VCU GUI', fingerprint: true
+    }
+  }
 }
