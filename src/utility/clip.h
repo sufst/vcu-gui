@@ -22,10 +22,8 @@ namespace utility
  */
 template <typename T>
 T clip(T value, T min, T max)
-
-
 {
-                   return std::max(min, std::min(value, max));
+    return std::max(min, std::min(value, max));
 }
 
 } // namespace utility
