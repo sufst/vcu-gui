@@ -1,0 +1,24 @@
+// IDL Schema for Communication protocol
+// This provides the serialisation and deserialisation for the protocol to change VCU parameters
+// Supported commands:
+//    - set <var> <val>  -- set the <var> variable to <val>
+//    - get <var>        -- get the value of <var>
+//    - res <var> <val>  -- return (response) with the <val> for <var>
+//    - save             -- move the current config to EEPROM
+
+namespace Comms;
+
+
+// Store command IDs
+enum CommandID : byte {
+  SET,
+  GET,
+  RES,
+  SAVE
+}
+
+table Command {
+  id : CommandID;
+  var : int16; // make optional
+  val : int16; // make optional
+}
