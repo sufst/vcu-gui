@@ -11,6 +11,8 @@ namespace Comms;
 
 // Store command IDs
 enum CommandID : byte {
+  OPEN,
+  CLOSE,
   SET,
   GET,
   RES,
@@ -18,11 +20,26 @@ enum CommandID : byte {
 }
 
 enum VariableID : byte {
-  
+//Variable Name                    Type    - Size 
+  config_name,                  // String
+  config_version,               // String
+  config_last_revision_date,    // String
+  torque_map,                   // Table   - 2048 Bytes
+  inverter_mode,                // Enum    - 1 Bytes
+  disable_torque_requests,      // Boolean - 1 Bytes
+  apps_1_adc_min,               // Int     - 2 Bytes
+  apps_1_adc_max,               // Int     - 2 Bytes
+  apps_2_adc_min,               // Int     - 2 Bytes 
+  apps_2_adc_max,               // Int     - 2 Bytes
+  bps_adc_min,                  // Int     - 2 Bytes
+  bps_adc_max,                  // Int     - 2 Bytes
+  bps_fully_pressed_threshold,  // Float   - 4 Bytes
+  enable_lapsim_testbench,      // Boolean - 1 Bytes
+  lapsim_testbench_laps         // Int     - 1 Bytes
 }
 
 table Command {
   id : CommandID;
-  var : VariableID; // make optional
-  val : int32; // make optional
+  var : VariableID; // This field is "optional" - obviously it some commands need it
+  val : int32; // This field is also "optional"^^^
 }
