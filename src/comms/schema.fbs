@@ -17,8 +17,12 @@ enum CommandID : byte {
   SAVE
 }
 
+enum VariableID : byte {
+  
+}
+
 table Command {
   id : CommandID;
-  var : int16; // make optional
+  var : VariableID; // make optional
   val : int16; // make optional
 }
