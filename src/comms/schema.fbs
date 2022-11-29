@@ -24,5 +24,5 @@ enum VariableID : byte {
 table Command {
   id : CommandID;
   var : VariableID; // make optional
-  val : int16; // make optional
+  val : int32; // make optional
 }
