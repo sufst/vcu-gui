@@ -12,8 +12,8 @@ runtimes:
     - node@16.14.2
 lint:
   enabled:
-    - prettier@2.7.1
-    - gitleaks@8.15.0
+    - prettier@2.8.0
+    - gitleaks@8.15.1
     - clang-tidy@14.0.0
     - clang-format@14.0.0
   disabled:
@@ -27,9 +27,9 @@ lint:
         - res/**
   compile_commands: json
 cli:
-  version: 1.0.1
+  version: 1.1.0
 plugins:
   sources:
     - id: trunk
-      ref: v0.0.5
+      ref: v0.0.6
       uri: https://github.com/trunk-io/plugins
