@@ -16,7 +16,7 @@ This must be answered with `suc` to show that the VCU is ready and in the correc
 
 ### Write a Parameter Value
 
-To write a new value to a VCU parameter, the `set <var> <val>` command is used. `<var>` must be replaced with the name of the variable (this can be found in the enum in [`schema.fbs`](schema.fbs)) and `<val>` must be replaced with the new value. 
+To write a new value to a VCU parameter, the `set <var> <val>` command is used. `<var>` must be replaced with the name of the variable (this can be found in the enum in [`schema.fbs`](schema.fbs)) and `<val>` must be replaced with the new value.
 
 This should be acknowledged with either `suc` for a successful execution of the `set` command, or `err` if the `set` command failed to execute successfully.
 
@@ -34,6 +34,6 @@ This should be answered with `suc` or `err` respectively if the save is successf
 
 ### End Communication
 
-Once all desired reprogramming has been done, the connection must be closed. To do this the `close` command must be sent. 
+Once all desired reprogramming has been done, the connection must be closed. To do this the `close` command must be sent.
 
-This does not require a response. 
+This does not require a response.
