@@ -93,6 +93,7 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "system_error": "cpp",
-    "typeindex": "cpp"
+    "typeindex": "cpp",
+    "schema_verifier.h": "c"
   }
 }
