@@ -20,5 +20,3 @@ Before working with the CANdapter it is important to note the following informat
 To manually use the CANdapter (that is to send messages to the connected CAN bus from the terminal, or to inspect the outputs) you can follow these instructions. These instructions are for Linux. The same instructions can be applied to any UNIX-like operating system (including macOS and BSD) and can be slightly modified to work on Windows.
 
 Note that some commands depend on your user having the appropriate permissions to access the virtual serial port the CANdapter creates. On some systems, this is controlled by membership to the `dialout` or similar group but this varies per system.
-
-WIP
