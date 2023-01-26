@@ -25,6 +25,7 @@ lint:
         - build/**
         - lib/**
         - res/**
+        - src/comms/lib/**
   compile_commands: json
 cli:
   version: 1.0.1

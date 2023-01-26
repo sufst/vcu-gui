@@ -12,9 +12,7 @@
 Communicator* Communicator::getInstance()
 {
     if (Communicator::_instance == nullptr)
-    {
         Communicator::_instance = new Communicator();
-    }
     return Communicator::_instance;
 }
 
@@ -27,5 +25,17 @@ Communicator::Communicator(/* args */)
 // Descructor for the Communicator object
 // Closes the serial port
 Communicator::~Communicator()
+{
+}
+
+bool Communicator::set()
+{
+}
+
+std::string Communicator::get()
+{
+}
+
+bool Communicator::save()
 {
 }

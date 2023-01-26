@@ -4,6 +4,10 @@
  * @brief  Header file for comms
  *****************************************************************************/
 
+#pragma once
+
+#include <string>
+
 // Singleton pattern to ensure only one communicator is created
 class Communicator
 {
@@ -13,6 +17,10 @@ private:
 
     Communicator();
     ~Communicator();
+
+    bool set();
+    std::string get();
+    bool save();
 
 public:
 
