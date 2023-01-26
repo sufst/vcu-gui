@@ -18,7 +18,7 @@ Communicator* Communicator::getInstance()
 
 // Constructor for the Communicator object
 // Opens the serial port for the candapter
-Communicator::Communicator(/* args */)
+Communicator::Communicator()
 {
 }
 
@@ -37,5 +37,17 @@ std::string Communicator::get()
 }
 
 bool Communicator::save()
+{
+}
+
+bool chunkMsg()
+{
+}
+
+struct Frame makeFrame()
+{
+}
+
+std::vector<struct Frame> makeFrameSequence()
 {
 }

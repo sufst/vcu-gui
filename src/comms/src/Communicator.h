@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 // Singleton pattern to ensure only one communicator is created
 class Communicator
@@ -17,12 +18,17 @@ private:
 
     Communicator();
     ~Communicator();
-
-    bool set();
-    std::string get();
-    bool save();
+    bool chunkMsg();
+    struct Frame makeFrame();
+    std::vector<struct Frame> makeFrameSequence();
 
 public:
 
     static Communicator* getInstance();
+
+    bool set();
+    std::string get();
+    bool save();
 };
+
+struct Frame;
