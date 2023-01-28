@@ -137,30 +137,30 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) Version FLATBUFFERS_FINAL_CLASS
 {
 private:
 
-    int8_t a_;
-    int8_t b_;
-    int8_t c_;
+    uint8_t a_;
+    uint8_t b_;
+    uint8_t c_;
 
 public:
 
     Version() : a_(0), b_(0), c_(0)
     {
     }
-    Version(int8_t _a, int8_t _b, int8_t _c)
+    Version(uint8_t _a, uint8_t _b, uint8_t _c)
         : a_(::flatbuffers::EndianScalar(_a)),
           b_(::flatbuffers::EndianScalar(_b)),
           c_(::flatbuffers::EndianScalar(_c))
     {
     }
-    int8_t a() const
+    uint8_t a() const
     {
         return ::flatbuffers::EndianScalar(a_);
     }
-    int8_t b() const
+    uint8_t b() const
     {
         return ::flatbuffers::EndianScalar(b_);
     }
-    int8_t c() const
+    uint8_t c() const
     {
         return ::flatbuffers::EndianScalar(c_);
     }

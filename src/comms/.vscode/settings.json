@@ -1,6 +1,10 @@
 {
   "files.associations": {
     "string": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "stdexcept": "cpp",
+    "*.tcc": "cpp",
+    "new": "cpp",
+    "fstream": "cpp"
   }
 }

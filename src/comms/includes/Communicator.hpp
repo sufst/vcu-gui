@@ -7,6 +7,7 @@
 #pragma once
 
 #include "flatbuffers/flatbuffer_builder.h"
+#include "schema_generated.h"
 #include <string>
 #include <vector>
 
@@ -23,6 +24,7 @@ private:
     bool chunkMsg();
     struct Frame makeFrame();
     std::vector<struct Frame> makeFrameSequence();
+    Comms::Version stringToVersion(std::string);
 
 public:
 
@@ -31,8 +33,7 @@ public:
 
     bool set();
     std::string get();
-    bool save();
-    bool setConfigDetails(std::string name, std::string version);
+    bool save(std::string name, std::string version);
 };
 
 struct Frame
