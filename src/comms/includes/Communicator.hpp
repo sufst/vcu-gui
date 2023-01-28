@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "flatbuffers/flatbuffer_builder.h"
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@ class Communicator
 private:
 
     static Communicator* _instance;
+    static flatbuffers::FlatBufferBuilder* _fbBuilder;
 
     Communicator();
     ~Communicator();
@@ -25,10 +27,18 @@ private:
 public:
 
     static Communicator* getInstance();
+    static flatbuffers::FlatBufferBuilder* getBuilder();
 
     bool set();
     std::string get();
     bool save();
+    bool setConfigDetails(std::string name, std::string version);
 };
 
-struct Frame;
+struct Frame
+{
+    uint8_t id;
+    uint16_t frameNumber;
+    uint16_t totalFrames;
+    char payload[8];
+};
