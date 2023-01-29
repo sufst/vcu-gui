@@ -24,6 +24,12 @@ private:
     struct Frame makeFrame();
     std::vector<struct Frame> makeFrameSequence();
     Comms::Version stringToVersion(std::string);
+    std::string versionToString(const Comms::Version*);
+    std::tuple<uint8_t*, int> createCommand(Comms::CommandID,
+                                            Comms::VariableID*,
+                                            int32_t*,
+                                            std::string*,
+                                            const Comms::Version*);
 
 public:
 

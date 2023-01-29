@@ -44,6 +44,7 @@ enum VariableID : byte {
 }
 
 // Version are in the format a.b.c
+// NOTE: no part of the version number can have leading zeros as they will be lost
 struct Version {
   a:uint8;
   b:uint8;

@@ -11,6 +11,8 @@
 
 Communicator* Communicator::_instance;
 
+// As we are using the singleton pattern we must allow the user to get a pointer
+// to the running instance
 Communicator* Communicator::getInstance()
 {
     if (Communicator::_instance == nullptr)
@@ -30,37 +32,136 @@ Communicator::~Communicator()
 {
 }
 
+// The SET command
 bool Communicator::set()
 {
     return true;
 }
 
+// The SAVE command
 bool Communicator::save(std::string name, std::string version)
 {
     Comms::Version v = stringToVersion(version);
     const Comms::Version* v_ptr = &v;
 
     // Oh no, now time for serialisation :(
-    flatbuffers::FlatBufferBuilder builder(1024);
-    auto config_name = builder.CreateString(name);
-    auto config_version = builder.CreateStruct(v);
+    // flatbuffers::FlatBufferBuilder builder(1024);
+    // auto config_name = builder.CreateString(name);
+    // auto config_version = builder.CreateStruct(v);
 
-    Comms::CommandBuilder commandBuilder(builder);
-    commandBuilder.add_id(Comms::CommandID_SAVE);
-    commandBuilder.add_config_name(config_name);
-    commandBuilder.add_config_version(v_ptr);
+    // Comms::CommandBuilder commandBuilder(builder);
+    // commandBuilder.add_id(Comms::CommandID_SAVE);
+    // commandBuilder.add_config_name(config_name);
+    // commandBuilder.add_config_version(v_ptr);
 
-    auto command = commandBuilder.Finish();
-    builder.Finish(command);
+    // auto command = commandBuilder.Finish();
+    // builder.Finish(command);
 
-    uint8_t* buf = builder.GetBufferPointer();
-    int size = builder.GetSize();
+    // uint8_t* buf = builder.GetBufferPointer();
+    // int size = builder.GetSize();
 
-    Candapter_MOCK::sendMsg("schema.fb", buf, size);
+    std::tuple<uint8_t*, int> pair
+        = Communicator::createCommand(Comms::CommandID_SAVE,
+                                      nullptr,
+                                      nullptr,
+                                      &name,
+                                      v_ptr);
+
+    Candapter_MOCK::sendMsg("schema.fb", std::get<0>(pair), std::get<1>(pair));
+
+    /* FOR TESTING PURPOSES - DELETE LATER */
+    uint8_t* data = Candapter_MOCK::getMsg("schema.fb");
+    auto received = flatbuffers::GetRoot<Comms::Command>(data);
+
+    auto newName = flatbuffers::GetString(received->config_name());
+    auto newVersion = versionToString(received->config_version());
+
+    std::cout << newName << " - version " << newVersion << std::endl;
 
     return false;
 }
 
+std::tuple<uint8_t*, int>
+Communicator::createCommand(Comms::CommandID cmdID,
+                            Comms::VariableID* varID,
+                            int32_t* val,
+                            std::string* name,
+                            const Comms::Version* version)
+{
+
+    // The flatbuffer builder object
+    flatbuffers::FlatBufferBuilder builder(1024);
+
+    if (cmdID == Comms::CommandID_SAVE)
+    {
+        assert(varID == nullptr);
+        assert(val == nullptr);
+        assert(name != nullptr);
+        assert(version != nullptr);
+
+        auto fbName = builder.CreateString(*name);
+        // auto fbVersion = builder.CreateStruct(version);
+
+        Comms::CommandBuilder commandBuilder(builder);
+
+        commandBuilder.add_id(cmdID);
+        commandBuilder.add_config_name(fbName);
+        commandBuilder.add_config_version(version);
+
+        auto command = commandBuilder.Finish();
+        builder.Finish(command);
+    }
+    else if (cmdID == Comms::CommandID_SET)
+    {
+        assert(varID != nullptr);
+        assert(val != nullptr);
+        assert(name == nullptr);
+        assert(version == nullptr);
+
+        Comms::CommandBuilder commandBuilder(builder);
+
+        commandBuilder.add_id(cmdID);
+        commandBuilder.add_var(*varID);
+        commandBuilder.add_val(*val);
+
+        auto command = commandBuilder.Finish();
+        builder.Finish(command);
+    }
+    else if (cmdID == Comms::CommandID_GET)
+    {
+        assert(varID != nullptr);
+        assert(val == nullptr);
+        assert(name == nullptr);
+        assert(version == nullptr);
+
+        Comms::CommandBuilder commandBuilder(builder);
+
+        commandBuilder.add_id(cmdID);
+        commandBuilder.add_var(*varID);
+
+        auto command = commandBuilder.Finish();
+        builder.Finish(command);
+    }
+    else
+    {
+        throw std::runtime_error(
+            "This function can only be used for SAVE, GET and SET commands!");
+    }
+
+    uint8_t* buf = builder.GetBufferPointer();
+    int size = builder.GetSize();
+
+    return std::tuple<uint8_t*, int>(buf, size);
+}
+
+// Converts a flatbuffer Version struct into the version string X.X.X
+std::string Communicator::versionToString(const Comms::Version* v)
+{
+    return (std::to_string(v->a()) + "." + std::to_string(v->b()) + "."
+            + std::to_string(v->c()));
+}
+
+// Convern the version string X.X.X into a flatbuffer Version struct
 Comms::Version Communicator::stringToVersion(std::string s)
 {
     Comms::Version version;
@@ -103,22 +204,27 @@ Comms::Version Communicator::stringToVersion(std::string s)
     return version;
 }
 
+// The GET command
 std::string Communicator::get()
 {
     return ":(";
 }
 
+// Chunk the serialised data into small enough chunks to be sent in the payload
+// of a CAN frame
 bool chunkMsg()
 {
     return true;
 }
 
+// Make a CAN frame
 Frame makeFrame()
 {
     Frame newFrame = {0, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
     return newFrame;
 }
 
+// Convert a command into a series of CAN frames
 std::vector<Frame> makeFrameSequence()
 {
     return std::vector<Frame>{};
