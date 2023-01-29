@@ -1,3 +1,0 @@
-/home/toby/Code/sufst/vcu-gui/src/comms/build/CMakeFiles/comms.dir
-/home/toby/Code/sufst/vcu-gui/src/comms/build/CMakeFiles/edit_cache.dir
-/home/toby/Code/sufst/vcu-gui/src/comms/build/CMakeFiles/rebuild_cache.dir

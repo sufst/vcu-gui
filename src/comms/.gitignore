@@ -1,0 +1,38 @@
+# folders
+/build
+
+# compilation artefacts and executables
+*.d
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
+*.mod
+*.smod
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
+compile_commands.json
+
+# vscode
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/c_cpp_properties.json
+!.vscode/extensions.json
+
+# macOS
+.DS_Store
+
+# LSP
+.ccls-cache/
