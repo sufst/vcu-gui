@@ -10,23 +10,12 @@
 #include <iostream>
 
 Communicator* Communicator::_instance;
-flatbuffers::FlatBufferBuilder* Communicator::_fbBuilder;
 
 Communicator* Communicator::getInstance()
 {
     if (Communicator::_instance == nullptr)
         Communicator::_instance = new Communicator();
     return Communicator::_instance;
-}
-
-flatbuffers::FlatBufferBuilder* Communicator::getBuilder()
-{
-    if (Communicator::_fbBuilder == nullptr)
-    {
-        flatbuffers::FlatBufferBuilder builder(1024);
-        Communicator::_fbBuilder = &builder;
-    }
-    return Communicator::_fbBuilder;
 }
 
 // Constructor for the Communicator object
@@ -52,22 +41,22 @@ bool Communicator::save(std::string name, std::string version)
     const Comms::Version* v_ptr = &v;
 
     // Oh no, now time for serialisation :(
-    flatbuffers::FlatBufferBuilder* builder = Communicator::getBuilder();
-    auto config_name = builder->CreateString(name);
-    auto config_version = builder->CreateStruct(v);
+    flatbuffers::FlatBufferBuilder builder(1024);
+    auto config_name = builder.CreateString(name);
+    auto config_version = builder.CreateStruct(v);
 
-    Comms::CommandBuilder commandBuilder(*builder);
+    Comms::CommandBuilder commandBuilder(builder);
     commandBuilder.add_id(Comms::CommandID_SAVE);
     commandBuilder.add_config_name(config_name);
     commandBuilder.add_config_version(v_ptr);
 
-    flatbuffers::FlatBufferBuilder::NotNested
+    auto command = commandBuilder.Finish();
+    builder.Finish(command);
 
-        auto command
-        = commandBuilder.Finish();
-    uint8_t* command_ptr = (uint8_t*) &command;
+    uint8_t* buf = builder.GetBufferPointer();
+    int size = builder.GetSize();
 
-    Candapter_MOCK::sendMsg("schema.fb", command_ptr);
+    Candapter_MOCK::sendMsg("schema.fb", buf, size);
 
     return false;
 }

@@ -17,7 +17,6 @@ class Communicator
 private:
 
     static Communicator* _instance;
-    static flatbuffers::FlatBufferBuilder* _fbBuilder;
 
     Communicator();
     ~Communicator();
@@ -29,7 +28,6 @@ private:
 public:
 
     static Communicator* getInstance();
-    static flatbuffers::FlatBufferBuilder* getBuilder();
 
     bool set();
     std::string get();

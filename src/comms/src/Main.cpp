@@ -7,7 +7,6 @@ int main(int argc, char const* argv[])
     std::string n;
     std::cout << "Config name: ";
     std::cin >> n;
-    std::cout << std::endl;
     std::string v;
     std::cout << "Config version: ";
     std::cin >> v;
