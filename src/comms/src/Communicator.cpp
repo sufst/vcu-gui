@@ -44,22 +44,6 @@ bool Communicator::save(std::string name, std::string version)
     Comms::Version v = stringToVersion(version);
     const Comms::Version* v_ptr = &v;
 
-    // Oh no, now time for serialisation :(
-    // flatbuffers::FlatBufferBuilder builder(1024);
-    // auto config_name = builder.CreateString(name);
-    // auto config_version = builder.CreateStruct(v);
-
-    // Comms::CommandBuilder commandBuilder(builder);
-    // commandBuilder.add_id(Comms::CommandID_SAVE);
-    // commandBuilder.add_config_name(config_name);
-    // commandBuilder.add_config_version(v_ptr);
-
-    // auto command = commandBuilder.Finish();
-    // builder.Finish(command);
-
-    // uint8_t* buf = builder.GetBufferPointer();
-    // int size = builder.GetSize();
-
     std::tuple<uint8_t*, int> pair
         = Communicator::createCommand(Comms::CommandID_SAVE,
                                       nullptr,
