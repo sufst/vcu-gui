@@ -10,11 +10,6 @@ public:
 
     static void sendMsg(std::string name, uint8_t* data, int size)
     {
-        // std::ofstream outfile;
-        // outfile.open(name, std::ios::binary | std::ios::out);
-        // outfile << data;
-        // outfile.close();
-
         auto file = std::fstream(name, std::ios::binary | std::ios::out);
         file.write((char*) data, size);
         file.close();

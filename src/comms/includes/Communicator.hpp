@@ -35,9 +35,10 @@ public:
 
     static Communicator* getInstance();
 
-    bool set();
-    std::string get();
-    bool save(std::string name, std::string version);
+    bool set(Comms::VariableID, int32_t);
+    std::string get(Comms::VariableID);
+    std::string get(std::string);
+    bool save(std::string, std::string);
 };
 
 struct Frame

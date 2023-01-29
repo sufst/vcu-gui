@@ -33,8 +33,12 @@ Communicator::~Communicator()
 }
 
 // The SET command
-bool Communicator::set()
+bool Communicator::set(Comms::VariableID var, int32_t val)
 {
+
+    /*
+    REWRITE TO TAKE A STRUCT WITH EVERY VALUE EACH TIME
+    */
     return true;
 }
 
@@ -189,7 +193,7 @@ Comms::Version Communicator::stringToVersion(std::string s)
 }
 
 // The GET command
-std::string Communicator::get()
+std::string Communicator::get(Comms::VariableID)
 {
     return ":(";
 }

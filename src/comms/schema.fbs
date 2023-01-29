@@ -26,9 +26,6 @@ enum CommandID : byte {
 
 enum VariableID : byte {
 //Variable Name                    Type    - Size 
-  config_name,                  // String
-  config_version,               // String
-  config_last_revision_date,    // String
   torque_map,                   // Table   - 2048 Bytes
   inverter_mode,                // Enum    - 1 Bytes
   disable_torque_requests,      // Boolean - 1 Bytes

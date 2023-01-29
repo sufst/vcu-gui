@@ -63,31 +63,25 @@ inline const char* EnumNameCommandID(CommandID e)
 
 enum VariableID : int8_t
 {
-    VariableID_config_name = 0,
-    VariableID_config_version = 1,
-    VariableID_config_last_revision_date = 2,
-    VariableID_torque_map = 3,
-    VariableID_inverter_mode = 4,
-    VariableID_disable_torque_requests = 5,
-    VariableID_apps_1_adc_min = 6,
-    VariableID_apps_1_adc_max = 7,
-    VariableID_apps_2_adc_min = 8,
-    VariableID_apps_2_adc_max = 9,
-    VariableID_bps_adc_min = 10,
-    VariableID_bps_adc_max = 11,
-    VariableID_bps_fully_pressed_threshold = 12,
-    VariableID_enable_lapsim_testbench = 13,
-    VariableID_lapsim_testbench_laps = 14,
-    VariableID_MIN = VariableID_config_name,
+    VariableID_torque_map = 0,
+    VariableID_inverter_mode = 1,
+    VariableID_disable_torque_requests = 2,
+    VariableID_apps_1_adc_min = 3,
+    VariableID_apps_1_adc_max = 4,
+    VariableID_apps_2_adc_min = 5,
+    VariableID_apps_2_adc_max = 6,
+    VariableID_bps_adc_min = 7,
+    VariableID_bps_adc_max = 8,
+    VariableID_bps_fully_pressed_threshold = 9,
+    VariableID_enable_lapsim_testbench = 10,
+    VariableID_lapsim_testbench_laps = 11,
+    VariableID_MIN = VariableID_torque_map,
     VariableID_MAX = VariableID_lapsim_testbench_laps
 };
 
-inline const VariableID (&EnumValuesVariableID())[15]
+inline const VariableID (&EnumValuesVariableID())[12]
 {
-    static const VariableID values[] = {VariableID_config_name,
-                                        VariableID_config_version,
-                                        VariableID_config_last_revision_date,
-                                        VariableID_torque_map,
+    static const VariableID values[] = {VariableID_torque_map,
                                         VariableID_inverter_mode,
                                         VariableID_disable_torque_requests,
                                         VariableID_apps_1_adc_min,
@@ -104,10 +98,7 @@ inline const VariableID (&EnumValuesVariableID())[15]
 
 inline const char* const* EnumNamesVariableID()
 {
-    static const char* const names[16] = {"config_name",
-                                          "config_version",
-                                          "config_last_revision_date",
-                                          "torque_map",
+    static const char* const names[13] = {"torque_map",
                                           "inverter_mode",
                                           "disable_torque_requests",
                                           "apps_1_adc_min",
@@ -126,7 +117,7 @@ inline const char* const* EnumNamesVariableID()
 inline const char* EnumNameVariableID(VariableID e)
 {
     if (::flatbuffers::IsOutRange(e,
-                                  VariableID_config_name,
+                                  VariableID_torque_map,
                                   VariableID_lapsim_testbench_laps))
         return "";
     const size_t index = static_cast<size_t>(e);
@@ -252,7 +243,7 @@ struct CommandBuilder
 inline ::flatbuffers::Offset<Command>
 CreateCommand(::flatbuffers::FlatBufferBuilder& _fbb,
               Comms::CommandID id = Comms::CommandID_OPEN,
-              Comms::VariableID var = Comms::VariableID_config_name,
+              Comms::VariableID var = Comms::VariableID_torque_map,
               int32_t val = 0,
               ::flatbuffers::Offset<::flatbuffers::String> config_name = 0,
               const Comms::Version* config_version = nullptr)
@@ -269,7 +260,7 @@ CreateCommand(::flatbuffers::FlatBufferBuilder& _fbb,
 inline ::flatbuffers::Offset<Command>
 CreateCommandDirect(::flatbuffers::FlatBufferBuilder& _fbb,
                     Comms::CommandID id = Comms::CommandID_OPEN,
-                    Comms::VariableID var = Comms::VariableID_config_name,
+                    Comms::VariableID var = Comms::VariableID_torque_map,
                     int32_t val = 0,
                     const char* config_name = nullptr,
                     const Comms::Version* config_version = nullptr)
