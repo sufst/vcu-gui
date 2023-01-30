@@ -125,7 +125,7 @@ public:
         (void) padding0__;
         (void) padding1__;
     }
-    VariableVals(Comms::CommandID _inverter_mode_val,
+    VariableVals(Comms::InverterMode _inverter_mode_val,
                  bool _disable_torque_requests_val,
                  uint16_t _apps_1_adc_min_val,
                  uint16_t _apps_1_adc_max_val,
@@ -159,7 +159,7 @@ public:
         (void) padding1__;
     }
     VariableVals(::flatbuffers::span<const uint8_t, 2048> _torque_map_val,
-                 Comms::CommandID _inverter_mode_val,
+                 Comms::InverterMode _inverter_mode_val,
                  bool _disable_torque_requests_val,
                  uint16_t _apps_1_adc_min_val,
                  uint16_t _apps_1_adc_max_val,
@@ -198,9 +198,9 @@ public:
     {
         return &::flatbuffers::CastToArray(torque_map_val_);
     }
-    Comms::CommandID inverter_mode_val() const
+    Comms::InverterMode inverter_mode_val() const
     {
-        return static_cast<Comms::CommandID>(
+        return static_cast<Comms::InverterMode>(
             ::flatbuffers::EndianScalar(inverter_mode_val_));
     }
     bool disable_torque_requests_val() const

@@ -24,9 +24,14 @@ enum CommandID : byte {
   SAVE
 }
 
+enum InverterMode : byte {
+  TORQUE,
+  SPEED
+}
+
 struct VariableVals {
   torque_map_val : [uint8 : 2048];
-  inverter_mode_val: CommandID;
+  inverter_mode_val: InverterMode;
   disable_torque_requests_val : bool;
   apps_1_adc_min_val : uint16;
   apps_1_adc_max_val : uint16;
@@ -37,11 +42,6 @@ struct VariableVals {
   bps_fully_pressed_threshold_val : uint32;
   enable_lapsim_testbench_val: bool;      
   lapsim_testbench_laps_val: uint8;        
-}
-
-enum InverterMode : byte {
-  TORQUE,
-  SPEED,
 }
 
 // Version are in the format a.b.c
