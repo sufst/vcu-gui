@@ -6,7 +6,7 @@ int main(int argc, char const* argv[])
     Communicator* c = Communicator::getInstance();
 
     std::string cmd;
-    while (cmd != "exit")
+    while (true)
     {
         std::cout << "Command: ";
         std::cin >> cmd;
@@ -21,7 +21,7 @@ int main(int argc, char const* argv[])
             std::cout << std::endl;
             c->save(n, v);
         }
-        else if (cmd == "exit")
+        else if (cmd == "exit" || cmd == ":q")
         {
             break;
         }

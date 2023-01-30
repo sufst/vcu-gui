@@ -32,9 +32,35 @@ Communicator::~Communicator()
 {
 }
 
-// The SET command
-bool Communicator::set(Comms::VariableVals)
+// The GET command
+const Comms::VariableVals* Communicator::get()
 {
+    Comms::VariableVals vals;
+
+    uint8_t* buf = Candapter_MOCK::getMsg("data.fb");
+    auto cmd = flatbuffers::GetRoot<Comms::Command>(buf);
+
+    auto data = cmd->vals();
+
+    Communicator::printVariables(data);
+
+    return data;
+}
+
+// The SET command
+bool Communicator::set(Comms::VariableVals vals)
+{
+
+    std::tuple<uint8_t*, int> pair
+        = Communicator::createCommand(Comms::CommandID_SET,
+                                      &vals,
+                                      nullptr,
+                                      nullptr);
+
+    Candapter_MOCK::sendMsg("data.fb", std::get<0>(pair), std::get<1>(pair));
+
+    std::cout << "Data written" << std::endl;
+
     return true;
 }
 
@@ -50,10 +76,10 @@ bool Communicator::save(std::string name, std::string version)
                                       &name,
                                       v_ptr);
 
-    Candapter_MOCK::sendMsg("schema.fb", std::get<0>(pair), std::get<1>(pair));
+    Candapter_MOCK::sendMsg("version.fb", std::get<0>(pair), std::get<1>(pair));
 
     /* FOR TESTING PURPOSES - DELETE LATER */
-    uint8_t* data = Candapter_MOCK::getMsg("schema.fb");
+    uint8_t* data = Candapter_MOCK::getMsg("version.fb");
     auto received = flatbuffers::GetRoot<Comms::Command>(data);
 
     auto newName = flatbuffers::GetString(received->config_name());
@@ -181,12 +207,6 @@ Comms::Version Communicator::stringToVersion(std::string s)
     return version;
 }
 
-// The GET command
-Comms::VariableVals Communicator::get()
-{
-    return Comms::VariableVals();
-}
-
 // Chunk the serialised data into small enough chunks to be sent in the payload
 // of a CAN frame
 bool chunkMsg()
@@ -205,4 +225,35 @@ Frame makeFrame()
 std::vector<Frame> makeFrameSequence()
 {
     return std::vector<Frame>{};
+}
+
+void Communicator::printVariables(const Comms::VariableVals* data)
+{
+    std::cout << "Variable:                       Val" << std::endl;
+    std::cout << "----------------------------------------------------"
+              << std::endl;
+    std::cout << "Torque Map:                    " << data->torque_map_val()
+              << std::endl;
+    std::cout << "Inverter Mode:                 " << data->torque_map_val()
+              << std::endl;
+    std::cout << "Disable Torque Requests:       " << data->torque_map_val()
+              << std::endl;
+    std::cout << "APPS 1 ADC Min:                " << data->torque_map_val()
+              << std::endl;
+    std::cout << "APPS 1 ADC Max:                " << data->torque_map_val()
+              << std::endl;
+    std::cout << "APPS 2 ADC Min:                " << data->torque_map_val()
+              << std::endl;
+    std::cout << "APPS 2 ADC Max:                " << data->torque_map_val()
+              << std::endl;
+    std::cout << "BPS ADC Min:                   " << data->torque_map_val()
+              << std::endl;
+    std::cout << "BPS ADC Max:                   " << data->torque_map_val()
+              << std::endl;
+    std::cout << "BPS Fully Pressed Threshold:   " << data->torque_map_val()
+              << std::endl;
+    std::cout << "Enable Lapsim Testbench:       " << data->torque_map_val()
+              << std::endl;
+    std::cout << "Lapsim Testbench Laps:         " << data->torque_map_val()
+              << std::endl;
 }

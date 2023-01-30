@@ -29,13 +29,14 @@ private:
                                             const Comms::VariableVals*,
                                             std::string*,
                                             const Comms::Version*);
+    void printVariables(const Comms::VariableVals*);
 
 public:
 
     static Communicator* getInstance();
 
     bool set(Comms::VariableVals);
-    Comms::VariableVals get();
+    const Comms::VariableVals* get();
     bool save(std::string, std::string);
 };
 
