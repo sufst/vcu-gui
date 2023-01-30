@@ -16,15 +16,15 @@ This must be answered with `suc` to show that the VCU is ready and in the correc
 
 ### Write a Parameter Value
 
-To write a new value to a VCU parameter, the `set <var> <val>` command is used. `<var>` must be replaced with the name of the variable (this can be found in the enum in [`schema.fbs`](schema.fbs)) and `<val>` must be replaced with the new value.
+To write a new value to the VCU parameters, the `set <vals>` command is used. `<vals>` must be replaced with the struct of the variable values.
 
 This should be acknowledged with either `suc` for a successful execution of the `set` command, or `err` if the `set` command failed to execute successfully.
 
 ### Read a Parameter Value
 
-To retrieve a value from the VCU, the `get <var>` command must be used. `<var>` must be replaced with the name of the variable (this can be found in the enum in [`schema.fbs`](schema.fbs)).
+To retrieve values from the VCU, the `get` command must be used. This returns a struct holding the values of all of the variables.
 
-Every `get` command should be answered with either `ret` or `err`. If the read is successful, `ret <val>` is returned where `<val>` is the current value of the requested variable. If the read fails, then `err` should be returned.
+Every `get` command should be answered with either `ret` or `err`. If the read is successful, `ret <vals>` is returned where `<vals>` is the struct of the variable values. If the read fails, then `err` should be returned.
 
 ### Save the Current Configuration
 

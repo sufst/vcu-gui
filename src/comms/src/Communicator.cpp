@@ -33,12 +33,8 @@ Communicator::~Communicator()
 }
 
 // The SET command
-bool Communicator::set(Comms::VariableID var, int32_t val)
+bool Communicator::set(Comms::VariableVals)
 {
-
-    /*
-    REWRITE TO TAKE A STRUCT WITH EVERY VALUE EACH TIME
-    */
     return true;
 }
 
@@ -50,7 +46,6 @@ bool Communicator::save(std::string name, std::string version)
 
     std::tuple<uint8_t*, int> pair
         = Communicator::createCommand(Comms::CommandID_SAVE,
-                                      nullptr,
                                       nullptr,
                                       &name,
                                       v_ptr);
@@ -71,8 +66,7 @@ bool Communicator::save(std::string name, std::string version)
 
 std::tuple<uint8_t*, int>
 Communicator::createCommand(Comms::CommandID cmdID,
-                            Comms::VariableID* varID,
-                            int32_t* val,
+                            const Comms::VariableVals* vals,
                             std::string* name,
                             const Comms::Version* version)
 {
@@ -82,8 +76,7 @@ Communicator::createCommand(Comms::CommandID cmdID,
 
     if (cmdID == Comms::CommandID_SAVE)
     {
-        assert(varID == nullptr);
-        assert(val == nullptr);
+        assert(vals == nullptr);
         assert(name != nullptr);
         assert(version != nullptr);
 
@@ -101,31 +94,27 @@ Communicator::createCommand(Comms::CommandID cmdID,
     }
     else if (cmdID == Comms::CommandID_SET)
     {
-        assert(varID != nullptr);
-        assert(val != nullptr);
+        assert(vals != nullptr);
         assert(name == nullptr);
         assert(version == nullptr);
 
         Comms::CommandBuilder commandBuilder(builder);
 
         commandBuilder.add_id(cmdID);
-        commandBuilder.add_var(*varID);
-        commandBuilder.add_val(*val);
+        commandBuilder.add_vals(vals);
 
         auto command = commandBuilder.Finish();
         builder.Finish(command);
     }
     else if (cmdID == Comms::CommandID_GET)
     {
-        assert(varID != nullptr);
-        assert(val == nullptr);
+        assert(vals == nullptr);
         assert(name == nullptr);
         assert(version == nullptr);
 
         Comms::CommandBuilder commandBuilder(builder);
 
         commandBuilder.add_id(cmdID);
-        commandBuilder.add_var(*varID);
 
         auto command = commandBuilder.Finish();
         builder.Finish(command);
@@ -193,9 +182,9 @@ Comms::Version Communicator::stringToVersion(std::string s)
 }
 
 // The GET command
-std::string Communicator::get(Comms::VariableID)
+Comms::VariableVals Communicator::get()
 {
-    return ":(";
+    return Comms::VariableVals();
 }
 
 // Chunk the serialised data into small enough chunks to be sent in the payload

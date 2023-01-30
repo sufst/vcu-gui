@@ -26,8 +26,7 @@ private:
     Comms::Version stringToVersion(std::string);
     std::string versionToString(const Comms::Version*);
     std::tuple<uint8_t*, int> createCommand(Comms::CommandID,
-                                            Comms::VariableID*,
-                                            int32_t*,
+                                            const Comms::VariableVals*,
                                             std::string*,
                                             const Comms::Version*);
 
@@ -35,9 +34,8 @@ public:
 
     static Communicator* getInstance();
 
-    bool set(Comms::VariableID, int32_t);
-    std::string get(Comms::VariableID);
-    std::string get(std::string);
+    bool set(Comms::VariableVals);
+    Comms::VariableVals get();
     bool save(std::string, std::string);
 };
 

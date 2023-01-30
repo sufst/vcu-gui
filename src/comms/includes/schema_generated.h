@@ -14,6 +14,8 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 && FLATBUFFERS_VERSION_MINOR == 1
 namespace Comms
 {
 
+struct VariableVals;
+
 struct Version;
 
 struct Command;
@@ -61,68 +63,188 @@ inline const char* EnumNameCommandID(CommandID e)
     return EnumNamesCommandID()[index];
 }
 
-enum VariableID : int8_t
+enum InverterMode : int8_t
 {
-    VariableID_torque_map = 0,
-    VariableID_inverter_mode = 1,
-    VariableID_disable_torque_requests = 2,
-    VariableID_apps_1_adc_min = 3,
-    VariableID_apps_1_adc_max = 4,
-    VariableID_apps_2_adc_min = 5,
-    VariableID_apps_2_adc_max = 6,
-    VariableID_bps_adc_min = 7,
-    VariableID_bps_adc_max = 8,
-    VariableID_bps_fully_pressed_threshold = 9,
-    VariableID_enable_lapsim_testbench = 10,
-    VariableID_lapsim_testbench_laps = 11,
-    VariableID_MIN = VariableID_torque_map,
-    VariableID_MAX = VariableID_lapsim_testbench_laps
+    InverterMode_TORQUE = 0,
+    InverterMode_SPEED = 1,
+    InverterMode_MIN = InverterMode_TORQUE,
+    InverterMode_MAX = InverterMode_SPEED
 };
 
-inline const VariableID (&EnumValuesVariableID())[12]
+inline const InverterMode (&EnumValuesInverterMode())[2]
 {
-    static const VariableID values[] = {VariableID_torque_map,
-                                        VariableID_inverter_mode,
-                                        VariableID_disable_torque_requests,
-                                        VariableID_apps_1_adc_min,
-                                        VariableID_apps_1_adc_max,
-                                        VariableID_apps_2_adc_min,
-                                        VariableID_apps_2_adc_max,
-                                        VariableID_bps_adc_min,
-                                        VariableID_bps_adc_max,
-                                        VariableID_bps_fully_pressed_threshold,
-                                        VariableID_enable_lapsim_testbench,
-                                        VariableID_lapsim_testbench_laps};
+    static const InverterMode values[]
+        = {InverterMode_TORQUE, InverterMode_SPEED};
     return values;
 }
 
-inline const char* const* EnumNamesVariableID()
+inline const char* const* EnumNamesInverterMode()
 {
-    static const char* const names[13] = {"torque_map",
-                                          "inverter_mode",
-                                          "disable_torque_requests",
-                                          "apps_1_adc_min",
-                                          "apps_1_adc_max",
-                                          "apps_2_adc_min",
-                                          "apps_2_adc_max",
-                                          "bps_adc_min",
-                                          "bps_adc_max",
-                                          "bps_fully_pressed_threshold",
-                                          "enable_lapsim_testbench",
-                                          "lapsim_testbench_laps",
-                                          nullptr};
+    static const char* const names[3] = {"TORQUE", "SPEED", nullptr};
     return names;
 }
 
-inline const char* EnumNameVariableID(VariableID e)
+inline const char* EnumNameInverterMode(InverterMode e)
 {
-    if (::flatbuffers::IsOutRange(e,
-                                  VariableID_torque_map,
-                                  VariableID_lapsim_testbench_laps))
+    if (::flatbuffers::IsOutRange(e, InverterMode_TORQUE, InverterMode_SPEED))
         return "";
     const size_t index = static_cast<size_t>(e);
-    return EnumNamesVariableID()[index];
+    return EnumNamesInverterMode()[index];
 }
+
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) VariableVals FLATBUFFERS_FINAL_CLASS
+{
+private:
+
+    uint8_t torque_map_val_[2048];
+    int8_t inverter_mode_val_;
+    uint8_t disable_torque_requests_val_;
+    uint16_t apps_1_adc_min_val_;
+    uint16_t apps_1_adc_max_val_;
+    uint16_t apps_2_adc_min_val_;
+    uint16_t apps_2_adc_max_val_;
+    uint16_t bps_adc_min_val_;
+    uint16_t bps_adc_max_val_;
+    int16_t padding0__;
+    uint32_t bps_fully_pressed_threshold_val_;
+    uint8_t enable_lapsim_testbench_val_;
+    uint8_t lapsim_testbench_laps_val_;
+    int16_t padding1__;
+
+public:
+
+    VariableVals()
+        : torque_map_val_(), inverter_mode_val_(0),
+          disable_torque_requests_val_(0), apps_1_adc_min_val_(0),
+          apps_1_adc_max_val_(0), apps_2_adc_min_val_(0),
+          apps_2_adc_max_val_(0), bps_adc_min_val_(0), bps_adc_max_val_(0),
+          padding0__(0), bps_fully_pressed_threshold_val_(0),
+          enable_lapsim_testbench_val_(0), lapsim_testbench_laps_val_(0),
+          padding1__(0)
+    {
+        (void) padding0__;
+        (void) padding1__;
+    }
+    VariableVals(Comms::CommandID _inverter_mode_val,
+                 bool _disable_torque_requests_val,
+                 uint16_t _apps_1_adc_min_val,
+                 uint16_t _apps_1_adc_max_val,
+                 uint16_t _apps_2_adc_min_val,
+                 uint16_t _apps_2_adc_max_val,
+                 uint16_t _bps_adc_min_val,
+                 uint16_t _bps_adc_max_val,
+                 uint32_t _bps_fully_pressed_threshold_val,
+                 bool _enable_lapsim_testbench_val,
+                 uint8_t _lapsim_testbench_laps_val)
+        : torque_map_val_(), inverter_mode_val_(::flatbuffers::EndianScalar(
+                                 static_cast<int8_t>(_inverter_mode_val))),
+          disable_torque_requests_val_(::flatbuffers::EndianScalar(
+              static_cast<uint8_t>(_disable_torque_requests_val))),
+          apps_1_adc_min_val_(::flatbuffers::EndianScalar(_apps_1_adc_min_val)),
+          apps_1_adc_max_val_(::flatbuffers::EndianScalar(_apps_1_adc_max_val)),
+          apps_2_adc_min_val_(::flatbuffers::EndianScalar(_apps_2_adc_min_val)),
+          apps_2_adc_max_val_(::flatbuffers::EndianScalar(_apps_2_adc_max_val)),
+          bps_adc_min_val_(::flatbuffers::EndianScalar(_bps_adc_min_val)),
+          bps_adc_max_val_(::flatbuffers::EndianScalar(_bps_adc_max_val)),
+          padding0__(0),
+          bps_fully_pressed_threshold_val_(
+              ::flatbuffers::EndianScalar(_bps_fully_pressed_threshold_val)),
+          enable_lapsim_testbench_val_(::flatbuffers::EndianScalar(
+              static_cast<uint8_t>(_enable_lapsim_testbench_val))),
+          lapsim_testbench_laps_val_(
+              ::flatbuffers::EndianScalar(_lapsim_testbench_laps_val)),
+          padding1__(0)
+    {
+        (void) padding0__;
+        (void) padding1__;
+    }
+    VariableVals(::flatbuffers::span<const uint8_t, 2048> _torque_map_val,
+                 Comms::CommandID _inverter_mode_val,
+                 bool _disable_torque_requests_val,
+                 uint16_t _apps_1_adc_min_val,
+                 uint16_t _apps_1_adc_max_val,
+                 uint16_t _apps_2_adc_min_val,
+                 uint16_t _apps_2_adc_max_val,
+                 uint16_t _bps_adc_min_val,
+                 uint16_t _bps_adc_max_val,
+                 uint32_t _bps_fully_pressed_threshold_val,
+                 bool _enable_lapsim_testbench_val,
+                 uint8_t _lapsim_testbench_laps_val)
+        : inverter_mode_val_(::flatbuffers::EndianScalar(
+            static_cast<int8_t>(_inverter_mode_val))),
+          disable_torque_requests_val_(::flatbuffers::EndianScalar(
+              static_cast<uint8_t>(_disable_torque_requests_val))),
+          apps_1_adc_min_val_(::flatbuffers::EndianScalar(_apps_1_adc_min_val)),
+          apps_1_adc_max_val_(::flatbuffers::EndianScalar(_apps_1_adc_max_val)),
+          apps_2_adc_min_val_(::flatbuffers::EndianScalar(_apps_2_adc_min_val)),
+          apps_2_adc_max_val_(::flatbuffers::EndianScalar(_apps_2_adc_max_val)),
+          bps_adc_min_val_(::flatbuffers::EndianScalar(_bps_adc_min_val)),
+          bps_adc_max_val_(::flatbuffers::EndianScalar(_bps_adc_max_val)),
+          padding0__(0),
+          bps_fully_pressed_threshold_val_(
+              ::flatbuffers::EndianScalar(_bps_fully_pressed_threshold_val)),
+          enable_lapsim_testbench_val_(::flatbuffers::EndianScalar(
+              static_cast<uint8_t>(_enable_lapsim_testbench_val))),
+          lapsim_testbench_laps_val_(
+              ::flatbuffers::EndianScalar(_lapsim_testbench_laps_val)),
+          padding1__(0)
+    {
+        ::flatbuffers::CastToArray(torque_map_val_)
+            .CopyFromSpan(_torque_map_val);
+        (void) padding0__;
+        (void) padding1__;
+    }
+    const ::flatbuffers::Array<uint8_t, 2048>* torque_map_val() const
+    {
+        return &::flatbuffers::CastToArray(torque_map_val_);
+    }
+    Comms::CommandID inverter_mode_val() const
+    {
+        return static_cast<Comms::CommandID>(
+            ::flatbuffers::EndianScalar(inverter_mode_val_));
+    }
+    bool disable_torque_requests_val() const
+    {
+        return ::flatbuffers::EndianScalar(disable_torque_requests_val_) != 0;
+    }
+    uint16_t apps_1_adc_min_val() const
+    {
+        return ::flatbuffers::EndianScalar(apps_1_adc_min_val_);
+    }
+    uint16_t apps_1_adc_max_val() const
+    {
+        return ::flatbuffers::EndianScalar(apps_1_adc_max_val_);
+    }
+    uint16_t apps_2_adc_min_val() const
+    {
+        return ::flatbuffers::EndianScalar(apps_2_adc_min_val_);
+    }
+    uint16_t apps_2_adc_max_val() const
+    {
+        return ::flatbuffers::EndianScalar(apps_2_adc_max_val_);
+    }
+    uint16_t bps_adc_min_val() const
+    {
+        return ::flatbuffers::EndianScalar(bps_adc_min_val_);
+    }
+    uint16_t bps_adc_max_val() const
+    {
+        return ::flatbuffers::EndianScalar(bps_adc_max_val_);
+    }
+    uint32_t bps_fully_pressed_threshold_val() const
+    {
+        return ::flatbuffers::EndianScalar(bps_fully_pressed_threshold_val_);
+    }
+    bool enable_lapsim_testbench_val() const
+    {
+        return ::flatbuffers::EndianScalar(enable_lapsim_testbench_val_) != 0;
+    }
+    uint8_t lapsim_testbench_laps_val() const
+    {
+        return ::flatbuffers::EndianScalar(lapsim_testbench_laps_val_);
+    }
+};
+FLATBUFFERS_STRUCT_END(VariableVals, 2072);
 
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) Version FLATBUFFERS_FINAL_CLASS
 {
@@ -164,22 +286,17 @@ struct Command FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE
     {
         VT_ID = 4,
-        VT_VAR = 6,
-        VT_VAL = 8,
-        VT_CONFIG_NAME = 10,
-        VT_CONFIG_VERSION = 12
+        VT_VALS = 6,
+        VT_CONFIG_NAME = 8,
+        VT_CONFIG_VERSION = 10
     };
     Comms::CommandID id() const
     {
         return static_cast<Comms::CommandID>(GetField<int8_t>(VT_ID, 0));
     }
-    Comms::VariableID var() const
+    const Comms::VariableVals* vals() const
     {
-        return static_cast<Comms::VariableID>(GetField<int8_t>(VT_VAR, 0));
-    }
-    int32_t val() const
-    {
-        return GetField<int32_t>(VT_VAL, 0);
+        return GetStruct<const Comms::VariableVals*>(VT_VALS);
     }
     const ::flatbuffers::String* config_name() const
     {
@@ -193,8 +310,7 @@ struct Command FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     {
         return VerifyTableStart(verifier)
                && VerifyField<int8_t>(verifier, VT_ID, 1)
-               && VerifyField<int8_t>(verifier, VT_VAR, 1)
-               && VerifyField<int32_t>(verifier, VT_VAL, 4)
+               && VerifyField<Comms::VariableVals>(verifier, VT_VALS, 4)
                && VerifyOffset(verifier, VT_CONFIG_NAME)
                && verifier.VerifyString(config_name())
                && VerifyField<Comms::Version>(verifier, VT_CONFIG_VERSION, 1)
@@ -211,13 +327,9 @@ struct CommandBuilder
     {
         fbb_.AddElement<int8_t>(Command::VT_ID, static_cast<int8_t>(id), 0);
     }
-    void add_var(Comms::VariableID var)
+    void add_vals(const Comms::VariableVals* vals)
     {
-        fbb_.AddElement<int8_t>(Command::VT_VAR, static_cast<int8_t>(var), 0);
-    }
-    void add_val(int32_t val)
-    {
-        fbb_.AddElement<int32_t>(Command::VT_VAL, val, 0);
+        fbb_.AddStruct(Command::VT_VALS, vals);
     }
     void
     add_config_name(::flatbuffers::Offset<::flatbuffers::String> config_name)
@@ -243,16 +355,14 @@ struct CommandBuilder
 inline ::flatbuffers::Offset<Command>
 CreateCommand(::flatbuffers::FlatBufferBuilder& _fbb,
               Comms::CommandID id = Comms::CommandID_OPEN,
-              Comms::VariableID var = Comms::VariableID_torque_map,
-              int32_t val = 0,
+              const Comms::VariableVals* vals = nullptr,
               ::flatbuffers::Offset<::flatbuffers::String> config_name = 0,
               const Comms::Version* config_version = nullptr)
 {
     CommandBuilder builder_(_fbb);
     builder_.add_config_version(config_version);
     builder_.add_config_name(config_name);
-    builder_.add_val(val);
-    builder_.add_var(var);
+    builder_.add_vals(vals);
     builder_.add_id(id);
     return builder_.Finish();
 }
@@ -260,18 +370,12 @@ CreateCommand(::flatbuffers::FlatBufferBuilder& _fbb,
 inline ::flatbuffers::Offset<Command>
 CreateCommandDirect(::flatbuffers::FlatBufferBuilder& _fbb,
                     Comms::CommandID id = Comms::CommandID_OPEN,
-                    Comms::VariableID var = Comms::VariableID_torque_map,
-                    int32_t val = 0,
+                    const Comms::VariableVals* vals = nullptr,
                     const char* config_name = nullptr,
                     const Comms::Version* config_version = nullptr)
 {
     auto config_name__ = config_name ? _fbb.CreateString(config_name) : 0;
-    return Comms::CreateCommand(_fbb,
-                                id,
-                                var,
-                                val,
-                                config_name__,
-                                config_version);
+    return Comms::CreateCommand(_fbb, id, vals, config_name__, config_version);
 }
 
 } // namespace Comms
