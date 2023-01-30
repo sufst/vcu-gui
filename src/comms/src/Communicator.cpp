@@ -287,17 +287,18 @@ void Communicator::printVariables(const Comms::VariableVals* data)
     std::cout << "----------------------------------------------------"
               << std::endl;
     std::cout << "Torque Map:                    [";
+    auto tm = data->torque_map_val()->data();
     for (int i = 0; i < 2047; i++)
     {
-        std::cout << std::to_string(data->torque_map_val()->data()[i]) << ", ";
+        std::cout << std::to_string(tm[i]) << ", ";
     }
-    std::cout << std::to_string(data->torque_map_val()->data()[2047]) << "]"
-              << std::endl;
-    if (data->inverter_mode_val() == Comms::InverterMode_TORQUE)
+    std::cout << std::to_string(tm[2047]) << "]" << std::endl;
+    auto im = data->inverter_mode_val();
+    if (im == Comms::InverterMode_TORQUE)
     {
         std::cout << "Inverter Mode:                 TORQUE" << std::endl;
     }
-    else if (data->inverter_mode_val() == Comms::InverterMode_SPEED)
+    else if (im == Comms::InverterMode_SPEED)
     {
         std::cout << "Inverter Mode:                 SPEED" << std::endl;
     }
@@ -305,9 +306,16 @@ void Communicator::printVariables(const Comms::VariableVals* data)
     {
         std::cout << "ERROR" << std::endl;
     }
-    std::cout << "Disable Torque Requests:       "
-              << std::to_string(data->disable_torque_requests_val())
-              << std::endl;
+    std::cout << "Disable Torque Requests:       ";
+    auto dtr = data->disable_torque_requests_val();
+    if (dtr)
+    {
+        std::cout << "TRUE" << std::endl;
+    }
+    else
+    {
+        std::cout << "FALSE" << std::endl;
+    }
     std::cout << "APPS 1 ADC Min:                "
               << std::to_string(data->apps_1_adc_min_val()) << std::endl;
     std::cout << "APPS 1 ADC Max:                "
@@ -323,9 +331,16 @@ void Communicator::printVariables(const Comms::VariableVals* data)
     std::cout << "BPS Fully Pressed Threshold:   "
               << std::to_string(data->bps_fully_pressed_threshold_val())
               << std::endl;
-    std::cout << "Enable Lapsim Testbench:       "
-              << std::to_string(data->enable_lapsim_testbench_val())
-              << std::endl;
+    std::cout << "Enable Lapsim Testbench:       ";
+    auto elt = data->enable_lapsim_testbench_val();
+    if (elt)
+    {
+        std::cout << "TRUE" << std::endl;
+    }
+    else
+    {
+        std::cout << "FALSE" << std::endl;
+    }
     std::cout << "Lapsim Testbench Laps:         "
               << std::to_string(data->lapsim_testbench_laps_val()) << std::endl;
 }
