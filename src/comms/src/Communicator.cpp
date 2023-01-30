@@ -11,8 +11,12 @@
 
 Communicator* Communicator::_instance;
 
-// As we are using the singleton pattern we must allow the user to get a pointer
-// to the running instance
+/**
+ * @brief       Returns a pointer to the instance of the class
+ *
+ * @note        This is needed as we use the singleton pattern so there can only
+ * be one instance of the class
+ */
 Communicator* Communicator::getInstance()
 {
     if (Communicator::_instance == nullptr)
@@ -20,19 +24,27 @@ Communicator* Communicator::getInstance()
     return Communicator::_instance;
 }
 
-// Constructor for the Communicator object
-// Opens the serial port for the candapter
+/**
+ * @brief       Constructor for the Communicator class
+ *
+ * @note        This opens the serial port for the CANdapter
+ */
 Communicator::Communicator()
 {
 }
 
-// Descructor for the Communicator object
-// Closes the serial port
+/**
+ * @brief       Destructor for the Communicator class
+ *
+ * @note        This closes the serial port for the CANdapter
+ */
 Communicator::~Communicator()
 {
 }
 
-// The GET command
+/**
+ * @brief       Runs the GET command
+ */
 const Comms::VariableVals* Communicator::get()
 {
     Comms::VariableVals vals;
@@ -47,7 +59,11 @@ const Comms::VariableVals* Communicator::get()
     return data;
 }
 
-// The SET command
+/**
+ * @brief       Runs the SET command
+ *
+ * @param[in]   vals    A struct containing the values for all the variables
+ */
 bool Communicator::set(Comms::VariableVals vals)
 {
 
@@ -64,7 +80,14 @@ bool Communicator::set(Comms::VariableVals vals)
     return true;
 }
 
-// The SAVE command
+/**
+ * @brief       Runs the SAVE command
+ *
+ * @note        This command moves the current config into EEPROM
+ *
+ * @param[in]   name    The name for the current configuration
+ * @param[in]   version A struct containing the new version number
+ */
 bool Communicator::save(std::string name, std::string version)
 {
     Comms::Version v = stringToVersion(version);
@@ -90,6 +113,20 @@ bool Communicator::save(std::string name, std::string version)
     return false;
 }
 
+/**
+ * @brief       A command builder
+ *
+ * @note        This is a private function to build command flatbuffers and
+ * check the relevant arguments are given
+ *
+ * @param[in]   cmdID   The enum value for the command type to build
+ * @param[in]   vals    A pointer to a struct containing the values for all the
+ * variables
+ * @param[in]   name    A pointer to the name for the new saved configuration
+ * (relevant for the SAVE command)
+ * @param[in]   version A pointer to a struct containing the new version number
+ * (relevant for the SAVE command)
+ */
 std::tuple<uint8_t*, int>
 Communicator::createCommand(Comms::CommandID cmdID,
                             const Comms::VariableVals* vals,
@@ -157,14 +194,25 @@ Communicator::createCommand(Comms::CommandID cmdID,
     return std::tuple<uint8_t*, int>(buf, size);
 }
 
-// Converts a flatbuffer Version struct into the version string X.X.X
+/**
+ * @brief       A helper function to convert a version struct into a string
+ *
+ * @param[in]   v    A pointer to a struct containing the version
+ */
 std::string Communicator::versionToString(const Comms::Version* v)
 {
     return (std::to_string(v->a()) + "." + std::to_string(v->b()) + "."
             + std::to_string(v->c()));
 }
 
-// Convern the version string X.X.X into a flatbuffer Version struct
+/**
+ * @brief       A helper function to convert a version string into a struct
+ *
+ * @param[in]   s    A version string in the form X.X.X
+ *
+ * @throw       std::overflow_error This is thrown if the values are larger than
+ * 8 bits
+ */
 Comms::Version Communicator::stringToVersion(std::string s)
 {
     Comms::Version version;
@@ -227,33 +275,57 @@ std::vector<Frame> makeFrameSequence()
     return std::vector<Frame>{};
 }
 
+/**
+ * @brief       A helper function to print the values stored in a variable
+ * values struct
+ *
+ * @param[in]   data    A pointer to a struct containing the values
+ */
 void Communicator::printVariables(const Comms::VariableVals* data)
 {
     std::cout << "Variable:                       Val" << std::endl;
     std::cout << "----------------------------------------------------"
               << std::endl;
-    std::cout << "Torque Map:                    " << data->torque_map_val()
+    std::cout << "Torque Map:                    [";
+    for (int i = 0; i < 2047; i++)
+    {
+        std::cout << std::to_string(data->torque_map_val()->data()[i]) << ", ";
+    }
+    std::cout << std::to_string(data->torque_map_val()->data()[2047]) << "]"
               << std::endl;
-    std::cout << "Inverter Mode:                 " << data->torque_map_val()
+    if (data->inverter_mode_val() == Comms::InverterMode_TORQUE)
+    {
+        std::cout << "Inverter Mode:                 TORQUE" << std::endl;
+    }
+    else if (data->inverter_mode_val() == Comms::InverterMode_SPEED)
+    {
+        std::cout << "Inverter Mode:                 SPEED" << std::endl;
+    }
+    else
+    {
+        std::cout << "ERROR" << std::endl;
+    }
+    std::cout << "Disable Torque Requests:       "
+              << std::to_string(data->disable_torque_requests_val())
               << std::endl;
-    std::cout << "Disable Torque Requests:       " << data->torque_map_val()
+    std::cout << "APPS 1 ADC Min:                "
+              << std::to_string(data->apps_1_adc_min_val()) << std::endl;
+    std::cout << "APPS 1 ADC Max:                "
+              << std::to_string(data->apps_1_adc_max_val()) << std::endl;
+    std::cout << "APPS 2 ADC Min:                "
+              << std::to_string(data->apps_2_adc_min_val()) << std::endl;
+    std::cout << "APPS 2 ADC Max:                "
+              << std::to_string(data->apps_2_adc_max_val()) << std::endl;
+    std::cout << "BPS ADC Min:                   "
+              << std::to_string(data->bps_adc_min_val()) << std::endl;
+    std::cout << "BPS ADC Max:                   "
+              << std::to_string(data->bps_adc_max_val()) << std::endl;
+    std::cout << "BPS Fully Pressed Threshold:   "
+              << std::to_string(data->bps_fully_pressed_threshold_val())
               << std::endl;
-    std::cout << "APPS 1 ADC Min:                " << data->torque_map_val()
+    std::cout << "Enable Lapsim Testbench:       "
+              << std::to_string(data->enable_lapsim_testbench_val())
               << std::endl;
-    std::cout << "APPS 1 ADC Max:                " << data->torque_map_val()
-              << std::endl;
-    std::cout << "APPS 2 ADC Min:                " << data->torque_map_val()
-              << std::endl;
-    std::cout << "APPS 2 ADC Max:                " << data->torque_map_val()
-              << std::endl;
-    std::cout << "BPS ADC Min:                   " << data->torque_map_val()
-              << std::endl;
-    std::cout << "BPS ADC Max:                   " << data->torque_map_val()
-              << std::endl;
-    std::cout << "BPS Fully Pressed Threshold:   " << data->torque_map_val()
-              << std::endl;
-    std::cout << "Enable Lapsim Testbench:       " << data->torque_map_val()
-              << std::endl;
-    std::cout << "Lapsim Testbench Laps:         " << data->torque_map_val()
-              << std::endl;
+    std::cout << "Lapsim Testbench Laps:         "
+              << std::to_string(data->lapsim_testbench_laps_val()) << std::endl;
 }

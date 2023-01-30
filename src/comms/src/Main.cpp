@@ -29,17 +29,18 @@ int main(int argc, char const* argv[])
         {
             std::cout << "Torque Map ([uint8:2048] (Enter a single value and "
                          "it will be repeated)): ";
-            uint8_t val;
+            std::string val;
             std::cin >> val;
             uint8_t tm[2048];
+            uint8_t v = (uint8_t) std::stoi(val);
             for (int i = 0; i < 2048; i++)
             {
-                tm[i] = val;
+                tm[i] = v;
             }
             std::cout << "Inverter Mode (1 = Torque, ¬1 = Speed): ";
             std::cin >> val;
             Comms::InverterMode im;
-            switch (val)
+            switch (std::stoi(val))
             {
             case 1:
                 im = Comms::InverterMode_TORQUE;
@@ -51,55 +52,55 @@ int main(int argc, char const* argv[])
             }
             std::cout << "Disable Torque Requests (Bool): ";
             bool dtr;
-            std::cin >> dtr;
+            std::cin >> std::boolalpha >> dtr;
             std::cout << "APPS 1 ADC Min (uint16): ";
-            uint16_t a1min;
+            std::string a1min;
             std::cin >> a1min;
             std::cout << "APPS 1 ADC Max (uint16): ";
-            uint16_t a1max;
+            std::string a1max;
             std::cin >> a1max;
             std::cout << "APPS 2 ADC Min (uint16): ";
-            uint16_t a2min;
+            std::string a2min;
             std::cin >> a2min;
             std::cout << "APPS 2 ADC Max (uint16): ";
-            uint16_t a2max;
+            std::string a2max;
             std::cin >> a2max;
             std::cout << "BPS ADC Min (uint16): ";
-            uint16_t bmin;
+            std::string bmin;
             std::cin >> bmin;
             std::cout << "BPS ADC Max (uint16): ";
-            uint16_t bmax;
+            std::string bmax;
             std::cin >> bmax;
             std::cout << "BPS Fully Pressed Threshold (uint32): ";
-            uint32_t bpst;
+            std::string bpst;
             std::cin >> bpst;
             std::cout << "Enable Lapsim Testbench (Bool): ";
             bool elt;
-            std::cin >> elt;
+            std::cin >> std::boolalpha >> elt;
             std::cout << "Lapsim Testbench Laps (uint8): ";
-            uint8_t ltl;
+            std::string ltl;
             std::cin >> ltl;
+            std::cout << std::to_string((uint8_t) std::stoi(ltl)) << std::endl;
 
             flatbuffers::FlatBufferBuilder builder(1024);
 
             Comms::VariableVals vals(tm,
                                      im,
                                      dtr,
-                                     a1min,
-                                     a1max,
-                                     a2min,
-                                     a2max,
-                                     bmin,
-                                     bmax,
-                                     bpst,
+                                     (uint16_t) std::stoi(a1min),
+                                     (uint16_t) std::stoi(a1max),
+                                     (uint16_t) std::stoi(a2min),
+                                     (uint16_t) std::stoi(a2max),
+                                     (uint16_t) std::stoi(bmin),
+                                     (uint16_t) std::stoi(bmax),
+                                     (uint32_t) std::stoi(bpst),
                                      elt,
-                                     ltl);
+                                     (uint8_t) std::stoi(ltl));
 
             c->set(vals);
         }
         else if (cmd == "get")
         {
-
             c->get();
         }
         else
