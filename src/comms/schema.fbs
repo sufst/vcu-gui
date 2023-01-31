@@ -10,7 +10,7 @@
 //    - suc                                   -- the last command executed successfully 
 //    - save <config_name> <config_version>   -- move the current config to EEPROM
 
-namespace Comms;
+namespace CommsSchema;
 
 // Store command IDs
 enum CommandID : byte {

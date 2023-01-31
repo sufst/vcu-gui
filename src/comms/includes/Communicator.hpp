@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+namespace comms
+{
+
 // Singleton pattern to ensure only one communicator is created
 class Communicator
 {
@@ -23,27 +26,17 @@ private:
     bool chunkMsg();
     struct Frame makeFrame();
     std::vector<struct Frame> makeFrameSequence();
-    Comms::Version stringToVersion(std::string);
-    std::string versionToString(const Comms::Version*);
-    std::tuple<uint8_t*, int> createCommand(Comms::CommandID,
-                                            const Comms::VariableVals*,
+    std::tuple<uint8_t*, int> createCommand(CommsSchema::CommandID,
+                                            const CommsSchema::VariableVals*,
                                             std::string*,
-                                            const Comms::Version*);
-    void printVariables(const Comms::VariableVals*);
+                                            const CommsSchema::Version*);
 
 public:
 
     static Communicator* getInstance();
 
-    bool set(Comms::VariableVals);
-    const Comms::VariableVals* get();
+    bool set(CommsSchema::VariableVals);
+    const CommsSchema::VariableVals* get();
     bool save(std::string, std::string);
 };
-
-struct Frame
-{
-    uint8_t id;
-    uint16_t frameNumber;
-    uint16_t totalFrames;
-    char payload[8];
-};
+} // namespace comms

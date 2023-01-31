@@ -3,7 +3,7 @@
 
 int main(int argc, char const* argv[])
 {
-    Communicator* c = Communicator::getInstance();
+    comms::Communicator* c = comms::Communicator::getInstance();
 
     std::string cmd;
     while (true)
@@ -39,15 +39,15 @@ int main(int argc, char const* argv[])
             }
             std::cout << "Inverter Mode (1 = Torque, ¬1 = Speed): ";
             std::cin >> val;
-            Comms::InverterMode im;
+            CommsSchema::InverterMode im;
             switch (std::stoi(val))
             {
             case 1:
-                im = Comms::InverterMode_TORQUE;
+                im = CommsSchema::InverterMode_TORQUE;
                 break;
 
             default:
-                im = Comms::InverterMode_SPEED;
+                im = CommsSchema::InverterMode_SPEED;
                 break;
             }
             std::cout << "Disable Torque Requests (Bool): ";
@@ -84,18 +84,18 @@ int main(int argc, char const* argv[])
 
             flatbuffers::FlatBufferBuilder builder(1024);
 
-            Comms::VariableVals vals(tm,
-                                     im,
-                                     dtr,
-                                     (uint16_t) std::stoi(a1min),
-                                     (uint16_t) std::stoi(a1max),
-                                     (uint16_t) std::stoi(a2min),
-                                     (uint16_t) std::stoi(a2max),
-                                     (uint16_t) std::stoi(bmin),
-                                     (uint16_t) std::stoi(bmax),
-                                     (uint32_t) std::stoi(bpst),
-                                     elt,
-                                     (uint8_t) std::stoi(ltl));
+            CommsSchema::VariableVals vals(tm,
+                                           im,
+                                           dtr,
+                                           (uint16_t) std::stoi(a1min),
+                                           (uint16_t) std::stoi(a1max),
+                                           (uint16_t) std::stoi(a2min),
+                                           (uint16_t) std::stoi(a2max),
+                                           (uint16_t) std::stoi(bmin),
+                                           (uint16_t) std::stoi(bmax),
+                                           (uint32_t) std::stoi(bpst),
+                                           elt,
+                                           (uint8_t) std::stoi(ltl));
 
             c->set(vals);
         }
