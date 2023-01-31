@@ -31,6 +31,7 @@ add_executable(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
   PRIVATE
+    src/Utils.cpp
     src/Communicator.cpp
     src/Main.cpp
 )

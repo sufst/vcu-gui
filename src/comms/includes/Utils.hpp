@@ -1,7 +1,7 @@
 /******************************************************************************
- * @file   Communicator.h
+ * @file   Utils.hpp
  * @author Toby Godfrey (@tg, tmag1g21@soton.ac.uk)
- * @brief  Header file for comms
+ * @brief  Header file for comms utils
  *****************************************************************************/
 
 #pragma once
@@ -16,18 +16,13 @@ namespace comms
 
 namespace utils
 {
-// private:
-//   Utils();
-//   ~Utils();
+void chunkMsg();
+void makeFrame();
+void makeFrameSequence();
 
-// public:
-static void chunkMsg();
-static void makeFrame();
-static void makeFrameSequence();
-
-static CommsSchema::Version stringToVersion(std::string);
-static std::string versionToString(const CommsSchema::Version*);
-static void printVariables(const CommsSchema::VariableVals*);
+CommsSchema::Version stringToVersion(std::string);
+std::string versionToString(const CommsSchema::Version*);
+void printVariables(const CommsSchema::VariableVals*);
 }; // namespace utils
 
 struct Frame

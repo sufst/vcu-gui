@@ -1,7 +1,7 @@
 /******************************************************************************
- * @file   Communicator.cpp
+ * @file   Utils.cpp
  * @author Toby Godfrey (@tg, tmag1g21@soton.ac.uk)
- * @brief  Main file for VCU communication
+ * @brief  A file with helper methods for VCU communication
  *****************************************************************************/
 
 #include "Utils.hpp"
@@ -10,10 +10,6 @@
 #include <iostream>
 
 using namespace comms::utils;
-
-// Private
-//   Utils::Utils(){}
-//   Utils::~Utils(){}
 
 static void chunkMsg()
 {
@@ -30,7 +26,7 @@ static void makeFrameSequence()
  *
  * @param[in]   v    A pointer to a struct containing the version
  */
-static std::string versionToString(const CommsSchema::Version* v)
+std::string versionToString(const CommsSchema::Version* v)
 {
     return (std::to_string(v->a()) + "." + std::to_string(v->b()) + "."
             + std::to_string(v->c()));
@@ -44,7 +40,7 @@ static std::string versionToString(const CommsSchema::Version* v)
  * @throw       std::overflow_error This is thrown if the values are larger than
  * 8 bits
  */
-static CommsSchema::Version stringToVersion(std::string s)
+CommsSchema::Version stringToVersion(std::string s)
 {
     CommsSchema::Version version;
     uint8_t v[3]; // Parsed version number a.b.c
@@ -92,7 +88,7 @@ static CommsSchema::Version stringToVersion(std::string s)
  *
  * @param[in]   data    A pointer to a struct containing the values
  */
-static void printVariables(const CommsSchema::VariableVals* data)
+void printVariables(const CommsSchema::VariableVals* data)
 {
     std::cout << "Variable:                       Val" << std::endl;
     std::cout << "----------------------------------------------------"
