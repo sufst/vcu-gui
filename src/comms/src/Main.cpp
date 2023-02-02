@@ -80,7 +80,7 @@ int main(int argc, char const* argv[])
             std::cout << "Lapsim Testbench Laps (uint8): ";
             std::string ltl;
             std::cin >> ltl;
-            std::cout << std::to_string((uint8_t) std::stoi(ltl)) << std::endl;
+            std::cout << std::endl;
 
             flatbuffers::FlatBufferBuilder builder(1024);
 
