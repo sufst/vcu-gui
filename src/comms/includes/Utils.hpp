@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "flatbuffers/flatbuffer_builder.h"
 #include "schema_generated.h"
 #include <string>
 #include <vector>

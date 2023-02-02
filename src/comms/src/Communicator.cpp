@@ -57,7 +57,7 @@ const CommsSchema::VariableVals* Communicator::get()
 
     auto data = cmd->vals();
 
-    comms::utils::printVariables(data);
+    utils::printVariables(data);
 
     return data;
 }
@@ -93,7 +93,7 @@ bool Communicator::set(CommsSchema::VariableVals vals)
  */
 bool Communicator::save(std::string name, std::string version)
 {
-    CommsSchema::Version v = comms::utils::stringToVersion(version);
+    CommsSchema::Version v = utils::stringToVersion(version);
     const CommsSchema::Version* v_ptr = &v;
 
     std::tuple<uint8_t*, int> pair
@@ -109,7 +109,7 @@ bool Communicator::save(std::string name, std::string version)
     auto received = flatbuffers::GetRoot<CommsSchema::Command>(data);
 
     auto newName = flatbuffers::GetString(received->config_name());
-    auto newVersion = comms::utils::versionToString(received->config_version());
+    auto newVersion = utils::versionToString(received->config_version());
 
     std::cout << newName << " - version " << newVersion << std::endl;
 
