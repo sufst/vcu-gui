@@ -78,7 +78,7 @@ bool Communicator::set(CommsSchema::VariableVals vals)
 
     Candapter_MOCK::sendMsg("data.fb", std::get<0>(pair), std::get<1>(pair));
 
-    std::cout << std::to_string(std::get<1>(pair)) << " bytes written written"
+    std::cout << std::to_string(std::get<1>(pair)) << " bytes written"
               << std::endl;
 
     return true;

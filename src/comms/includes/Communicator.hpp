@@ -23,9 +23,6 @@ private:
 
     Communicator();
     ~Communicator();
-    bool chunkMsg();
-    struct Frame makeFrame();
-    std::vector<struct Frame> makeFrameSequence();
     std::tuple<uint8_t*, int> createCommand(CommsSchema::CommandID,
                                             const CommsSchema::VariableVals*,
                                             std::string*,

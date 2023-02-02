@@ -12,18 +12,6 @@
 
 namespace comms
 {
-
-namespace utils
-{
-void chunkMsg();
-void makeFrame();
-void makeFrameSequence();
-
-CommsSchema::Version stringToVersion(std::string);
-std::string versionToString(const CommsSchema::Version*);
-void printVariables(const CommsSchema::VariableVals*);
-}; // namespace utils
-
 struct Frame
 {
     uint8_t id;
@@ -31,4 +19,16 @@ struct Frame
     uint16_t totalFrames;
     char payload[8];
 };
+
+namespace utils
+{
+std::vector<uint8_t*> chunkMsg(uint8_t*, int);
+::comms::Frame makeFrame();
+std::vector<::comms::Frame> makeFrameSequence();
+
+CommsSchema::Version stringToVersion(std::string);
+std::string versionToString(const CommsSchema::Version*);
+void printVariables(const CommsSchema::VariableVals*);
+}; // namespace utils
+
 } // namespace comms

@@ -9,13 +9,15 @@
 #include "Candapter_MOCK.hpp"
 #include <iostream>
 
-void comms::utils::chunkMsg()
+std::vector<uint8_t*> comms::utils::chunkMsg(uint8_t* buf, int length)
 {
 }
-void comms::utils::makeFrame()
+
+comms::Frame comms::utils::makeFrame()
 {
 }
-void comms::utils::makeFrameSequence()
+
+std::vector<comms::Frame> comms::utils::makeFrameSequence()
 {
 }
 
