@@ -9,13 +9,13 @@
 #include "Candapter_MOCK.hpp"
 #include <iostream>
 
-static void comms::utils::chunkMsg()
+void comms::utils::chunkMsg()
 {
 }
-static void comms::utils::makeFrame()
+void comms::utils::makeFrame()
 {
 }
-static void comms::utils::makeFrameSequence()
+void comms::utils::makeFrameSequence()
 {
 }
 
