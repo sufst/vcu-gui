@@ -8,9 +8,39 @@
 
 #include "Candapter_MOCK.hpp"
 #include <iostream>
+#include <math.h>
 
-std::vector<uint8_t*> comms::utils::chunkMsg(uint8_t* buf, int length)
+// Divide the buffer into blocks of 6 bytes
+std::vector<uint8_t[CHUNK_SIZE]> comms::utils::chunkMsg(uint8_t* buf,
+                                                        int length)
 {
+    std::vector<uint8_t[CHUNK_SIZE]> chunks;
+    uint8_t single[CHUNK_SIZE]; // Zero initialised
+
+    for (uint16_t i = 0; i < (length / CHUNK_SIZE); i++)
+    {
+
+        if ((i + CHUNK_SIZE) <= length)
+        {
+            for (uint8_t j = 0; j < CHUNK_SIZE; j++)
+            {
+                single[j] = buf[i];
+            }
+        }
+        else
+        {
+            throw std::runtime_error("aohdiosdipsadios");
+        }
+
+        chunks.push_back(single);
+    }
+
+    if (chunks.size() != std::ceil(length / CHUNK_SIZE))
+    {
+        throw std::runtime_error("Incorrect number of chunks");
+    }
+
+    return chunks;
 }
 
 comms::Frame comms::utils::makeFrame()
@@ -93,6 +123,17 @@ void comms::utils::printVariables(const CommsSchema::VariableVals* data)
     std::cout << "Variable:                       Val" << std::endl;
     std::cout << "----------------------------------------------------"
               << std::endl;
+    std::cout << "Config name: ";
+    auto name = data->config_name()->data();
+    std::string name_str;
+    for (uint8_t i = 0; i < 64; i++)
+    {
+        unsigned char c = (unsigned char) name[i];
+        if (c == '\0')
+            break;
+        name_str += c;
+    }
+
     std::cout << "Torque Map:                    [";
     auto tm = data->torque_map_val()->data();
     for (int i = 0; i < 2047; i++)

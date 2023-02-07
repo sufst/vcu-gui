@@ -1,4 +1,5 @@
 #include "Communicator.hpp"
+#include "Utils.hpp"
 #include <iostream>
 
 int main(int argc, char const* argv[])
@@ -27,6 +28,20 @@ int main(int argc, char const* argv[])
         }
         else if (cmd == "set")
         {
+            std::cout << "Config name (max length 64): ";
+            std::string name_str;
+            std::cin >> name_str;
+            uint8_t name[64] = {'\0'};
+            for (int i = 0; i < name_str.size(); i++)
+            {
+                name[i] = (uint8_t) name_str.at(i);
+            }
+
+            std::string ver_str;
+            std::cout << "Version: ";
+            std::cin >> ver_str;
+            CommsSchema::Version ver = comms::utils::stringToVersion(ver_str);
+
             std::cout << "Torque Map ([uint8:2048] (Enter a single value and "
                          "it will be repeated)): ";
             std::string val;
@@ -84,7 +99,9 @@ int main(int argc, char const* argv[])
 
             flatbuffers::FlatBufferBuilder builder(1024);
 
-            CommsSchema::VariableVals vals(tm,
+            CommsSchema::VariableVals vals(name,
+                                           ver,
+                                           tm,
                                            im,
                                            dtr,
                                            (uint16_t) std::stoi(a1min),
@@ -102,6 +119,33 @@ int main(int argc, char const* argv[])
         else if (cmd == "get")
         {
             c->get();
+        }
+        else if (cmd == "chunk")
+        {
+            std::vector<uint8_t> vals;
+            std::string num;
+            std::cout << "Add numbers to a vec, type an 8 bit num then enter. "
+                         "\"end\" to finish"
+                      << std::endl;
+            while (true)
+            {
+                std::cin >> num;
+                if (num == "end")
+                {
+                    break;
+                }
+                vals.push_back(std::stoi(num));
+            }
+            auto cs = comms::utils::chunkMsg(&vals[0], vals.size());
+            for (int i = 0; i < cs.size(); i++)
+            {
+                std::cout << "Chunk " << std::to_string(i) << " : ";
+                for (int j = 0; j < CHUNK_SIZE; j++)
+                {
+                    std::cout << std::to_string(cs[i][j]) << " ";
+                }
+                std::cout << std::endl;
+            }
         }
         else
         {

@@ -29,7 +29,17 @@ enum InverterMode : byte {
   SPEED
 }
 
+// Version are in the format a.b.c
+// NOTE: no part of the version number can have leading zeros as they will be lost
+struct Version {
+  a:uint8;
+  b:uint8;
+  c:uint8;
+}
+
 struct VariableVals {
+  config_name: [uint8: 64]; // max length 64 chars
+  convig_version: Version;
   torque_map_val : [uint8 : 2048];
   inverter_mode_val: InverterMode;
   disable_torque_requests_val : bool;
@@ -42,14 +52,6 @@ struct VariableVals {
   bps_fully_pressed_threshold_val : uint32;
   enable_lapsim_testbench_val: bool;      
   lapsim_testbench_laps_val: uint8;        
-}
-
-// Version are in the format a.b.c
-// NOTE: no part of the version number can have leading zeros as they will be lost
-struct Version {
-  a:uint8;
-  b:uint8;
-  c:uint8;
 }
 
 table Command {

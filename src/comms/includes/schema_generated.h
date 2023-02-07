@@ -14,9 +14,9 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 && FLATBUFFERS_VERSION_MINOR == 1
 namespace CommsSchema
 {
 
-struct VariableVals;
-
 struct Version;
+
+struct VariableVals;
 
 struct Command;
 struct CommandBuilder;
@@ -92,73 +92,78 @@ inline const char* EnumNameInverterMode(InverterMode e)
     return EnumNamesInverterMode()[index];
 }
 
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) Version FLATBUFFERS_FINAL_CLASS
+{
+private:
+
+    uint8_t a_;
+    uint8_t b_;
+    uint8_t c_;
+
+public:
+
+    Version() : a_(0), b_(0), c_(0)
+    {
+    }
+    Version(uint8_t _a, uint8_t _b, uint8_t _c)
+        : a_(::flatbuffers::EndianScalar(_a)),
+          b_(::flatbuffers::EndianScalar(_b)),
+          c_(::flatbuffers::EndianScalar(_c))
+    {
+    }
+    uint8_t a() const
+    {
+        return ::flatbuffers::EndianScalar(a_);
+    }
+    uint8_t b() const
+    {
+        return ::flatbuffers::EndianScalar(b_);
+    }
+    uint8_t c() const
+    {
+        return ::flatbuffers::EndianScalar(c_);
+    }
+};
+FLATBUFFERS_STRUCT_END(Version, 3);
+
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(4) VariableVals FLATBUFFERS_FINAL_CLASS
 {
 private:
 
+    uint8_t config_name_[64];
+    CommsSchema::Version convig_version_;
     uint8_t torque_map_val_[2048];
     int8_t inverter_mode_val_;
     uint8_t disable_torque_requests_val_;
+    int8_t padding0__;
     uint16_t apps_1_adc_min_val_;
     uint16_t apps_1_adc_max_val_;
     uint16_t apps_2_adc_min_val_;
     uint16_t apps_2_adc_max_val_;
     uint16_t bps_adc_min_val_;
     uint16_t bps_adc_max_val_;
-    int16_t padding0__;
+    int16_t padding1__;
     uint32_t bps_fully_pressed_threshold_val_;
     uint8_t enable_lapsim_testbench_val_;
     uint8_t lapsim_testbench_laps_val_;
-    int16_t padding1__;
+    int16_t padding2__;
 
 public:
 
     VariableVals()
-        : torque_map_val_(), inverter_mode_val_(0),
-          disable_torque_requests_val_(0), apps_1_adc_min_val_(0),
-          apps_1_adc_max_val_(0), apps_2_adc_min_val_(0),
-          apps_2_adc_max_val_(0), bps_adc_min_val_(0), bps_adc_max_val_(0),
-          padding0__(0), bps_fully_pressed_threshold_val_(0),
-          enable_lapsim_testbench_val_(0), lapsim_testbench_laps_val_(0),
-          padding1__(0)
+        : config_name_(), convig_version_(), torque_map_val_(),
+          inverter_mode_val_(0), disable_torque_requests_val_(0), padding0__(0),
+          apps_1_adc_min_val_(0), apps_1_adc_max_val_(0),
+          apps_2_adc_min_val_(0), apps_2_adc_max_val_(0), bps_adc_min_val_(0),
+          bps_adc_max_val_(0), padding1__(0),
+          bps_fully_pressed_threshold_val_(0), enable_lapsim_testbench_val_(0),
+          lapsim_testbench_laps_val_(0), padding2__(0)
     {
         (void) padding0__;
         (void) padding1__;
+        (void) padding2__;
     }
-    VariableVals(CommsSchema::InverterMode _inverter_mode_val,
-                 bool _disable_torque_requests_val,
-                 uint16_t _apps_1_adc_min_val,
-                 uint16_t _apps_1_adc_max_val,
-                 uint16_t _apps_2_adc_min_val,
-                 uint16_t _apps_2_adc_max_val,
-                 uint16_t _bps_adc_min_val,
-                 uint16_t _bps_adc_max_val,
-                 uint32_t _bps_fully_pressed_threshold_val,
-                 bool _enable_lapsim_testbench_val,
-                 uint8_t _lapsim_testbench_laps_val)
-        : torque_map_val_(), inverter_mode_val_(::flatbuffers::EndianScalar(
-                                 static_cast<int8_t>(_inverter_mode_val))),
-          disable_torque_requests_val_(::flatbuffers::EndianScalar(
-              static_cast<uint8_t>(_disable_torque_requests_val))),
-          apps_1_adc_min_val_(::flatbuffers::EndianScalar(_apps_1_adc_min_val)),
-          apps_1_adc_max_val_(::flatbuffers::EndianScalar(_apps_1_adc_max_val)),
-          apps_2_adc_min_val_(::flatbuffers::EndianScalar(_apps_2_adc_min_val)),
-          apps_2_adc_max_val_(::flatbuffers::EndianScalar(_apps_2_adc_max_val)),
-          bps_adc_min_val_(::flatbuffers::EndianScalar(_bps_adc_min_val)),
-          bps_adc_max_val_(::flatbuffers::EndianScalar(_bps_adc_max_val)),
-          padding0__(0),
-          bps_fully_pressed_threshold_val_(
-              ::flatbuffers::EndianScalar(_bps_fully_pressed_threshold_val)),
-          enable_lapsim_testbench_val_(::flatbuffers::EndianScalar(
-              static_cast<uint8_t>(_enable_lapsim_testbench_val))),
-          lapsim_testbench_laps_val_(
-              ::flatbuffers::EndianScalar(_lapsim_testbench_laps_val)),
-          padding1__(0)
-    {
-        (void) padding0__;
-        (void) padding1__;
-    }
-    VariableVals(::flatbuffers::span<const uint8_t, 2048> _torque_map_val,
+    VariableVals(const CommsSchema::Version& _convig_version,
                  CommsSchema::InverterMode _inverter_mode_val,
                  bool _disable_torque_requests_val,
                  uint16_t _apps_1_adc_min_val,
@@ -170,29 +175,80 @@ public:
                  uint32_t _bps_fully_pressed_threshold_val,
                  bool _enable_lapsim_testbench_val,
                  uint8_t _lapsim_testbench_laps_val)
-        : inverter_mode_val_(::flatbuffers::EndianScalar(
-            static_cast<int8_t>(_inverter_mode_val))),
+        : config_name_(), convig_version_(_convig_version), torque_map_val_(),
+          inverter_mode_val_(::flatbuffers::EndianScalar(
+              static_cast<int8_t>(_inverter_mode_val))),
           disable_torque_requests_val_(::flatbuffers::EndianScalar(
               static_cast<uint8_t>(_disable_torque_requests_val))),
+          padding0__(0),
           apps_1_adc_min_val_(::flatbuffers::EndianScalar(_apps_1_adc_min_val)),
           apps_1_adc_max_val_(::flatbuffers::EndianScalar(_apps_1_adc_max_val)),
           apps_2_adc_min_val_(::flatbuffers::EndianScalar(_apps_2_adc_min_val)),
           apps_2_adc_max_val_(::flatbuffers::EndianScalar(_apps_2_adc_max_val)),
           bps_adc_min_val_(::flatbuffers::EndianScalar(_bps_adc_min_val)),
           bps_adc_max_val_(::flatbuffers::EndianScalar(_bps_adc_max_val)),
-          padding0__(0),
+          padding1__(0),
           bps_fully_pressed_threshold_val_(
               ::flatbuffers::EndianScalar(_bps_fully_pressed_threshold_val)),
           enable_lapsim_testbench_val_(::flatbuffers::EndianScalar(
               static_cast<uint8_t>(_enable_lapsim_testbench_val))),
           lapsim_testbench_laps_val_(
               ::flatbuffers::EndianScalar(_lapsim_testbench_laps_val)),
-          padding1__(0)
+          padding2__(0)
     {
+        (void) padding0__;
+        (void) padding1__;
+        (void) padding2__;
+    }
+    VariableVals(::flatbuffers::span<const uint8_t, 64> _config_name,
+                 const CommsSchema::Version& _convig_version,
+                 ::flatbuffers::span<const uint8_t, 2048> _torque_map_val,
+                 CommsSchema::InverterMode _inverter_mode_val,
+                 bool _disable_torque_requests_val,
+                 uint16_t _apps_1_adc_min_val,
+                 uint16_t _apps_1_adc_max_val,
+                 uint16_t _apps_2_adc_min_val,
+                 uint16_t _apps_2_adc_max_val,
+                 uint16_t _bps_adc_min_val,
+                 uint16_t _bps_adc_max_val,
+                 uint32_t _bps_fully_pressed_threshold_val,
+                 bool _enable_lapsim_testbench_val,
+                 uint8_t _lapsim_testbench_laps_val)
+        : convig_version_(_convig_version),
+          inverter_mode_val_(::flatbuffers::EndianScalar(
+              static_cast<int8_t>(_inverter_mode_val))),
+          disable_torque_requests_val_(::flatbuffers::EndianScalar(
+              static_cast<uint8_t>(_disable_torque_requests_val))),
+          padding0__(0),
+          apps_1_adc_min_val_(::flatbuffers::EndianScalar(_apps_1_adc_min_val)),
+          apps_1_adc_max_val_(::flatbuffers::EndianScalar(_apps_1_adc_max_val)),
+          apps_2_adc_min_val_(::flatbuffers::EndianScalar(_apps_2_adc_min_val)),
+          apps_2_adc_max_val_(::flatbuffers::EndianScalar(_apps_2_adc_max_val)),
+          bps_adc_min_val_(::flatbuffers::EndianScalar(_bps_adc_min_val)),
+          bps_adc_max_val_(::flatbuffers::EndianScalar(_bps_adc_max_val)),
+          padding1__(0),
+          bps_fully_pressed_threshold_val_(
+              ::flatbuffers::EndianScalar(_bps_fully_pressed_threshold_val)),
+          enable_lapsim_testbench_val_(::flatbuffers::EndianScalar(
+              static_cast<uint8_t>(_enable_lapsim_testbench_val))),
+          lapsim_testbench_laps_val_(
+              ::flatbuffers::EndianScalar(_lapsim_testbench_laps_val)),
+          padding2__(0)
+    {
+        ::flatbuffers::CastToArray(config_name_).CopyFromSpan(_config_name);
         ::flatbuffers::CastToArray(torque_map_val_)
             .CopyFromSpan(_torque_map_val);
         (void) padding0__;
         (void) padding1__;
+        (void) padding2__;
+    }
+    const ::flatbuffers::Array<uint8_t, 64>* config_name() const
+    {
+        return &::flatbuffers::CastToArray(config_name_);
+    }
+    const CommsSchema::Version& convig_version() const
+    {
+        return convig_version_;
     }
     const ::flatbuffers::Array<uint8_t, 2048>* torque_map_val() const
     {
@@ -244,41 +300,7 @@ public:
         return ::flatbuffers::EndianScalar(lapsim_testbench_laps_val_);
     }
 };
-FLATBUFFERS_STRUCT_END(VariableVals, 2072);
-
-FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(1) Version FLATBUFFERS_FINAL_CLASS
-{
-private:
-
-    uint8_t a_;
-    uint8_t b_;
-    uint8_t c_;
-
-public:
-
-    Version() : a_(0), b_(0), c_(0)
-    {
-    }
-    Version(uint8_t _a, uint8_t _b, uint8_t _c)
-        : a_(::flatbuffers::EndianScalar(_a)),
-          b_(::flatbuffers::EndianScalar(_b)),
-          c_(::flatbuffers::EndianScalar(_c))
-    {
-    }
-    uint8_t a() const
-    {
-        return ::flatbuffers::EndianScalar(a_);
-    }
-    uint8_t b() const
-    {
-        return ::flatbuffers::EndianScalar(b_);
-    }
-    uint8_t c() const
-    {
-        return ::flatbuffers::EndianScalar(c_);
-    }
-};
-FLATBUFFERS_STRUCT_END(Version, 3);
+FLATBUFFERS_STRUCT_END(VariableVals, 2140);
 
 struct Command FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 {

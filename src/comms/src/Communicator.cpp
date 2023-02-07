@@ -92,30 +92,33 @@ bool Communicator::set(CommsSchema::VariableVals vals)
  * @param[in]   name    The name for the current configuration
  * @param[in]   version A struct containing the new version number
  */
-bool Communicator::save(std::string name, std::string version)
-{
-    CommsSchema::Version v = utils::stringToVersion(version);
-    const CommsSchema::Version* v_ptr = &v;
+// bool Communicator::save(std::string name, std::string version)
+// {
+//     CommsSchema::Version v = utils::stringToVersion(version);
+//     const CommsSchema::Version* v_ptr = &v;
 
-    std::tuple<uint8_t*, int> pair
-        = Communicator::createCommand(CommsSchema::CommandID_SAVE,
-                                      nullptr,
-                                      &name,
-                                      v_ptr);
+//     std::tuple<uint8_t*, int> pair
+//         = Communicator::createCommand(CommsSchema::CommandID_SAVE,
+//                                       nullptr,
+//                                       &name,
+//                                       v_ptr);
 
-    Candapter_MOCK::sendMsg("version.fb", std::get<0>(pair), std::get<1>(pair));
+//     Candapter_MOCK::sendMsg("version.fb", std::get<0>(pair),
+//     std::get<1>(pair));
 
-    /* FOR TESTING PURPOSES - DELETE LATER */
-    uint8_t* data = Candapter_MOCK::getMsg("version.fb");
-    auto received = flatbuffers::GetRoot<CommsSchema::Command>(data);
+//     std::cout << "Size: " << std::to_string(std::get<1>(pair)) << std::endl;
 
-    auto newName = flatbuffers::GetString(received->config_name());
-    auto newVersion = utils::versionToString(received->config_version());
+//     /* FOR TESTING PURPOSES - DELETE LATER */
+//     uint8_t* data = Candapter_MOCK::getMsg("version.fb");
+//     auto received = flatbuffers::GetRoot<CommsSchema::Command>(data);
 
-    std::cout << newName << " - version " << newVersion << std::endl;
+//     auto newName = flatbuffers::GetString(received->config_name());
+//     auto newVersion = utils::versionToString(received->config_version());
 
-    return false;
-}
+//     std::cout << newName << " - version " << newVersion << std::endl;
+
+//     return false;
+// }
 
 /**
  * @brief       A command builder

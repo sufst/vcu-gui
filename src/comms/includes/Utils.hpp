@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#define CHUNK_SIZE 6
+
 namespace comms
 {
 struct Frame
@@ -22,7 +24,7 @@ struct Frame
 
 namespace utils
 {
-std::vector<uint8_t*> chunkMsg(uint8_t*, int);
+std::vector<uint8_t[CHUNK_SIZE]> chunkMsg(uint8_t*, int);
 ::comms::Frame makeFrame();
 std::vector<::comms::Frame> makeFrameSequence();
 
