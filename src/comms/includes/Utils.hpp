@@ -20,7 +20,7 @@ struct Frame
     uint8_t id;
     uint16_t frameNumber;
     uint16_t totalFrames;
-    char payload[8]; // 8?
+    unsigned char* payload; // TODO: does this all fit in a frame?
 };
 
 namespace utils

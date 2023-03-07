@@ -45,6 +45,7 @@ comms::Frame comms::utils::makeFrame(uint8_t* payload,
                                      uint16_t totalFrames,
                                      uint16_t counter)
 {
+
     comms::Frame frame = {CAN_ID, counter, totalFrames, payload};
 
     return frame;
@@ -59,6 +60,8 @@ comms::utils::makeFrameSequence(std::vector<uint8_t*> data)
     {
         frames.push_back(makeFrame(data.at(i), data.size(), i + 1));
     }
+
+    return frames;
 }
 
 /**
