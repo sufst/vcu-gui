@@ -41,12 +41,24 @@ std::vector<uint8_t*> comms::utils::chunkMsg(uint8_t* buf, int length)
     return chunks;
 }
 
-comms::Frame comms::utils::makeFrame()
+comms::Frame comms::utils::makeFrame(uint8_t* payload,
+                                     uint16_t totalFrames,
+                                     uint16_t counter)
 {
+    comms::Frame frame = {CAN_ID, counter, totalFrames, payload};
+
+    return frame;
 }
 
-std::vector<comms::Frame> comms::utils::makeFrameSequence()
+std::vector<comms::Frame>
+comms::utils::makeFrameSequence(std::vector<uint8_t*> data)
 {
+    std::vector<comms::Frame> frames;
+
+    for (uint16_t i = 0; i < data.size(); i++)
+    {
+        frames.push_back(makeFrame(data.at(i), data.size(), i + 1));
+    }
 }
 
 /**

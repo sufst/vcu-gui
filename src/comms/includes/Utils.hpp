@@ -11,6 +11,7 @@
 #include <vector>
 
 #define CHUNK_SIZE 6
+#define CAN_ID     10
 
 namespace comms
 {
@@ -19,14 +20,14 @@ struct Frame
     uint8_t id;
     uint16_t frameNumber;
     uint16_t totalFrames;
-    char payload[8];
+    char payload[8]; // 8?
 };
 
 namespace utils
 {
 std::vector<uint8_t*> chunkMsg(uint8_t*, int);
-::comms::Frame makeFrame();
-std::vector<::comms::Frame> makeFrameSequence();
+::comms::Frame makeFrame(uint8_t*, uint16_t, uint16_t);
+std::vector<::comms::Frame> makeFrameSequence(std::vector<uint8_t*>);
 
 CommsSchema::Version stringToVersion(std::string);
 std::string versionToString(const CommsSchema::Version*);
