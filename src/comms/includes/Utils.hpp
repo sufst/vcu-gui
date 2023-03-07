@@ -18,15 +18,13 @@ namespace comms
 struct Frame
 {
     uint8_t id;
-    uint16_t frameNumber;
-    uint16_t totalFrames;
-    unsigned char* payload; // TODO: does this all fit in a frame?
+    uint8_t payload[8];
 };
 
 namespace utils
 {
 std::vector<uint8_t*> chunkMsg(uint8_t*, int);
-::comms::Frame makeFrame(uint8_t*, uint16_t, uint16_t);
+::comms::Frame makeFrame(uint8_t*, uint16_t);
 std::vector<::comms::Frame> makeFrameSequence(std::vector<uint8_t*>);
 
 CommsSchema::Version stringToVersion(std::string);

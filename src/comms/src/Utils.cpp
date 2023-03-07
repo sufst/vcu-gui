@@ -41,12 +41,21 @@ std::vector<uint8_t*> comms::utils::chunkMsg(uint8_t* buf, int length)
     return chunks;
 }
 
-comms::Frame comms::utils::makeFrame(uint8_t* payload,
-                                     uint16_t totalFrames,
-                                     uint16_t counter)
+comms::Frame comms::utils::makeFrame(uint8_t* payload, uint16_t counter)
 {
 
-    comms::Frame frame = {CAN_ID, counter, totalFrames, payload};
+    uint8_t data[8] = {};
+
+    // Split counter into two bytes
+    uint8_t first = static_cast<uint8_t>((counter & 0xFF00) >> 8);
+    uint8_t second = static_cast<uint8_t>(counter & 0x00FF);
+
+    for (uint8_t i = 0; i < CHUNK_SIZE; i++)
+    {
+        data[i + 2] = payload[i];
+    }
+
+    comms::Frame frame = {CAN_ID, data};
 
     return frame;
 }
@@ -56,10 +65,15 @@ comms::utils::makeFrameSequence(std::vector<uint8_t*> data)
 {
     std::vector<comms::Frame> frames;
 
+    comms::Frame start = {CAN_ID, {0, 0, 0, 0, 0, 0, 0, 0}};
+    frames.push_back(start);
+
     for (uint16_t i = 0; i < data.size(); i++)
     {
-        frames.push_back(makeFrame(data.at(i), data.size(), i + 1));
+        frames.push_back(makeFrame(data.at(i), i));
     }
+
+    // make end frame
 
     return frames;
 }
