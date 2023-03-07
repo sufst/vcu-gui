@@ -11,15 +11,13 @@
 #include <math.h>
 
 // Divide the buffer into blocks of 6 bytes
-std::vector<uint8_t[CHUNK_SIZE]> comms::utils::chunkMsg(uint8_t* buf,
-                                                        int length)
+std::vector<uint8_t*> comms::utils::chunkMsg(uint8_t* buf, int length)
 {
-    std::vector<uint8_t[CHUNK_SIZE]> chunks;
-    uint8_t single[CHUNK_SIZE]; // Zero initialised
+    std::vector<uint8_t*> chunks;
+    uint8_t single[CHUNK_SIZE] = {}; // Zero initialised
 
     for (uint16_t i = 0; i < (length / CHUNK_SIZE); i++)
     {
-
         if ((i + CHUNK_SIZE) <= length)
         {
             for (uint8_t j = 0; j < CHUNK_SIZE; j++)

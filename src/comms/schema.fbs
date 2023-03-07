@@ -38,7 +38,7 @@ struct Version {
 }
 
 struct VariableVals {
-  config_name: [uint8: 64]; // max length 64 chars
+  config_name: [ubyte: 64]; // max length 64 chars
   convig_version: Version;
   torque_map_val : [uint8 : 2048];
   inverter_mode_val: InverterMode;
