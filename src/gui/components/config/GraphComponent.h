@@ -53,6 +53,8 @@ protected:
 
     //==========================================================================
     void paint(juce::Graphics& g) override;
+    void paintXAxis(Graphics& g);
+    void paintYAxis(Graphics& g);
     void resized() override;
 
     void mouseDown(const juce::MouseEvent& event) override;
@@ -235,15 +237,84 @@ ValueType GraphComponent<ValueType>::getMaxY() const
 template <typename ValueType>
 void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
+
     paintBorder(g);
     paintTicks(g);
-
+    paintXAxis(g);
+    paintYAxis(g);
     if (interpolator)
     {
         paintCurve(g);
     }
 
     paintPoints(g);
+}
+
+template <typename ValueType>
+void GraphComponent<ValueType>::paintXAxis(Graphics& g)
+{
+    g.setFont(Font(15.0f));
+    g.setColour(Colours::white);
+
+    int xAxisStart = 0;
+    int xAxisEnd = getWidth();
+    int xAxisLength = xAxisEnd - xAxisStart;
+    int xAxisMid = xAxisStart + (xAxisLength / 2);
+    int xAxisBottom = getHeight();
+    int xAxisLabelY = xAxisBottom;
+
+    g.drawLine(xAxisStart, xAxisBottom, xAxisEnd, xAxisBottom, 2.0f);
+    g.drawText("accelerator pressure",
+               xAxisLabelY - 20,
+               xAxisMid,
+               g.getCurrentFont().getStringWidth("accelerator pressure"),
+               20,
+               Justification::centred,
+               true);
+}
+
+template <typename ValueType>
+void GraphComponent<ValueType>::paintYAxis(Graphics& g)
+{
+    g.setFont(Font(15.0f));
+    g.setColour(Colours::white);
+
+    int yAxisStart = 0;
+    int yAxisLength = getHeight();
+    int xAxisLength = getWidth();
+
+    g.drawLine(yAxisStart, yAxisStart, yAxisStart, yAxisLength, 2.0f);
+
+    // Draw intervals on the y-axis
+    for (int i = 10; i <= 100; i += 10)
+    {
+        int intervalStart = yAxisLength - (i * yAxisLength / 100);
+        g.drawLine(xAxisLength - 10,
+                   intervalStart,
+                   xAxisLength,
+                   intervalStart,
+                   2.0f);
+
+        // Draw the interval label
+        g.setFont(Font(15.0f));
+        g.setColour(Colours::white);
+        g.drawText(String(i) + "%",
+                   xAxisLength - 40,
+                   intervalStart,
+                   50,
+                   20,
+                   Justification::centred,
+                   true);
+
+        // Draw torque label vertically
+        g.drawText("t\nor\nq\nue",
+                   yAxisStart,
+                   yAxisStart,
+                   g.getCurrentFont().getStringWidth("torque"),
+                   yAxisLength,
+                   Justification::centred,
+                   true);
+    }
 }
 
 /**
@@ -596,12 +667,10 @@ bool GraphComponent<ValueType>::keyPressed(
     const juce::KeyPress& key,
     juce::Component* /*originatingComponent*/)
 {
-    if (key.isKeyCode(juce::KeyPress::backspaceKey))
-    {
+    if (key.isKeyCode(juce::KeyPress::backspaceKey)) {
         pointEditState = (pointEditState == PointEditingState::Delete)
-                             ? PointEditingState::None
-                             : PointEditingState::Delete;
-
+                            ? PointEditingState::None
+                            : PointEditingState::Delete;
         updateCursor();
         return true;
     }
