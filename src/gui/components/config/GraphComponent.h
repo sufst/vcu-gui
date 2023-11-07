@@ -603,7 +603,7 @@ bool GraphComponent<ValueType>::keyPressed(
         setDeletionState(true);
         return true;
     }
-    
+
     if (key.isKeyCode(juce::KeyPress::escapeKey))
     {
         if (pointEditState == PointEditingState::Delete)
@@ -630,7 +630,8 @@ bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key)
 template <typename ValueType>
 void GraphComponent<ValueType>::setDeletionState(bool enabled)
 {
-    pointEditState = enabled ? PointEditingState::Delete : PointEditingState::None;
+    pointEditState
+        = enabled ? PointEditingState::Delete : PointEditingState::None;
     updateCursor();
 }
 
