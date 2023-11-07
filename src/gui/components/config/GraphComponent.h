@@ -65,6 +65,8 @@ protected:
                     juce::Component* originatingComponent) override;
     bool keyPressed(const juce::KeyPress& key) override;
 
+    void setDeletionState(bool enabled);
+
     //==========================================================================
     virtual int getNumPoints() const = 0;
     virtual PointType getPoint(int index) const = 0;
@@ -598,17 +600,19 @@ bool GraphComponent<ValueType>::keyPressed(
 {
     if (key.isKeyCode(juce::KeyPress::backspaceKey))
     {
-        pointEditState = PointEditingState::Delete;
-        updateCursor();
+        setDeletionState(true);
         return true;
     }
-    else if (key.isKeyCode(juce::KeyPress::escapeKey)
-             && pointEditState == PointEditingState::Delete)
+    
+    if (key.isKeyCode(juce::KeyPress::escapeKey))
     {
-        pointEditState = PointEditingState::None;
-        updateCursor();
-        return true;
+        if (pointEditState == PointEditingState::Delete)
+        {
+            setDeletionState(false);
+            return true;
+        }
     }
+
     return false;
 }
 
@@ -621,6 +625,13 @@ template <typename ValueType>
 bool GraphComponent<ValueType>::keyPressed(const juce::KeyPress& key)
 {
     return keyPressed(key, nullptr);
+}
+
+template <typename ValueType>
+void GraphComponent<ValueType>::setDeletionState(bool enabled)
+{
+    pointEditState = enabled ? PointEditingState::Delete : PointEditingState::None;
+    updateCursor();
 }
 
 //==============================================================================
