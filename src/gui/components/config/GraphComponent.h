@@ -667,19 +667,14 @@ bool GraphComponent<ValueType>::keyPressed(
     const juce::KeyPress& key,
     juce::Component* /*originatingComponent*/)
 {
-    if (key.isKeyCode(juce::KeyPress::backspaceKey))
-    {
-        pointEditState = PointEditingState::Delete;
+    if (key.isKeyCode(juce::KeyPress::backspaceKey)) {
+        pointEditState = (pointEditState == PointEditingState::Delete)
+                            ? PointEditingState::None
+                            : PointEditingState::Delete;
         updateCursor();
         return true;
     }
-    else if (key.isKeyCode(juce::KeyPress::escapeKey)
-             && pointEditState == PointEditingState::Delete)
-    {
-        pointEditState = PointEditingState::None;
-        updateCursor();
-        return true;
-    }
+
     return false;
 }
 
