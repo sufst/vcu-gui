@@ -169,9 +169,11 @@ void TorqueMapComponent::setDeadzonePosition(int newPosition)
  */
 juce::Rectangle<int> TorqueMapComponent::getDeadzoneBounds() const
 {
-    auto deadzoneEdgePoint
-        = transformPointForPaint({getDeadzonePosition(), getHeight()});
-    return juce::Rectangle<int>({0, 0}, deadzoneEdgePoint);
+    juce::Point<int> deadzoneCorner(getDeadzonePosition(),
+                                    TorqueMapPoint::MaxOutput);
+
+    auto guiPoint = transformPointForPaint(deadzoneCorner);
+    return juce::Rectangle<int>({0, 0}, guiPoint);
 }
 
 /**
@@ -184,7 +186,7 @@ void TorqueMapComponent::paintDeadzoneOverlay(juce::Graphics& g) const
     auto deadzoneBounds = getDeadzoneBounds();
 
     g.setColour(deadzoneColour.withLightness(0.5f).withAlpha(0.2f));
-    g.fillRect(deadzoneBounds.expanded(0, 5));
+    g.fillRect(deadzoneBounds);
 
     g.setColour(deadzoneColour);
     g.drawVerticalLine(deadzoneBounds.getWidth(),
