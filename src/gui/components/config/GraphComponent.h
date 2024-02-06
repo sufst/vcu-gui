@@ -468,7 +468,7 @@ void GraphComponent<ValueType>::mouseDown(const juce::MouseEvent& event)
     if (pointEditState == PointEditingState::None
         || pointEditState == PointEditingState::OverPoint)
     {
-        // create new
+        // create new if cursor is not pointing at a point
         if (pointIndex == -1)
         {
             const auto newPoint = transformPointToGraph(event.getPosition());

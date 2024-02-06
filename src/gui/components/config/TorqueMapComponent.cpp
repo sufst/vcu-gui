@@ -32,6 +32,8 @@ TorqueMapComponent::TorqueMapComponent(juce::ValueTree torqueMapTree)
     // TODO: this should really use a juce::ChangeListener instead of listening
     //       to the value tree directly
     torqueMap.state.addListener(this);
+
+    generalTooltip = std::make_shared<juce::TooltipWindow>(this, 0);
 }
 
 //==============================================================================
@@ -241,6 +243,8 @@ void TorqueMapComponent::mouseUp(const juce::MouseEvent& event)
  */
 void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
 {
+    int pointNo = getPointNearMouseEvent(event);
+
     if (mouseEventInDeadzone(event) || movingDeadzone)
     {
         if (movingDeadzone)
@@ -259,6 +263,10 @@ void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
 
         showDeadzoneTooltip();
     }
+    else if (pointNo != -1)
+    {
+        showPointTooltip(pointNo);
+    }
     else if (!shouldPreventPointEdit(event))
     {
         GraphComponent<TorqueMapPoint::ValueType>::mouseDrag(event);
@@ -273,14 +281,20 @@ void TorqueMapComponent::mouseDrag(const juce::MouseEvent& event)
  */
 void TorqueMapComponent::mouseMove(const juce::MouseEvent& event)
 {
+    int pointNo = getPointNearMouseEvent(event);
+
     if (mouseEventInDeadzone(event))
     {
         setMouseCursor(juce::MouseCursor::LeftRightResizeCursor);
         showDeadzoneTooltip();
     }
-    else if (!shouldPreventPointEdit(event))
+    else if (pointNo != -1)
     {
-        hideDeadzoneTooltip();
+        showPointTooltip(pointNo);
+    }
+    else
+    {
+        hideTooltip();
         GraphComponent<TorqueMapPoint::ValueType>::mouseMove(event);
     }
 }
@@ -318,10 +332,8 @@ bool TorqueMapComponent::shouldPreventPointEdit(
  */
 void TorqueMapComponent::showDeadzoneTooltip()
 {
-    if (deadzoneTooltip == nullptr)
-    {
-        deadzoneTooltip = std::make_unique<juce::TooltipWindow>(this, 0);
-    }
+    // Make a shared pointer pointing to generalTooltip
+    auto deadzoneTooltip {generalTooltip};
 
     auto deadzoneX = transformPointForPaint({getDeadzonePosition(), 0}).getX();
 
@@ -339,11 +351,33 @@ void TorqueMapComponent::showDeadzoneTooltip()
 }
 
 /**
- * @brief Hide the deadzone tooltip
- */
-void TorqueMapComponent::hideDeadzoneTooltip()
+ * @brief Shows the hovered point tooltip
+*/
+void TorqueMapComponent::showPointTooltip(int pointNo)
 {
-    deadzoneTooltip.reset();
+    // Make a shared pointer pointing to generalTooltip
+    auto pointTooltip {generalTooltip};
+
+    // Get point and cursor position in the graph
+    auto pointInGraph = getPoint(pointNo);
+    auto cursorLocation = juce::Desktop::getMousePosition();
+
+    // String denoting coordinates of points in the form of (x, y)
+    juce::String tipText = 
+        juce::String::toDecimalStringWithSignificantFigures(pointInGraph.x, 2) 
+        + ","
+        + juce::String::toDecimalStringWithSignificantFigures(pointInGraph.y, 3);
+
+    pointTooltip->displayTip(cursorLocation, tipText);
+    pointTooltip->setVisible(true);
+}
+
+/**
+ * @brief Hide the general tooltip
+ */
+void TorqueMapComponent::hideTooltip()
+{
+    generalTooltip->setVisible(false);
 }
 
 } // namespace gui

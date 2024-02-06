@@ -62,10 +62,11 @@ private:
     bool mouseEventInDeadzone(const juce::MouseEvent& event) const;
     bool shouldPreventPointEdit(const juce::MouseEvent& event) const;
     void showDeadzoneTooltip();
-    void hideDeadzoneTooltip();
+    void showPointTooltip(int pointNo);
+    void hideTooltip();
 
     bool movingDeadzone = false;
-    std::unique_ptr<juce::TooltipWindow> deadzoneTooltip;
+    std::shared_ptr<juce::TooltipWindow> generalTooltip;
 
     //==========================================================================
     TorqueMap torqueMap;
