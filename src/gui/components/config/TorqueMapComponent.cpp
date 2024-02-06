@@ -333,7 +333,7 @@ bool TorqueMapComponent::shouldPreventPointEdit(
 void TorqueMapComponent::showDeadzoneTooltip()
 {
     // Make a shared pointer pointing to generalTooltip
-    auto deadzoneTooltip {generalTooltip};
+    auto deadzoneTooltip{generalTooltip};
 
     auto deadzoneX = transformPointForPaint({getDeadzonePosition(), 0}).getX();
 
@@ -352,21 +352,22 @@ void TorqueMapComponent::showDeadzoneTooltip()
 
 /**
  * @brief Shows the hovered point tooltip
-*/
+ */
 void TorqueMapComponent::showPointTooltip(int pointNo)
 {
     // Make a shared pointer pointing to generalTooltip
-    auto pointTooltip {generalTooltip};
+    auto pointTooltip{generalTooltip};
 
     // Get point and cursor position in the graph
     auto pointInGraph = getPoint(pointNo);
     auto cursorLocation = juce::Desktop::getMousePosition();
 
     // String denoting coordinates of points in the form of (x, y)
-    juce::String tipText = 
-        juce::String::toDecimalStringWithSignificantFigures(pointInGraph.x, 2) 
-        + ","
-        + juce::String::toDecimalStringWithSignificantFigures(pointInGraph.y, 3);
+    juce::String tipText
+        = juce::String::toDecimalStringWithSignificantFigures(pointInGraph.x, 2)
+          + ","
+          + juce::String::toDecimalStringWithSignificantFigures(pointInGraph.y,
+                                                                3);
 
     pointTooltip->displayTip(cursorLocation, tipText);
     pointTooltip->setVisible(true);
