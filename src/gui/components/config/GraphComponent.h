@@ -88,6 +88,8 @@ protected:
     void paintPoints(juce::Graphics& g) const;
     void paintCurve(juce::Graphics& g) const;
 
+    void labelXAxis(juce::Graphics& g, juce::String label);
+
     void recalculateInterpolatedPath();
 
     bool pointHitTest(const juce::Point<int>& guiPoint,
@@ -104,6 +106,10 @@ protected:
 
     juce::Path interpolatedPath;
     std::unique_ptr<Interpolator<ValueType>> interpolator = nullptr;
+
+    // Axes area
+    juce::Rectangle<ValueType> xAxisLabelArea;
+    juce::String xAxisLabel;
 
     //==========================================================================
     enum class PointEditingState
@@ -237,6 +243,7 @@ ValueType GraphComponent<ValueType>::getMaxY() const
 template <typename ValueType>
 void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
+    labelXAxis(g, juce::String("AcceleratorPressure"));
     paintBorder(g);
     paintTicks(g);
 
@@ -249,6 +256,29 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 }
 
 /**
+ * @brief   Label the x axes
+*/
+template <typename ValueType>
+void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label)
+{
+    int labelHeight = 0.1 * getHeight();
+
+    xAxisLabelArea = juce::Rectangle<int>(0, getHeight() - labelHeight, getWidth(), labelHeight);
+
+    g.drawRect(xAxisLabelArea, 3);
+
+    g.setFont(Font(15.0f));
+    g.setColour(Colours::white);
+
+    g.drawText(
+        label,
+        xAxisLabelArea,
+        Justification::centred,
+        true
+    );
+}
+
+/**
  * @brief       Paints the graph border
  *
  * @param[in]   g   JUCE graphics context
@@ -257,7 +287,7 @@ template <typename ValueType>
 void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
 {
     g.setColour(borderColour);
-    g.drawRect(0, 0, getWidth(), getHeight(), 1);
+    g.drawRect(0, xAxisLabelArea.getHeight(), getWidth(), getHeight(), 1);
 }
 
 /**
