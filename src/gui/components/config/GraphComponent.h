@@ -111,7 +111,9 @@ protected:
     // Axes area
     juce::Rectangle<int> yAxisLabelArea;
     juce::Rectangle<int> xAxisLabelArea;
-    juce::Rectangle<int> GraphArea;
+    juce::Rectangle<int> graphArea;
+    int graphWidth;
+    int graphHeight;
 
     juce::String xAxisLabel;
     juce::String yAxisLabel;
@@ -282,6 +284,9 @@ void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label
         Justification::centred,
         true
     );
+
+    // Update graph height
+    graphHeight = getHeight() - xAxisLabelArea.getHeight();
 }
 
 /**
@@ -304,6 +309,9 @@ void GraphComponent<ValueType>::labelYAxis(juce::Graphics &g, juce::String label
         Justification::centred,
         true
     );
+
+    // Update graph width
+    graphWidth = getWidth() - yAxisLabelArea.getWidth();
 }
 
 /**
@@ -707,16 +715,17 @@ void GraphComponent<ValueType>::setDeletionState(bool enabled)
 template <typename ValueType>
 juce::AffineTransform GraphComponent<ValueType>::graphToGuiTransform() const
 {
+    // Obtain ranges of actual data coordinates (not GUI pixels)
     const float xRange
         = static_cast<float>(getMaxX()) - static_cast<float>(getMinX());
     const float yRange
         = static_cast<float>(getMaxY()) - static_cast<float>(getMinY());
-    const float xScale = getWidth() / xRange;
-    const float yScale = getHeight() / yRange;
+    const float xScale = graphWidth / xRange;
+    const float yScale = graphHeight / yRange;
 
     return juce::AffineTransform()
-        .scaled(xScale, -yScale)
-        .translated(-xScale * getMinX(), yScale * getMaxY());
+        .scaled(xScale, -yScale)  // negative Y scale since JUCE inverts the Y axis with the origin at the top-left, Y increasing downwards
+        .translated(-xScale * getMinX() + yAxisLabelArea.getWidth(), yScale * getMaxY() - xAxisLabelArea.getHeight());  // Scale around the origin
 }
 
 /**
