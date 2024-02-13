@@ -248,8 +248,8 @@ ValueType GraphComponent<ValueType>::getMaxY() const
 template <typename ValueType>
 void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
-    labelXAxis(g, juce::String("AcceleratorPressure"));
-    labelYAxis(g, juce::String("T\no\nr\nq\nu\ne"));
+    labelXAxis(g, juce::String("ACCELERATOR PRESSURE"));
+    labelYAxis(g, juce::String("TORQUE"));
     paintBorder(g);
     paintTicks(g);
 
@@ -271,7 +271,7 @@ void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label
 
     xAxisLabelArea = juce::Rectangle<int>(0, getHeight() - labelHeight, getWidth(), labelHeight);
 
-    g.drawRect(xAxisLabelArea, 3);
+    g.drawRect(xAxisLabelArea, 0);
 
     g.setFont(Font(15.0f));
     g.setColour(Colours::white);
@@ -294,7 +294,7 @@ void GraphComponent<ValueType>::labelYAxis(juce::Graphics &g, juce::String label
 
     yAxisLabelArea = juce::Rectangle<int>(0, 0, labelWidth, getHeight());
 
-    g.drawRect(yAxisLabelArea, 3);
+    g.drawRect(yAxisLabelArea, 0);
 
     g.setColour(Colours::white);
 
@@ -315,7 +315,12 @@ template <typename ValueType>
 void GraphComponent<ValueType>::paintBorder(juce::Graphics& g) const
 {
     g.setColour(borderColour);
-    g.drawRect(0, xAxisLabelArea.getHeight(), getWidth(), getHeight(), 1);
+    g.drawRect(
+        yAxisLabelArea.getWidth(), 
+        0, 
+        getWidth()  - yAxisLabelArea.getWidth(), 
+        getHeight() - xAxisLabelArea.getHeight(), 
+        3);
 }
 
 /**
