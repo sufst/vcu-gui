@@ -89,6 +89,7 @@ protected:
     void paintCurve(juce::Graphics& g) const;
 
     void labelXAxis(juce::Graphics& g, juce::String label);
+    void labelYAxis(juce::Graphics& g, juce::String label);
 
     void recalculateInterpolatedPath();
 
@@ -108,8 +109,12 @@ protected:
     std::unique_ptr<Interpolator<ValueType>> interpolator = nullptr;
 
     // Axes area
-    juce::Rectangle<ValueType> xAxisLabelArea;
+    juce::Rectangle<int> yAxisLabelArea;
+    juce::Rectangle<int> xAxisLabelArea;
+    juce::Rectangle<int> GraphArea;
+
     juce::String xAxisLabel;
+    juce::String yAxisLabel;
 
     //==========================================================================
     enum class PointEditingState
@@ -244,6 +249,7 @@ template <typename ValueType>
 void GraphComponent<ValueType>::paint(juce::Graphics& g)
 {
     labelXAxis(g, juce::String("AcceleratorPressure"));
+    labelYAxis(g, juce::String("T\no\nr\nq\nu\ne"));
     paintBorder(g);
     paintTicks(g);
 
@@ -261,7 +267,7 @@ void GraphComponent<ValueType>::paint(juce::Graphics& g)
 template <typename ValueType>
 void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label)
 {
-    int labelHeight = 0.1 * getHeight();
+    int labelHeight = static_cast<int>(0.1 * getHeight());
 
     xAxisLabelArea = juce::Rectangle<int>(0, getHeight() - labelHeight, getWidth(), labelHeight);
 
@@ -273,6 +279,28 @@ void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label
     g.drawText(
         label,
         xAxisLabelArea,
+        Justification::centred,
+        true
+    );
+}
+
+/**
+ * @brief   Label the y axes
+*/
+template <typename ValueType>
+void GraphComponent<ValueType>::labelYAxis(juce::Graphics &g, juce::String label)
+{
+    int labelWidth = static_cast<int>(0.1 * getWidth());
+
+    yAxisLabelArea = juce::Rectangle<int>(0, 0, labelWidth, getHeight());
+
+    g.drawRect(yAxisLabelArea, 3);
+
+    g.setColour(Colours::white);
+
+    g.drawText(
+        label,
+        yAxisLabelArea,
         Justification::centred,
         true
     );
