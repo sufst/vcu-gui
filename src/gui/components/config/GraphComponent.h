@@ -273,7 +273,8 @@ void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label
 
     xAxisLabelArea = juce::Rectangle<int>(0, getHeight() - labelHeight, getWidth(), labelHeight);
 
-    g.drawRect(xAxisLabelArea, 0);
+    g.setColour(Colours::azure);
+    g.drawRect(xAxisLabelArea, 2);
 
     g.setFont(Font(15.0f));
     g.setColour(Colours::white);
@@ -286,7 +287,7 @@ void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label
     );
 
     // Update graph height
-    graphHeight = getHeight() - xAxisLabelArea.getHeight();
+    graphHeight = getHeight() - labelHeight;
 }
 
 /**
@@ -298,8 +299,9 @@ void GraphComponent<ValueType>::labelYAxis(juce::Graphics &g, juce::String label
     int labelWidth = static_cast<int>(0.1 * getWidth());
 
     yAxisLabelArea = juce::Rectangle<int>(0, 0, labelWidth, getHeight());
-
-    g.drawRect(yAxisLabelArea, 0);
+    
+    g.setColour(Colours::azure);
+    g.drawRect(yAxisLabelArea, 2);
 
     g.setColour(Colours::white);
 
@@ -725,7 +727,7 @@ juce::AffineTransform GraphComponent<ValueType>::graphToGuiTransform() const
 
     return juce::AffineTransform()
         .scaled(xScale, -yScale)  // negative Y scale since JUCE inverts the Y axis with the origin at the top-left, Y increasing downwards
-        .translated(-xScale * getMinX() + yAxisLabelArea.getWidth(), yScale * getMaxY() - xAxisLabelArea.getHeight());  // Scale around the origin
+        .translated(-xScale * getMinX() + yAxisLabelArea.getWidth(), yScale * getMaxY());  // Scale around the origin
 }
 
 /**
