@@ -378,14 +378,14 @@ void GraphComponent<ValueType>::paintTicks(juce::Graphics& g) const
                 auto point = transformPointForPaint({x, 0});
                 g.drawVerticalLine(point.getX(),
                                    0.f,
-                                   static_cast<float>(getHeight()));
+                                   static_cast<float>(graphHeight));
             }
             else
             {
                 int y = i * dirMult * tickSpacingY;
                 auto point = transformPointForPaint({0, y});
                 g.drawHorizontalLine(point.getY(),
-                                     0.f,
+                                     static_cast<float>(yAxisLabelArea.getWidth()),
                                      static_cast<float>(getWidth()));
             }
         }
