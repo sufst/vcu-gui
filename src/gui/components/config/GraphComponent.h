@@ -273,12 +273,12 @@ void GraphComponent<ValueType>::labelXAxis(juce::Graphics &g, juce::String label
 
     xAxisLabelArea = juce::Rectangle<int>(0, getHeight() - labelHeight, getWidth(), labelHeight);
 
-    g.setColour(Colours::azure);
-    g.drawRect(xAxisLabelArea, 2);
+    // Black background with white text label
+    g.setColour(Colours::black);
+    g.fillRect(xAxisLabelArea);
 
-    g.setFont(Font(15.0f));
     g.setColour(Colours::white);
-
+    g.setFont(Font(15.0f));
     g.drawText(
         label,
         xAxisLabelArea,
@@ -300,11 +300,12 @@ void GraphComponent<ValueType>::labelYAxis(juce::Graphics &g, juce::String label
 
     yAxisLabelArea = juce::Rectangle<int>(0, 0, labelWidth, getHeight());
     
-    g.setColour(Colours::azure);
-    g.drawRect(yAxisLabelArea, 2);
+    // Black background and white text label
+    g.setColour(Colours::black);
+    g.fillRect(yAxisLabelArea);
 
     g.setColour(Colours::white);
-
+    g.setFont(Font(15.0f));
     g.drawText(
         label,
         yAxisLabelArea,
